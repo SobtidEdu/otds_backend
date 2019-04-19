@@ -2,8 +2,8 @@ const { connectMongodb } = require('./mongo-connection')
 
 class Synchronizer {
   constructor() {
-    this.sqlQueryCmd = ''
-    this.mongoCollection = ''
+    this.sqlQueryCmd = null
+    this.mongoCollection = null
     this.mysql
     this.mongodb
     this.mongoConnection
@@ -19,9 +19,13 @@ class Synchronizer {
 
   async connectDB() {
     const {mongoConnection, mongodb} = await connectMongodb()
-    this.mongodb = mongodb
-    this.mongoConnection = mongoConnection
-    this.mysql = require('./mysql-connection')
+    if (!this.mongoConnection) {
+      this.mongodb = mongodb
+      this.mongoConnection = mongoConnection
+    }
+    if (!this.mysql) {
+      this.mysql = require('./mysql-connection')
+    }
   }
 
   async synchronize(recordsPerRound = 1000, callback) {
@@ -30,18 +34,22 @@ class Synchronizer {
     const round = Math.ceil(total / recordsPerRound)
     let firstRecordInRound = 0
     let lastRecordInRound = 0
+    let amountRecordInRound = 0
     let items = []
 
     for (let i = 1; i <= round; i++) {
       firstRecordInRound = ((i-1)*recordsPerRound)+1
       lastRecordInRound = i*recordsPerRound < total ? i*recordsPerRound : total
+      amountRecordInRound = lastRecordInRound - firstRecordInRound
       console.log(`Round ${i}/${round} upstreaming ${recordsPerRound} records each round`)
       console.log(` Quering... ${firstRecordInRound} - ${lastRecordInRound}`)
-      const sources = await this.mysql.query(`${this.sqlQueryCmd} LIMIT ${firstRecordInRound - 1}, ${recordsPerRound}`)
+      const sources = await this.mysql.query(`${this.sqlQueryCmd} ORDER BY id ASC LIMIT ${firstRecordInRound - 1}, ${recordsPerRound}`)
+      console.log(`${this.sqlQueryCmd} LIMIT ${firstRecordInRound - 1}, ${recordsPerRound}`)
       console.log(` Manipulating... ${firstRecordInRound} - ${lastRecordInRound}`)
-      for (let j = 0; j < lastRecordInRound; j++) {
+      for (let j = 0; j < amountRecordInRound; j++) {
         items[j] = callback(sources[j], {})
       }
+
       console.log(` Inserting... ${firstRecordInRound} - ${lastRecordInRound}`)
       await this.mongodb.collection(this.mongoCollection).insertMany(items)
     }

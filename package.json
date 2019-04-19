@@ -9,12 +9,14 @@
   "scripts": {
     "dev": "node ./node_modules/nodemon/bin/nodemon.js index.js",
     "db:seed": "node ./db/seeds",
-    "db:migrate": "node ./db/migrations"
+    "db:migrate": "node ./db/migrations",
+    "migrate": "node node_modules/db-migrate/bin/db-migrate"
   },
   "dependencies": {
     "commander": "^2.20.0",
     "dotenv": "^7.0.0",
     "fastify": "^2.1.0",
+    "fastify-swagger": "^2.3.2",
     "inquirer": "^6.2.2",
     "moment": "^2.24.0",
     "mongodb": "^3.2.3",
@@ -22,6 +24,8 @@
     "pino-pretty": "^2.5.0"
   },
   "devDependencies": {
+    "db-migrate": "^0.11.5",
+    "db-migrate-mongodb": "^1.5.0",
     "eslint": "^5.15.3",
     "nodemon": "^1.18.10"
   }

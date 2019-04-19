@@ -1,23 +1,24 @@
 'use strict'
 const moment = require('moment')
-const Synchronizer = require('./synchronizer')
-const synchronizer = new Synchronizer()
+const { connectMongodb } = require('./mongo-connection')
 
 module.exports = {
-  sync: async () => {
+  sync: async (synchronizer) => {
     console.log('Synchonizing Province .....')
-    await synchronizer.connectDB()
+    const { mongoConnection, mongodb } = await connectMongodb()
     synchronizer.setSqlQueryCmd('SELECT * FROM ot_provinces')
     synchronizer.setMongoCollection('provinces')
+    const th = await mongodb.collection('countries').findOne({abbr: 'TH'})
+    await mongoConnection.close()
     await synchronizer.synchronize(1000, (from, to) => {
-      to.id = from.id,
+      to.id = from.id
       to.name = from.name
       to.isActived = true
+      to.countryId = th._id
       to.createdAt = moment().unix()
       to.updatedAt = moment().unix()
       return to
     })
-    await synchronizer.close()
     console.log('Province synchonized .....')
   },
   clear: async (mongodb) => {

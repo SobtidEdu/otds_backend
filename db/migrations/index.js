@@ -2,19 +2,21 @@
 
 const program = require('commander')
 const { connectMongodb } = require('./mongo-connection')
-
-const groupCommands = ['competition', 'province']
+const Synchronizer = require('./synchronizer')
+const synchronizer = new Synchronizer()
+const groupCommands = ['competition', 'province', 'school', 'user']
 
 program
   .version('1.0.0')
   .command('sync <cmd>')
   .action(async (cmd) => {
     console.log('===== OTDS Migration Getting Start =====')
+    await synchronizer.connectDB()
     if (cmd == 'all') {
       for (migration of groupCommands) {
         let migrate = require(`./${migration}.migration`)
       
-        await migrate.sync()
+        await migrate.sync(synchronizer)
       }
     } else {
       if (!groupCommands.includes(cmd)) {
@@ -24,8 +26,9 @@ program
 
       const migrate = require(`./${cmd}.migration`)
       
-      await migrate.sync()
+      await migrate.sync(synchronizer)
     }
+    await synchronizer.close()
     console.log('===== OTDS Migration End =====')
   })
 
