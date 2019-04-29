@@ -13,15 +13,23 @@
     "migrate": "node node_modules/db-migrate/bin/db-migrate"
   },
   "dependencies": {
+    "ajv": "^6.10.0",
+    "ajv-errors": "^1.0.1",
     "commander": "^2.20.0",
+    "csv-parse": "^4.4.1",
+    "csvtojson": "^2.0.8",
     "dotenv": "^7.0.0",
     "fastify": "^2.1.0",
+    "fastify-env": "^0.6.2",
+    "fastify-file-upload": "^1.0.0",
+    "fastify-mongoose-driver": "^1.0.2",
     "fastify-swagger": "^2.3.2",
     "inquirer": "^6.2.2",
     "moment": "^2.24.0",
     "mongodb": "^3.2.3",
     "mysql": "^2.16.0",
-    "pino-pretty": "^2.5.0"
+    "pino-pretty": "^2.5.0",
+    "qs": "^6.7.0"
   },
   "devDependencies": {
     "db-migrate": "^0.11.5",

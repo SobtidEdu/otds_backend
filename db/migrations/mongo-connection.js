@@ -3,7 +3,7 @@ let MongoClient = require('mongodb').MongoClient;
 
 const { DB_HOST, DB_USER, DB_PASSWORD, DB_PORT, DB_NAME } = process.env
 
-const url = `mongodb://${DB_USER}:${DB_PASSWORD}@${DB_HOST}:${DB_PORT}/${DB_NAME}`
+const url = process.env.MONGODB_URL
 
 exports.connectMongodb = async () => {
   try {
@@ -13,6 +13,6 @@ exports.connectMongodb = async () => {
   }
   catch (err) {
     console.log(err)
-    mongodbConnection.close();
+    mongoConnection.close();
   }
 }
