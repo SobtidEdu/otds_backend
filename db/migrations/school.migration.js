@@ -6,7 +6,7 @@ module.exports = {
     console.log('Synchonizing school .....')
     synchronizer.setSqlQueryCmd('SELECT * FROM ot_schools')
     synchronizer.setMongoCollection('schools')
-    await synchronizer.synchronize(1000, (from, to) => {
+    await synchronizer.synchronize(5000, (from, to) => {
       to.id = from.id
       to.name = from.name
       to.isActive = true

@@ -11,14 +11,12 @@ module.exports = {
     name: {
       type: String,
       required: true,
-      trim: true
+      trim: true,
+      unique: true
     },
-    isActived: {
+    isActive: {
       type: Boolean,
       default: true
-    },
-    countryId: {
-      type: ObjectId,
     },
     createdAt: {
       type: Number,

@@ -19,24 +19,20 @@ module.exports = async (fastify, options) => {
   fastify.post('/import', {
     schema: schema.import
   }, async (request, reply) => {
-    const { provincesFile } = request.raw.files
-    const csvData = provincesFile.data.toString('utf8')
+    const { provincesImportFile } = request.raw.files
+    const csvData = provincesImportFile.data.toString('utf8')
     const provinces = await csvParser().fromString(csvData)
-    fastify.mongoose.Country.find()
+
     for (let province of provinces) {
-      let value = Object.values(country)
-      
-      await fastify.mongoose.Country.findOneAndUpdate({
-        name: value[0]
-      },{
-        name: value[0],
-        abbr: value[1],
-        isActive: value[2] == undefined ? true : (countryValue[3] == 'true' ? true : false),
+      await fastify.mongoose.Province.findOneAndUpdate({
+        name: province['ชื่อจังหวัด*']
+      }, {
+        isActive: ['1', ''].includes(province['สถานะ']) ? true : false,
         createdAt: fastify.moment().unix(),
         updatedAt: fastify.moment().unix(),
       }, { upsert: true })
     }
-    return { message: 'Import ไฟล์ประเทศเรียบร้อย' }
+    return { message: 'นำเข้าไฟล์จังหวัดเรียบร้อย' }
   })
 
   fastify.patch('/', {

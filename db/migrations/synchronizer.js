@@ -38,6 +38,7 @@ class Synchronizer {
     let items = []
 
     for (let i = 1; i <= round; i++) {
+      if (i < round) continue;
       firstRecordInRound = ((i-1)*recordsPerRound)+1
       lastRecordInRound = i*recordsPerRound < total ? i*recordsPerRound : total
       amountRecordInRound = lastRecordInRound - firstRecordInRound

@@ -13,8 +13,7 @@ module.exports = {
     await synchronizer.synchronize(1000, (from, to) => {
       to.id = from.id
       to.name = from.name
-      to.isActived = true
-      to.countryId = th._id
+      to.isActive = true
       to.createdAt = moment().unix()
       to.updatedAt = moment().unix()
       return to

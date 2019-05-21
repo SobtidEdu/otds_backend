@@ -48,6 +48,11 @@ module.exports = {
 
   },
   import: {
-
+    // body: {
+    //   type: 'object',
+    //   properties: {
+    //     file
+    //   }
+    // }
   }
 }

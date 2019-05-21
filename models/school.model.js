@@ -5,11 +5,16 @@ module.exports = {
     name: {
       type: String,
       required: true,
-      trim: true
+      trim: true,
+      unique: true
     },
     isActive: {
       type: Boolean,
       default: true
+    },
+    province: {
+      type: "ObjectId",
+      ref: "Province"
     },
     createdAt: {
       type: Date,
