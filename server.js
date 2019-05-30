@@ -1,14 +1,14 @@
 require('dotenv').config()
-const Ajv = require('ajv')
-const ajv = new Ajv({
-  // the fastify defaults (if needed)
-  removeAdditional: true,
-  useDefaults: true,
-  coerceTypes: true,
-  allErrors: true,
-  jsonPointers: true
-})
-require('ajv-errors')(ajv);
+// const Ajv = require('ajv')
+// const ajv = new Ajv({
+//   // the fastify defaults (if needed)
+//   removeAdditional: true,
+//   useDefaults: true,
+//   coerceTypes: true,
+//   allErrors: true,
+//   jsonPointers: true
+// })
+// require('ajv-errors')(ajv);
 const qs = require('qs')
 const fileUpload = require('fastify-file-upload')
 const moment = require('moment')
@@ -28,9 +28,6 @@ fastify.decorate('moment', moment())
 /*****
  * External Plugin
  *****/
-fastify.setSchemaCompiler(function (schema) {
-  return ajv.compile(schema)
-})
 fastify.register(fileUpload)
 fastify.register(require('fastify-sensible'), { errorHandler: false })
 fastify.register(require('fastify-auth'))
@@ -48,12 +45,12 @@ fastify.register(require('fastify-jwt'), {
 })
 fastify.register(require('fastify-nodemailer'), {
   pool: true,
-  host: 'smtp.mailtrap.io',
-  port: 465,
+  host: fastify.env.EMAIL_HOST,
+  port: fastify.env.EMAIL_PORT,
   secure: false, // use TLS
   auth: {
-      user: 'ebe0e4fe541f2e',
-      pass: '87700483c62436'
+    user: fastify.env.EMAIL_USERNAME,
+    pass: fastify.env.EMAIL_PASSWORD
   }
 })
 
@@ -65,14 +62,23 @@ fastify.register(require('./plugins/handle-error.plugin'))
 fastify.register(require('./plugins/utils.plugin'))
 fastify.register(require('./plugins/auth.plugin'))
 fastify.register(require('./plugins/html-template.plugin'))
+fastify.register(require('./plugins/validators.plugin'))
 
 /*****
  * Database Connection 
  *****/ 
+const {
+  MONGO_HOST,
+  MONGO_PORT,
+  MONGO_USERNAME,
+  MONGO_PASSWORD,
+  MONGO_DBNAME
+} = fastify.env
+console.log(`mongodb://${MONGO_USERNAME}:${MONGO_PASSWORD}@${MONGO_HOST}:${MONGO_PORT}/${MONGO_DBNAME}`)
 fastify.register(
   require("fastify-mongoose-driver"),
   {
-    uri: fastify.env.MONGODB_URL,
+    uri: `mongodb://${MONGO_USERNAME}:${MONGO_PASSWORD}@${MONGO_HOST}:${MONGO_PORT}/${MONGO_DBNAME}`,
     settings: {
       useNewUrlParser: true,
       config: {
@@ -94,7 +100,7 @@ fastify.setErrorHandler(async (error, request, reply) => {
   
   if (error.validation) {
     errorResponse.message = 'ข้อมูลไม่ถูกต้อง'
-    errorResponse.errors = error.validation
+    errorResponse.errors = error.errors
     return reply.code(422).send(errorResponse)
   }
   
@@ -106,24 +112,27 @@ fastify.setErrorHandler(async (error, request, reply) => {
 })
 
 fastify.ready((err) => {
-  if (err) throw err
+  if (err) {
+    console.log(err)
+    process.exit()
+  }
   console.log(fastify.printRoutes())
 })
 const start = async () => {
   try {
-    await fastify.listen(3000)
+    await fastify.listen(3000, '0.0.0.0')
   } catch (err) {
     fastify.log.error(err)
     process.exit(1)
   }
 }
 
-process.on('SIGINT', async () => {
-  console.log('stopping fastify server');
-  await fastify.close();
-  console.log('fastify server stopped');
-  process.exit(0);
-});
+// process.on('SIGINT', async () => {
+//   console.log('stopping fastify server');
+//   await fastify.close();
+//   console.log('fastify server stopped');
+//   process.exit(0);
+// });
 
 start()
 

@@ -1,9 +1,17 @@
 'use strict'
 const bcrypt = require('bcrypt')
+const _ = require('lodash')
+const schema = require('./auth.schema')
 
 module.exports = async (fastify, options) => {
-  fastify.post('/register', async (request, response) => {
+
+
+  fastify.post('/register', {
+    preValidation: async (request) => fastify.validate(schema.register, request)
+  }, async (request, response) => {
+    return []
     const { body } = request
+    const { SCHOOL_TYPE } = fastify.config
     const salt = 10;
 
     const hashed = await bcrypt.hashSync(body.password, salt)
@@ -13,6 +21,8 @@ module.exports = async (fastify, options) => {
     }
     
     const html = await fastify.htmlTemplate.getConfirmationRegisterTemplate(body)
+
+    body.school = body.school.type === SCHOOL_TYPE.HAS_DEPARTMENT ? _.pick(body.school, ['type', 'id', 'department']) : _.pick(body.school, ['type', 'name', 'address'])
 
     const [user, mailResponse] = await Promise.all([
       fastify.mongoose.User.create(request.body),

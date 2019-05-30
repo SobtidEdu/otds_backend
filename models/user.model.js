@@ -1,8 +1,6 @@
 'use strict'
 
-const mongoose = require('mongoose');
 const moment = require('moment');
-const ObjectId = mongoose.Schema.Types.ObjectId
 
 module.exports = {
   name: 'users',
@@ -42,8 +40,23 @@ module.exports = {
       default: 'student'
     },
     school: {
-      type: "ObjectId",
-      ref: "School"
+      type: {
+        type: String,
+        enum: ['hasDepartment', 'homeSchool'],
+        default: 'hasDepartment'
+      },
+      id: {
+        type: "ObjectId"
+      },
+      department: {
+        type: "ObjectId"
+      },
+      name: {
+        type: String
+      },
+      address: {
+        type: String
+      }
     },
     province: {
       type: "ObjectId",
