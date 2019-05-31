@@ -8,8 +8,8 @@ services:
     container_name: otds_api
     restart: always
     env_file: .env
-    environment:
-      - APP_ENV=$APP_ENV
+    # environment:
+    #   - APP_ENV=$APP_ENV
     ports:
       - "3100:3000"
     volumes:
