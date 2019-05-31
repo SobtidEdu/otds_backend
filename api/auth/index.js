@@ -9,11 +9,18 @@ module.exports = async (fastify, options) => {
   fastify.post('/register', {
     preValidation: async (request) => fastify.validate(schema.register, request)
   }, async (request, response) => {
-    return []
     const { body } = request
-    const { SCHOOL_TYPE } = fastify.config
-    const salt = 10;
 
+    body.school = { name = _.trimStart(body.school, 'โรงเรียน') }
+    
+    const school = await fastify.mongoose.School.findOne({ name: body.school })
+    if (!school) {
+      body.school.type = fastify.config.SCHOOL_TYPE.SYSTEM
+    } else {
+      body.school.type = fastify.config.SCHOOL_TYPE.OTHER
+    }
+    
+    const salt = 10;
     const hashed = await bcrypt.hashSync(body.password, salt)
     body.password = {
       hashed,
@@ -22,9 +29,7 @@ module.exports = async (fastify, options) => {
     
     const html = await fastify.htmlTemplate.getConfirmationRegisterTemplate(body)
 
-    body.school = body.school.type === SCHOOL_TYPE.HAS_DEPARTMENT ? _.pick(body.school, ['type', 'id', 'department']) : _.pick(body.school, ['type', 'name', 'address'])
-
-    const [user, mailResponse] = await Promise.all([
+    await Promise.all([
       fastify.mongoose.User.create(request.body),
       fastify.nodemailer.sendMail({
         from: fastify.env.EMAIL_FROM,
@@ -35,6 +40,22 @@ module.exports = async (fastify, options) => {
     ])
     
     return { message: 'กรุณาเช็คกล่อง email และยืนยันการลงทะเบียน' }
+  })
+
+  fastify.get('/confirm-email/:token', async (request, reply) => {
+    const { token } = request.params
+    
+    const { email } = fastify.jwt.decode(token)
+    
+    let user = await fastify.mongoose.User.findOne({ email })
+    
+    user.isConfirmationEmail = true;
+
+    return reply.redirect(fastify.env.CONFIRMED_EMAIL_LINK)
+  })
+
+  fastify.get('/confirmed', async (request, reply) => {
+    return reply.send('ยืนยันอีเมลเรียบร้อย')
   })
 
   fastify.post('/login', async (request, reply) => {

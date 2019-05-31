@@ -1,6 +1,7 @@
 'use strict'
 
 const moment = require('moment');
+const { GENDER, ROLE } = require('../config')
 
 module.exports = {
   name: 'users',
@@ -21,6 +22,11 @@ module.exports = {
       required: true,
       trim: true
     },
+    gender: {
+      type: String,
+      required: true,
+      enum: Object.values(GENDER)
+    },
     email: {
       type: String,
       unique: true,
@@ -36,27 +42,15 @@ module.exports = {
     },
     role: {
       type: String,
-      enum: ['student', 'teacher', 'superTeacher', 'admin'],
-      default: 'student'
+      enum: Object.values(ROLE),
+      default: ROLE.STUDENT
+    },
+    department: {
+      type: String,
     },
     school: {
-      type: {
-        type: String,
-        enum: ['hasDepartment', 'homeSchool'],
-        default: 'hasDepartment'
-      },
-      id: {
-        type: "ObjectId"
-      },
-      department: {
-        type: "ObjectId"
-      },
-      name: {
-        type: String
-      },
-      address: {
-        type: String
-      }
+      type: { type: String, enum: ['system', 'other'] },
+      name: { type: String }
     },
     province: {
       type: "ObjectId",

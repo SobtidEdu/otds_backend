@@ -1,3 +1,4 @@
+const { GENDER, ROLE } = require('../../config')
 module.exports = {
   register: {
     body: {
@@ -8,7 +9,8 @@ module.exports = {
           prefixName: { type: 'string' },
           firstName: { type: 'string' },
           lastName: { type: 'string' },
-          abbr: { type: 'string', minLength: 2, maxLength: 2 },
+          gender: { type: 'string', enum: Object.values(GENDER) },
+          role: { type: 'string', enum: [ ROLE.STUDENT, ROLE.TEACHER ] },
           email: { 
             type: 'string',
             format: 'email',
@@ -25,6 +27,12 @@ module.exports = {
         },
         password: {
           required: 'กรุณากรอกรหัสผ่าน'
+        },
+        role: {
+          enum: 'กรุณาระบุ Role ให้ถูกต้อง'
+        },
+        gender: {
+          enum: 'กรุณาระบุเพศให้ถูกต้อง'
         }
       }
     }

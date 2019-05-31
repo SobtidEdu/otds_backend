@@ -19,6 +19,7 @@ const fastify = require('fastify')({
   },
   ignoreTrailingSlash: true,
   querystringParser: str => qs.parse(str),
+  maxParamLength: 300
 })
 
 fastify.decorate('env', process.env)
@@ -53,6 +54,37 @@ fastify.register(require('fastify-nodemailer'), {
     pass: fastify.env.EMAIL_PASSWORD
   }
 })
+// if (fastify.env.APP_ENV !== 'production') {
+  fastify.register(require('fastify-swagger'), {
+  routePrefix: '/documentation',
+  exposeRoute: true,
+  swagger: {
+    info: {
+      title: 'OTDS API Documentation',
+        description: 'OTDS API Documentation',
+        version: '0.1.0'
+      },
+      externalDocs: {
+        url: 'https://swagger.io',
+        description: 'Find more info here'
+      },
+      host: 'localhost',
+      schemes: ['http'],
+      consumes: ['application/json'],
+      produces: ['application/json'],
+      tags: [
+        { name: 'auth', description: 'authentication related end-points' }
+      ],
+      securityDefinitions: {
+        apiKey: {
+          type: 'apiKey',
+          name: 'apiKey',
+          in: 'header'
+        }
+      }
+    }
+  })
+// }
 
 /*****
  * Internal Plugin
@@ -74,7 +106,6 @@ const {
   MONGO_PASSWORD,
   MONGO_DBNAME
 } = fastify.env
-console.log(`mongodb://${MONGO_USERNAME}:${MONGO_PASSWORD}@${MONGO_HOST}:${MONGO_PORT}/${MONGO_DBNAME}`)
 fastify.register(
   require("fastify-mongoose-driver"),
   {

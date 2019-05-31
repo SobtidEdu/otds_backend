@@ -29,7 +29,7 @@ module.exports = async (fastify, options) => {
           } else {
             item.property = error.dataPath.substring(1)
           }
-
+          console.log(item)
           item.message = messageTemp[item.property][item.keyword] || error.message
 
           return item
@@ -43,6 +43,6 @@ module.exports = async (fastify, options) => {
   })
 
   fastify.register(require('./auth'), { prefix: 'auth' })
-  fastify.register(require('./general'), { prefix: 'general' })
+  fastify.register(require('./master'), { prefix: 'master' })
   // fastify.register(require('./user.route'), { prefix: 'users' })
 }
