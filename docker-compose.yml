@@ -14,7 +14,8 @@ services:
       - "3100:3000"
     volumes:
       - .:/home/node/app
-      - node_modules:/home/node/app/node_modules
+      # - node_modules:/home/node/app/node_modules
+      # - storage:/home/node/app/node_modules
     #depends_on:
     #  - db
     # networks:

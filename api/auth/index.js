@@ -2,23 +2,26 @@
 const bcrypt = require('bcrypt')
 const _ = require('lodash')
 const schema = require('./auth.schema')
+const base64ToImage = require('base64-to-image')
+const uuid = require('uuid/v4')
 
 module.exports = async (fastify, options) => {
-
-
   fastify.post('/register', {
-    preValidation: async (request) => fastify.validate(schema.register, request)
+    preValidation: async (request) => fastify.validate(schema.register, request),
+    bodyLimit: 1248576 // limit 1.2 mb
   }, async (request, response) => {
     const { body } = request
 
-    body.school = { name = _.trimStart(body.school, 'โรงเรียน') }
-    
+    body.school = { name: _.trimStart(body.school, 'โรงเรียน') }
     const school = await fastify.mongoose.School.findOne({ name: body.school })
     if (!school) {
       body.school.type = fastify.config.SCHOOL_TYPE.SYSTEM
     } else {
       body.school.type = fastify.config.SCHOOL_TYPE.OTHER
     }
+
+    const path = `profile-${uuid()}`
+    base64ToImage(body.profileImage, fastify.config.prof)
     
     const salt = 10;
     const hashed = await bcrypt.hashSync(body.password, salt)
