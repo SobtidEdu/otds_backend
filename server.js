@@ -48,43 +48,12 @@ fastify.register(require('fastify-nodemailer'), {
   pool: true,
   host: fastify.env.EMAIL_HOST,
   port: fastify.env.EMAIL_PORT,
-  secure: false, // use TLS
+  secure: true, // use TLS
   auth: {
     user: fastify.env.EMAIL_USERNAME,
     pass: fastify.env.EMAIL_PASSWORD
   }
 })
-// if (fastify.env.APP_ENV !== 'production') {
-  fastify.register(require('fastify-swagger'), {
-  routePrefix: '/documentation',
-  exposeRoute: true,
-  swagger: {
-    info: {
-      title: 'OTDS API Documentation',
-        description: 'OTDS API Documentation',
-        version: '0.1.0'
-      },
-      externalDocs: {
-        url: 'https://swagger.io',
-        description: 'Find more info here'
-      },
-      host: 'localhost',
-      schemes: ['http'],
-      consumes: ['application/json'],
-      produces: ['application/json'],
-      tags: [
-        { name: 'auth', description: 'authentication related end-points' }
-      ],
-      securityDefinitions: {
-        apiKey: {
-          type: 'apiKey',
-          name: 'apiKey',
-          in: 'header'
-        }
-      }
-    }
-  })
-// }
 
 /*****
  * Internal Plugin
@@ -95,6 +64,7 @@ fastify.register(require('./plugins/utils.plugin'))
 fastify.register(require('./plugins/auth.plugin'))
 fastify.register(require('./plugins/html-template.plugin'))
 fastify.register(require('./plugins/validators.plugin'))
+fastify.register(require('./plugins/storage.plugin'))
 
 /*****
  * Database Connection 

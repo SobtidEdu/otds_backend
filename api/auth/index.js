@@ -2,29 +2,30 @@
 const bcrypt = require('bcrypt')
 const _ = require('lodash')
 const schema = require('./auth.schema')
-const base64ToImage = require('base64-to-image')
 const uuid = require('uuid/v4')
 
 module.exports = async (fastify, options) => {
   fastify.post('/register', {
     preValidation: async (request) => fastify.validate(schema.register, request),
     bodyLimit: 1248576 // limit 1.2 mb
-  }, async (request, response) => {
+  }, async (request, reply) => {
     const { body } = request
 
     body.school = { name: _.trimStart(body.school, 'โรงเรียน') }
-    const school = await fastify.mongoose.School.findOne({ name: body.school })
+    const school = await fastify.mongoose.School.findOne(body.school)
     if (!school) {
-      body.school.type = fastify.config.SCHOOL_TYPE.SYSTEM
-    } else {
       body.school.type = fastify.config.SCHOOL_TYPE.OTHER
+    } else {
+      body.school.type = fastify.config.SCHOOL_TYPE.SYSTEM
     }
 
-    const path = `profile-${uuid()}`
-    base64ToImage(body.profileImage, fastify.config.prof)
+    const filename = `profile-${uuid()}`
+    const imageInfo = fastify.storage.diskProfileImage(body.profileImage, filename)
     
+    body.profileImage = imageInfo.fileName
+
     const salt = 10;
-    const hashed = await bcrypt.hashSync(body.password, salt)
+    const hashed = bcrypt.hashSync(body.password, salt)
     body.password = {
       hashed,
       algo: 'bcrypt'
@@ -47,12 +48,16 @@ module.exports = async (fastify, options) => {
 
   fastify.get('/confirm-email/:token', async (request, reply) => {
     const { token } = request.params
+  
+    const decode = fastify.jwt.decode(token)
+    if (!decode) return fastify.httpErrors.notFound()
     
-    const { email } = fastify.jwt.decode(token)
-    
+    const { email } = decode
     let user = await fastify.mongoose.User.findOne({ email })
-    
-    user.isConfirmationEmail = true;
+    if (!user) return fastify.httpErrors.notFound()
+
+    const { _id } = user
+    await fastify.mongoose.User.updateOne({ _id}, { isConfirmationEmail: true })
 
     return reply.redirect(fastify.env.CONFIRMED_EMAIL_LINK)
   })

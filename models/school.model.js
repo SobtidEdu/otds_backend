@@ -12,10 +12,6 @@ module.exports = {
       type: Boolean,
       default: true
     },
-    province: {
-      type: "ObjectId",
-      ref: "Province"
-    },
     createdAt: {
       type: Date,
       default: new Date
