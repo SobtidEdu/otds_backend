@@ -19,10 +19,12 @@ module.exports = async (fastify, options) => {
       body.school.type = fastify.config.SCHOOL_TYPE.SYSTEM
     }
 
-    const filename = `profile-${uuid()}`
-    const imageInfo = fastify.storage.diskProfileImage(body.profileImage, filename)
-    
-    body.profileImage = imageInfo.fileName
+    if (!body.profileImage && body.profileImage !== '') {
+      const filename = `profile-${uuid()}`
+      const imageInfo = fastify.storage.diskProfileImage(body.profileImage, filename)
+      
+      body.profileImage = imageInfo.fileName
+    }
 
     const salt = 10;
     const hashed = bcrypt.hashSync(body.password, salt)
