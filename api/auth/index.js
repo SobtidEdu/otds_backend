@@ -12,12 +12,12 @@ module.exports = async (fastify, options) => {
     const { body } = request
 
     body.school = { name: _.trimStart(body.school, 'โรงเรียน') }
-    const school = await fastify.mongoose.School.findOne({ name: body.school.name })
-    if (!school) {
-      body.school.type = fastify.config.SCHOOL_TYPE.OTHER
-    } else {
+    // const school = await fastify.mongoose.School.findOne({ name: body.school.name })
+    // if (!school) {
+    //   body.school.type = fastify.config.SCHOOL_TYPE.OTHER
+    // } else {
       body.school.type = fastify.config.SCHOOL_TYPE.SYSTEM
-    }
+    // }
 
     const filename = `profile-${uuid()}`
     const imageInfo = fastify.storage.diskProfileImage(body.profileImage, filename)
