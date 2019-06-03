@@ -4,8 +4,6 @@ module.exports = {
   schema: {
     name: {
       type: String,
-      required: true,
-      trim: true,
       unique: true
     },
     isActive: {
