@@ -1476,6 +1476,13 @@ fastify-auth@^0.5.0:
     fastify-plugin "^1.5.0"
     reusify "^1.0.4"
 
+fastify-cors@^2.1.3:
+  version "2.1.3"
+  resolved "https://registry.yarnpkg.com/fastify-cors/-/fastify-cors-2.1.3.tgz#5ae8fcc620a47270cd68d46acc3b8dd7919b538b"
+  dependencies:
+    fastify-plugin "^1.5.0"
+    vary "^1.1.2"
+
 fastify-csrf@^1.0.2:
   version "1.0.2"
   resolved "https://registry.yarnpkg.com/fastify-csrf/-/fastify-csrf-1.0.2.tgz#c08f2afe13dc487b4d997b2a9466284242aea0a2"

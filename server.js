@@ -54,6 +54,11 @@ fastify.register(require('fastify-nodemailer'), {
     pass: fastify.env.EMAIL_PASSWORD
   }
 })
+fastify.register(require('fastify-cors'), { 
+  origin: true,
+  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+  allowedHeaders: ['Content-Type', 'Authorization']
+})
 
 /*****
  * Internal Plugin
