@@ -12,7 +12,7 @@ module.exports = async (fastify, options) => {
     const { body } = request
 
     body.school = { name: _.trimStart(body.school, 'โรงเรียน') }
-    const school = await fastify.mongoose.School.findOne(body.school)
+    const school = await fastify.mongoose.School.findOne({ name: body.school.name })
     if (!school) {
       body.school.type = fastify.config.SCHOOL_TYPE.OTHER
     } else {
