@@ -43,6 +43,6 @@ services:
 #   app-network:
 #     driver: bridge
 
-volumes:
+# volumes:
 #   dbdata:
 #   node_modules:  
