@@ -1,3 +1,7 @@
 /node_modules
 /storage/images/profile/profile-*
 .env
+
+.DS_Store
+/storage/.*
+/storage/images/.*

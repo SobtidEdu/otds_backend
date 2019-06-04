@@ -6,19 +6,16 @@ services:
       dockerfile: Dockerfile
     image: otds_api
     container_name: otds_api
-    restart: always
+    restart: unless-stopped
     env_file: .env
     # environment:
     #   - APP_ENV=$APP_ENV
     ports:
       - "3100:3000"
     volumes:
-      - .:/home/node/app
+      # - .:/home/node/app
       # - node_modules:/home/node/app/node_modules
-      - ./storage/images/profile:/home/node/app/storage/images/profile
-      # - type: bind
-      #   source: ./storage
-      #   target: /home/node/app/storage
+      - ./storage:/usr/src/app/storage
     #depends_on:
     #  - db
     # networks:
