@@ -81,14 +81,14 @@ module.exports = async (fastify, options) => {
 
     if (user.isBanned) throw fastify.httpErrors.badRequest('ผู้ใช้บัญชีนี้ถูกระงับการใช้งาน กรุกณาติดต่อผู้ดูแลระบบ')
 
-    const { _id, role, prefixName, firstName, lastName } = user.toObject()
+    const { _id, role, prefixName, firstName, lastName, gender, profileImage } = user.toObject()
 
     const [token] = await Promise.all([
       fastify.jwt.sign({ _id }),
       fastify.mongoose.User.updateOne({ _id }, { isLoggedOut: false })
     ])
 
-    return { role, prefixName, firstName, lastName, email, token }
+    return { role, prefixName, firstName, lastName, email, gender, profileImage: fastify.storage.getUrlProfileImage(profileImage), token }
   })
 
   fastify.post('/logout', {

@@ -8,6 +8,9 @@ module.exports = fp( async (fastify, options) => {
       const dirpath = path.resolve(fastify.config.PROFILE_IMAGE_PATH)
       const option = { fileName, imageType }
       return base64ToImage(dataBase64, `${dirpath}/`, option)
+    },
+    getUrlProfileImage: (filename) => {
+      return `${fastify.env.APP_URL}/${fastify.config.PROFILE_IMAGE_PATH}/${filename}`
     }
   })
 })
