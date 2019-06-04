@@ -12,6 +12,8 @@ require('dotenv').config()
 const qs = require('qs')
 const fileUpload = require('fastify-file-upload')
 const moment = require('moment')
+const path = require('path')
+const fs = require("fs")
 
 const fastify = require('fastify')({
   logger: {
@@ -22,9 +24,14 @@ const fastify = require('fastify')({
   maxParamLength: 300
 })
 
+/*****
+ * Bootstrap
+ *****/
 fastify.decorate('env', process.env)
 fastify.decorate('config', require('./config'))
-fastify.decorate('moment', moment())
+if (!fs.existsSync(fastify.config.PROFILE_IMAGE_PATH)) {
+  fs.mkdirSync(fastify.config.PROFILE_IMAGE_PATH, { recursive: true, mode: 0755 })
+}
 
 /*****
  * External Plugin
@@ -48,7 +55,7 @@ fastify.register(require('fastify-nodemailer'), {
   pool: true,
   host: fastify.env.EMAIL_HOST,
   port: fastify.env.EMAIL_PORT,
-  secure: true, // use TLS
+  secure: fastify.env.APP_ENV !== 'local',
   auth: {
     user: fastify.env.EMAIL_USERNAME,
     pass: fastify.env.EMAIL_PASSWORD
@@ -58,6 +65,10 @@ fastify.register(require('fastify-cors'), {
   origin: true,
   methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
   allowedHeaders: ['Content-Type', 'Authorization']
+})
+fastify.register(require('fastify-static'), {
+  root: path.join(__dirname, 'storage'),
+  prefix: '/storage/'
 })
 
 /*****

@@ -19,7 +19,7 @@ module.exports = async (fastify, options) => {
       body.school.type = fastify.config.SCHOOL_TYPE.SYSTEM
     }
 
-    if (!body.profileImage && body.profileImage !== '') {
+    if (body.profileImage) {
       const filename = `profile-${uuid()}`
       const imageInfo = fastify.storage.diskProfileImage(body.profileImage, filename)
       

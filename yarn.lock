@@ -1553,7 +1553,7 @@ fastify-sensible@^2.0.1:
     type-is "^1.6.16"
     vary "^1.1.2"
 
-fastify-static@^2.3.4:
+fastify-static@^2.3.4, fastify-static@^2.4.0:
   version "2.4.0"
   resolved "https://registry.yarnpkg.com/fastify-static/-/fastify-static-2.4.0.tgz#7d3937897a8feaa66a920a915f72a11e795c3351"
   dependencies:

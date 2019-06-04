@@ -15,7 +15,7 @@ services:
     volumes:
       - .:/home/node/app
       # - node_modules:/home/node/app/node_modules
-      # - storage:/home/node/app/node_modules
+      - ./storage:/home/node/app/storage
     #depends_on:
     #  - db
     # networks:
@@ -40,6 +40,7 @@ services:
 #   app-network:
 #     driver: bridge
 
-volumes:
+# volumes:
 #   dbdata:
-  node_modules:  
+#   node_modules:  
+  # storage/images/profile:
