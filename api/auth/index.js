@@ -77,6 +77,8 @@ module.exports = async (fastify, options) => {
     const isValidCredential = await bcrypt.compareSync(password, user.password.hashed)
     if (!isValidCredential) throw fastify.httpErrors.badRequest('อีเมลหรือรหัสผ่านผิดพลาด')
 
+    if (!user.isConfirmationEmail) throw fastify.httpErrors.badRequest('กรุณายืนยันการลงทะเบียนทาง Email')
+
     if (user.isBanned) throw fastify.httpErrors.badRequest('ผู้ใช้บัญชีนี้ถูกระงับการใช้งาน กรุกณาติดต่อผู้ดูแลระบบ')
 
     const { _id, role, prefixName, firstName, lastName } = user.toObject()

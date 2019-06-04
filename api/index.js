@@ -45,6 +45,7 @@ module.exports = async (fastify, options) => {
   fastify.register(require('./auth'), { prefix: 'auth' })
   fastify.register(require('./master'), { prefix: 'master' })
   fastify.register(require('./check'), { prefix: 'check' })
+  fastify.register(require('./group'), { prefix: 'groups' })
   if (fastify.env.APP_ENV !== 'production') {
     fastify.register(require('./dev'), { prefix: 'dev' })
   }

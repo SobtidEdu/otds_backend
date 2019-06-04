@@ -4,4 +4,5 @@ module.exports = [
   require('./user.model'),
   require('./department.model'),
   require('./prefix.model'),
+  require('./group.model'),
 ]
