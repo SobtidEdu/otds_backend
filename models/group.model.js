@@ -2,7 +2,8 @@
 
 const mongoose = require('mongoose');
 const moment = require('moment');
-const ObjectId = mongoose.Schema.Types.ObjectId
+const generator = require('rand-token').generator({ chars: '0-9' })
+
 
 module.exports = {
   name: 'groups',
@@ -12,7 +13,10 @@ module.exports = {
       type: String,
       required: true,
       trim: true,
-      unique: true
+    },
+    owner: {
+      type: "ObjectId",
+      ref: "User"
     },
     students: {
       requestToJoin: [
@@ -28,8 +32,17 @@ module.exports = {
         }
       ]
     },
-    exams: [{}],
-    profileImage: {
+    // exams: [
+    //   {
+    //     type: "ObjectId",
+    //     ref: "Exam"
+    //   }
+    // ],
+    code: {
+      type: String,
+      default: () => generator.generate(4)
+    },
+    logo: {
       type: String
     },
     createdAt: {

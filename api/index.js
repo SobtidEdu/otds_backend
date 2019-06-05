@@ -16,7 +16,7 @@ module.exports = async (fastify, options) => {
     for (let context in schema) {
       const validate = ajv.compile(schema[context].validation)
       try {
-        await validate(request[context])
+        const result = await validate(request[context])
       } catch (e) {
         console.log(e)
         messageTemp = schema[context].message

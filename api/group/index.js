@@ -1,21 +1,37 @@
 'use strict'
 const schema = require('./group.schema')
+const uuid = require('uuid')
 
 module.exports = async (fastify, options) => {
-  // fastify.get('/', {
-  //   schema: schema.list
-  // }, async (request, reply) => {
-  //   return await fastify.paginate(fastify.mongoose.Prefix, request.query)
-  // })
+  fastify.get('/', {
+    // preValidation: async (request) => fastify.validate(schema.create, request),
+  }, async (request, reply) => {
+    return await fastify.paginate(fastify.mongoose.Prefix, request.query)
+  })
 
   fastify.post('/', {
-    schema: schema.create
+    preValidation: [
+      (request) => fastify.validate(schema.create, request),
+      fastify.auth([fastify.verifyUser]),
+    ],
+    bodyLimit: 1248576 // limit 1.2 mb
   }, async (request, reply) => {
-    // const { name, profileImage } = await request.body
+    const { body } = request
+    body.owner = request.user._id
 
+    if (body.logo) {
+      const filename = `group-${uuid()}`
+      const imageInfo = fastify.storage.diskGroupLogo(body.logo, filename)
+      
+      body.logo = imageInfo.fileName
+    }
 
-    // const await fastify.mongoose.Group.create({  })
-    return reply.status(201).send()
+    const group = await fastify.mongoose.Group.create(body)
+
+    return reply.status(201).send({
+      message: 'สร้างกลุ่มสำเร็จ',
+      group
+    })
   })
 
   // fastify.post('/import', {
@@ -37,12 +53,12 @@ module.exports = async (fastify, options) => {
   //   return { message: 'นำเข้าไฟล์จังหวัดเรียบร้อย' }
   // })
 
-  // fastify.patch('/', {
-  //   schema: schema.update
-  // }, async (request, reply) => {
-  //   const result = await fastify.mongoose.Province.create(request.body)
-  //   return { message: `รายการจังหวัดถูกแก้ไขแล้ว ${result.updatedCount} รายการ` }
-  // })
+  fastify.patch('/:groupId', {
+    schema: schema.update
+  }, async (request, reply) => {
+    const result = await fastify.mongoose.Province.create(request.body)
+    return { message: `รายการจังหวัดถูกแก้ไขแล้ว ${result.updatedCount} รายการ` }
+  })
 
   fastify.delete('/', {
     schema: schema.delete
