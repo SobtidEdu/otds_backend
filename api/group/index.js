@@ -1,18 +1,20 @@
 'use strict'
 const schema = require('./group.schema')
 const uuid = require('uuid')
+const { ROLE } = require('../../config')
 
 module.exports = async (fastify, options) => {
   fastify.get('/', {
     // preValidation: async (request) => fastify.validate(schema.create, request),
   }, async (request, reply) => {
-    return await fastify.paginate(fastify.mongoose.Prefix, request.query)
+    return await fastify.paginate(fastify.mongoose.Group, request.query)
   })
 
   fastify.post('/', {
     preValidation: [
       (request) => fastify.validate(schema.create, request),
-      fastify.auth([fastify.verifyUser]),
+      fastify.authenticate,
+      fastify.authorize([ROLE.TEACHER])
     ],
     bodyLimit: 1248576 // limit 1.2 mb
   }, async (request, reply) => {
@@ -34,36 +36,19 @@ module.exports = async (fastify, options) => {
     })
   })
 
-  // fastify.post('/import', {
-  //   schema: schema.import
-  // }, async (request, reply) => {
-  //   const { provincesImportFile } = request.raw.files
-  //   const csvData = provincesImportFile.data.toString('utf8')
-  //   const provinces = await csvParser().fromString(csvData)
-
-  //   for (let province of provinces) {
-  //     await fastify.mongoose.Province.findOneAndUpdate({
-  //       name: province['ชื่อจังหวัด*']
-  //     }, {
-  //       isActive: ['1', ''].includes(province['สถานะ']) ? true : false,
-  //       createdAt: fastify.moment().unix(),
-  //       updatedAt: fastify.moment().unix(),
-  //     }, { upsert: true })
-  //   }
-  //   return { message: 'นำเข้าไฟล์จังหวัดเรียบร้อย' }
-  // })
-
   fastify.patch('/:groupId', {
     schema: schema.update
   }, async (request, reply) => {
-    const result = await fastify.mongoose.Province.create(request.body)
-    return { message: `รายการจังหวัดถูกแก้ไขแล้ว ${result.updatedCount} รายการ` }
+    const { groupId } = request.params
+    const result = await fastify.mongoose.Group.findOneAndUpdate({ _id: groupId }, request.body)
+    console.log(result)
+    return { message: `รายการกลุ่มถูกแก้ไขแล้ว` }
   })
 
   fastify.delete('/', {
     schema: schema.delete
   }, async (request, reply) => {
-    const result = await fastify.mongoose.Prefix.remove({_id: { $in: request.query._id }})
-    return { message: `รายการคำนำหน้าถูกลบแล้ว ${result.deletedCount} รายการ` }
+    const result = await fastify.mongoose.Group.remove({_id: { $in: request.query._id }})
+    return { message: `รายการคำนำหน้าถูกลบแล้ว` }
   })
 }

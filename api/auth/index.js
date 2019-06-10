@@ -92,9 +92,9 @@ module.exports = async (fastify, options) => {
   })
 
   fastify.post('/logout', {
-    preValidation: fastify.auth([
-      fastify.verifyUser
-    ])
+    preValidation: [
+      fastify.authenticate
+    ]
   },
   async (request, reply) => {
     const { _id } = request.user
