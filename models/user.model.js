@@ -71,6 +71,12 @@ module.exports = {
       type: Boolean,
       default: false
     },
+    groups: [
+      {
+        type: "ObjectId",
+        ref: "Group"
+      }
+    ],
     createdAt: {
       type: Number,
       default: moment().unix()

@@ -5,9 +5,24 @@ const { ROLE } = require('../../config')
 
 module.exports = async (fastify, options) => {
   fastify.get('/', {
-    // preValidation: async (request) => fastify.validate(schema.create, request),
+    preValidation: [
+      (request) => fastify.validate(schema.list, request),
+      fastify.authenticate
+    ]
   }, async (request, reply) => {
-    return await fastify.paginate(fastify.mongoose.Group, request.query)
+    const { user, query } = request;
+    if (user.role === ROLE.TEACHER) {
+      if (query['filters'] === undefined) query['filters'] = []
+      query['filters']['owner'] = user._id
+      return await fastify.paginate(fastify.mongoose.Group, query)
+    }
+
+    if (user.role === ROLE.STUDENT) {
+      if (query['filters'] === undefined) query['filters'] = []
+      query['filters']['owner'] = user._id
+    }
+
+    
   })
 
   fastify.post('/', {
@@ -18,8 +33,8 @@ module.exports = async (fastify, options) => {
     ],
     bodyLimit: 1248576 // limit 1.2 mb
   }, async (request, reply) => {
-    const { body } = request
-    body.owner = request.user._id
+    const { user, body } = request
+    body.owner = user._id
 
     if (body.logo) {
       const filename = `group-${uuid()}`
@@ -29,6 +44,11 @@ module.exports = async (fastify, options) => {
     }
 
     const group = await fastify.mongoose.Group.create(body)
+
+    await fastify.mongoose.User.update(
+      { _id: user._id },
+      { $push: { groups: group } }
+    )
 
     return reply.status(201).send({
       message: 'สร้างกลุ่มสำเร็จ',
@@ -45,10 +65,24 @@ module.exports = async (fastify, options) => {
     return { message: `รายการกลุ่มถูกแก้ไขแล้ว` }
   })
 
-  fastify.delete('/', {
-    schema: schema.delete
+  fastify.delete('/:id', {
+    preValidation: [
+      (request) => fastify.validate(schema.delete, request),
+      fastify.authenticate,
+      fastify.authorize([ROLE.TEACHER])
+    ],
   }, async (request, reply) => {
-    const result = await fastify.mongoose.Group.remove({_id: { $in: request.query._id }})
+    const { user, params } = request
+    console.log(user)
+    const group = await fastify.mongoose.Group.findOne({ _id: params.id })
+    
+    if (group) {
+      await Promise.all([
+        fastify.mongoose.Group.findOneAndDelete({_id: group._id }),
+        fastify.mongoose.User.update({ _id: user._id }, { $pull: { groups: group._id } })
+      ]);
+    }
+
     return { message: `รายการคำนำหน้าถูกลบแล้ว` }
   })
 }

@@ -125,6 +125,10 @@ fastify.setErrorHandler(async (error, request, reply) => {
     errorResponse.message = 'กรุณายืนยันตัวตน'
   }
 
+  if (reply.res.statusCode === 403) {
+    errorResponse.message = 'ไม่อนุญาตให้เข้าใช้บริการนี้'
+  }
+
   return errorResponse
 })
 

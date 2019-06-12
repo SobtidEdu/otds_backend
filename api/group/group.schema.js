@@ -47,7 +47,7 @@ module.exports = {
         properties: {
           name: {
             type: 'string',
-            minLength: 5,
+            minLength: 3,
             maxLength: 120
           },
           logo: {

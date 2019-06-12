@@ -4,19 +4,17 @@ module.exports = fp( async (fastify, options) => {
   fastify.decorate('authenticate', async (request, reply) => {
     const payload = await request.jwtVerify()
     const user = await fastify.mongoose.User.findOne({ _id: payload._id })
+
+    if (!user) throw fastify.httpErrors.unauthorized()
     
     const { isConfirmationEmail, isLoggedOut, isBanned } = user
 
-    if ( !isConfirmationEmail || isLoggedOut || isBanned ) throw this.httpErrors.unauthorized()
-    
-    request.user = user
+    if ( !isConfirmationEmail || isLoggedOut || isBanned ) throw fastify.httpErrors.unauthorized()
+
+    return request.user = user
   })
 
-  fastify.decorate('authorize', async (roles) =>  {
-    return async (request, reply) => {
-      console.log(roles);
-      console.log(roles.indexOf(request.user.role))
-      return roles.indexOf(request.user.role) !== -1
-    }
+  fastify.decorate('authorize', (roles) => async (request, reply) => {
+    if (roles.indexOf(request.user.role) === -1) throw fastify.httpErrors.forbidden()
   })
 })

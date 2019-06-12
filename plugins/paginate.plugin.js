@@ -22,7 +22,7 @@ module.exports = fp(async (fastify, options, next) => {
         }
       }
     }
-
+    
     const skip = (page-1) * limit
     console.log(filters)
     const [items, count] = await Promise.all([
