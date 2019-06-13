@@ -101,4 +101,28 @@ module.exports = async (fastify, options) => {
     await fastify.mongoose.User.updateOne({ _id }, { isLoggedOut: true })
     return { message: 'ออกจากระบบ'}
   })
+
+  fastify.get('/profile', {
+    preValidation: [
+      fastify.authenticate
+    ]
+  },
+  async (request, reply) => {
+    const { user } = request
+    user.profileImage = user.profileImage ? fastify.storage.getUrlProfileImage(user.profileImage) : fastify.storage.getUrlDefaultProfileImage()
+
+    // return user
+    return _.pick(user, ['prefixName', 'firstName', 'lastName', 'gender', 'department', 'province', 'profileImage', 'email', 'role', 'school'])
+  })
+
+  fastify.patch('/profile', {
+    preValidation: [
+      fastify.authenticate
+    ]
+  },
+  async (request, reply) => {
+    const { _id } = request.user
+    await fastify.mongoose.User.updateOne({ _id }, { isLoggedOut: true })
+    return { message: 'ออกจากระบบ'}
+  })
 }

@@ -12,6 +12,9 @@ module.exports = fp( async (fastify, options) => {
     getUrlProfileImage: (filename) => {
       return `${fastify.env.APP_URL}/${fastify.config.PROFILE_IMAGE_PATH}/${filename}`
     },
+    getUrlDefaultProfileImage: () => {
+      return `${fastify.env.APP_URL}/${fastify.config.PROFILE_IMAGE_PATH}/default.png`
+    },
 
     diskGroupLogo: (dataBase64, fileName, imageType = 'png') => {
       const dirpath = path.resolve(fastify.config.GROUP_LOGO_PATH)

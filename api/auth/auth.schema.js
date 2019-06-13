@@ -14,7 +14,7 @@ module.exports = {
           email: { 
             type: 'string',
             format: 'email',
-            isNotExist: { prop: 'email', collection: 'users' } 
+            isExist: { prop: 'email', collection: 'users' } 
           }
         },
         required: ['email', 'password'],
@@ -23,7 +23,7 @@ module.exports = {
         email: {
           required: 'กรุณากรอกอีเมล',
           format: 'อีเมลไม่ถูกต้อง',
-          isNotExist: 'อีเมลนี้มีอยู่ในระบบแล้ว'
+          isExist: 'อีเมลนี้มีอยู่ในระบบแล้ว'
         },
         password: {
           required: 'กรุณากรอกรหัสผ่าน'

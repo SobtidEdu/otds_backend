@@ -10,7 +10,7 @@ const ajv = new Ajv({
 require('ajv-errors')(ajv);
 
 module.exports = async (fastify, options) => {
-  ajv.addKeyword('isNotExist', fastify.validators.isNotExist)
+  ajv.addKeyword('isExist', fastify.validators.isExist)
 
   fastify.decorate('validate', async (schema, request) => {
     for (let context in schema) {

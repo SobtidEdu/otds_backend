@@ -19,10 +19,8 @@ module.exports = async (fastify, options) => {
 
     if (user.role === ROLE.STUDENT) {
       if (query['filters'] === undefined) query['filters'] = []
-      query['filters']['owner'] = user._id
+      query['filters']['_id'] = user._id
     }
-
-    
   })
 
   fastify.post('/', {
@@ -85,4 +83,7 @@ module.exports = async (fastify, options) => {
 
     return { message: `รายการคำนำหน้าถูกลบแล้ว` }
   })
+
+  fastify.register(require('./student'))
+  // fastify.register(require('./student'))
 }

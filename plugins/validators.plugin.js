@@ -2,7 +2,7 @@ const fp = require('fastify-plugin')
 
 module.exports = fp( async (fastify, options) => {
   fastify.decorate('validators', {
-    isNotExist: {
+    isExist: {
       async: true,
       type: 'string',
       validate: async (schema, data) => {
