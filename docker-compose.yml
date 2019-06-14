@@ -4,8 +4,8 @@ services:
     build:
       context: .
       dockerfile: Dockerfile
-    image: otds_api
-    container_name: otds_api
+    image: otds_backend
+    container_name: otds_backend
     restart: unless-stopped
     env_file: .env
     # environment:
