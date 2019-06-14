@@ -13,7 +13,7 @@ services:
     ports:
       - "3100:3000"
     volumes:
-      # - .:/home/node/app
+      - .:/home/node/app
       # - node_modules:/home/node/app/node_modules
       - ./storage:/usr/src/app/storage
     #depends_on:
