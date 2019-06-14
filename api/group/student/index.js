@@ -22,9 +22,9 @@ module.exports = async (fastify, options) => {
   }, async (request, reply) => {
     const { user, params } = request
 
-    const group = await fastify.mongoose.Group.findOne(params.groupId).select('students.requestToJoin')
-    
-    
+    const group = await fastify.mongoose.Group.findOne({ _id: params.groupId }).select('students.requestToJoin')
+
+    return { message: fastify.message('group.student.requested_to_join.success') }
   })
 
   fastify.post('/:groupId/students/cancel', {

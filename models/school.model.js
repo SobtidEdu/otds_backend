@@ -6,6 +6,27 @@ module.exports = {
       type: String,
       unique: true
     },
+    addressNo: {
+      type: String,
+    },
+    villageNo: {
+      type: String,
+    },
+    lane: {
+      type: String,
+    },
+    road: {
+      type: String,
+    },
+    subDistrict: {
+      type: String,
+    },
+    district: {
+      type: String,
+    },
+    postalCode: {
+      type: String,
+    },
     isActive: {
       type: Boolean,
       default: true

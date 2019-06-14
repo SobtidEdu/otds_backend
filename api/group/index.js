@@ -59,7 +59,6 @@ module.exports = async (fastify, options) => {
   }, async (request, reply) => {
     const { groupId } = request.params
     const result = await fastify.mongoose.Group.findOneAndUpdate({ _id: groupId }, request.body)
-    console.log(result)
     return { message: `รายการกลุ่มถูกแก้ไขแล้ว` }
   })
 

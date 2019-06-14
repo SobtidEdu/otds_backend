@@ -48,11 +48,10 @@ module.exports = {
         name: { type: 'string' },
         abbr: { type: 'string',  minLength: 2, maxLength: 2 }
       },
-      required: ['name', 'abbr'],
+      required: ['name'],
       errorMessage: {
         required: {
-          name: 'กรุณากรอกชื่อประเทศทั้งไทยและอังกฤษ',
-          abbr: 'กรุณากรอกตัวย่อของประเทศ'
+          name: 'กรุณากรอกชื่อประเทศทั้งไทยและอังกฤษ'
         },
         properties: {
           name: 'กรุณากรอกชื่อประเทศ',

@@ -2,6 +2,7 @@
 const schema = require('./school.schema')
 const csvParser = require('csvtojson')
 const _ = require('lodash')
+const moment = require('moment')
 
 module.exports = async (fastify, options) => {
   fastify.get('/', {
@@ -28,8 +29,8 @@ module.exports = async (fastify, options) => {
         }, {
           province: province._id,
           isActive: ['1', ''].includes(school['สถานะ']) ? true : false,
-          createdAt: fastify.moment().unix(),
-          updatedAt: fastify.moment().unix(),
+          createdAt: moment().unix(),
+          updatedAt: moment().unix(),
         }, { upsert: true })
       } else {
         console.log(`Not found province ${school['ชื่อจังหวัด*']}`)

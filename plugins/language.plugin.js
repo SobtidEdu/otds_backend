@@ -4,9 +4,9 @@ module.exports = fp( async (fastify, options) => {
   
   const defaultLang = 'th'
   
-  fastify.decorate('lang', (path, params = []) => {
-    const path = path.split('.')
-    const template = require(`../i18n/${defaultLang}/${path.pop()}`);
+  fastify.decorate('message', (_path, params = []) => {
+    const path = _path.split('.')
+    const template = require(`../i18n/${defaultLang}/${path.shift()}`);
     let message = template;
 
     path.forEach((value) => {

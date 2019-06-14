@@ -81,6 +81,7 @@ fastify.register(require('./plugins/auth.plugin'))
 fastify.register(require('./plugins/html-template.plugin'))
 fastify.register(require('./plugins/validators.plugin'))
 fastify.register(require('./plugins/storage.plugin'))
+fastify.register(require('./plugins/language.plugin'))
 
 /*****
  * Database Connection 
