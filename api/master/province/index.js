@@ -1,6 +1,8 @@
 'use strict'
+
 const schema = require('./province.schema')
 const csvParser = require('csvtojson')
+const moment = require('moment')
 
 module.exports = async (fastify, options) => {
   fastify.get('/', {
@@ -28,8 +30,8 @@ module.exports = async (fastify, options) => {
         name: province['ชื่อจังหวัด*']
       }, {
         isActive: ['1', ''].includes(province['สถานะ']) ? true : false,
-        createdAt: fastify.moment().unix(),
-        updatedAt: fastify.moment().unix(),
+        createdAt: moment().unix(),
+        updatedAt: moment().unix(),
       }, { upsert: true })
     }
     return { message: 'นำเข้าไฟล์จังหวัดเรียบร้อย' }

@@ -49,7 +49,7 @@ module.exports = async (fastify, options) => {
     )
 
     return reply.status(201).send({
-      message: 'สร้างกลุ่มสำเร็จ',
+      message: fastify.message('group.created'),
       group
     })
   })
@@ -59,7 +59,7 @@ module.exports = async (fastify, options) => {
   }, async (request, reply) => {
     const { groupId } = request.params
     const result = await fastify.mongoose.Group.findOneAndUpdate({ _id: groupId }, request.body)
-    return { message: `รายการกลุ่มถูกแก้ไขแล้ว` }
+    return { message: fastify.message('group.updated') }
   })
 
   fastify.delete('/:id', {
@@ -80,7 +80,7 @@ module.exports = async (fastify, options) => {
       ]);
     }
 
-    return { message: `รายการคำนำหน้าถูกลบแล้ว` }
+    return { message: fastify.message('group.deleted') }
   })
 
   fastify.register(require('./student'))

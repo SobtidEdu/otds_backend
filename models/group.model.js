@@ -25,7 +25,7 @@ module.exports = {
           ref: "User"
         }
       ],
-      InGroup: [
+      inGroup: [
         {
           type: "ObjectId",
           ref: "User"
