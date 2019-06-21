@@ -1,3 +1,4 @@
+require('module-alias/register')
 require('dotenv').config()
 // const Ajv = require('ajv')
 // const ajv = new Ajv({
@@ -28,7 +29,7 @@ const fastify = require('fastify')({
  * Bootstrap
  *****/
 fastify.decorate('env', process.env)
-fastify.decorate('config', require('./config'))
+fastify.decorate('config', require('@root/config'))
 if (!fs.existsSync(fastify.config.PROFILE_IMAGE_PATH)) {
   fs.mkdirSync(fastify.config.PROFILE_IMAGE_PATH, { recursive: true, mode: 0755 })
 }
@@ -74,14 +75,14 @@ fastify.register(require('fastify-static'), {
 /*****
  * Internal Plugin
  *****/ 
-fastify.register(require('./plugins/paginate.plugin'))
-fastify.register(require('./plugins/handle-error.plugin'))
-fastify.register(require('./plugins/utils.plugin'))
-fastify.register(require('./plugins/auth.plugin'))
-fastify.register(require('./plugins/html-template.plugin'))
-fastify.register(require('./plugins/validators.plugin'))
-fastify.register(require('./plugins/storage.plugin'))
-fastify.register(require('./plugins/language.plugin'))
+fastify.register(require('./src/plugins/paginate.plugin'))
+fastify.register(require('./src/plugins/handle-error.plugin'))
+fastify.register(require('./src/plugins/utils.plugin'))
+fastify.register(require('./src/plugins/auth.plugin'))
+fastify.register(require('./src/plugins/html-template.plugin'))
+fastify.register(require('./src/plugins/validators.plugin'))
+fastify.register(require('./src/plugins/storage.plugin'))
+fastify.register(require('./src/plugins/language.plugin'))
 
 /*****
  * Database Connection 
@@ -98,19 +99,18 @@ fastify.register(
   {
     uri: `mongodb://${MONGO_USERNAME}:${MONGO_PASSWORD}@${MONGO_HOST}:${MONGO_PORT}/${MONGO_DBNAME}`,
     settings: {
-      useNewUrlParser: true,
-      config: {
-        autoIndex: true
-      }
+      // useNewUrlParser: true,
+      useCreateIndex: true,
+      debug: true
     },
-    models: require('./models')
+    models: require('./src/models')
   },
 )
 
 /**
  * Route Setup
  */
-fastify.register(require('./api'), { prefix: '/api' })
+fastify.register(require('./src/api'), { prefix: '/api' })
 
 fastify.setErrorHandler(async (error, request, reply) => {
   console.debug(error)

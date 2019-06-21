@@ -8,13 +8,10 @@ services:
     container_name: otds_backend
     restart: unless-stopped
     env_file: .env
-    # environment:
-    #   - APP_ENV=$APP_ENV
     ports:
       - "3100:3000"
     volumes:
-      - .:/home/node/app
-      # - node_modules:/home/node/app/node_modules
+      - ./src:/usr/src/app/src
       - ./storage:/usr/src/app/storage
     #depends_on:
     #  - db

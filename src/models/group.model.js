@@ -21,14 +21,38 @@ module.exports = {
     students: {
       requestToJoin: [
         {
-          type: "ObjectId",
-          ref: "User"
+          userInfo: {
+            type: "ObjectId",
+            ref: "User"
+          },
+          requestedDate: {
+            type: Number,
+            default: moment().unix()
+          }
         }
       ],
       inGroup: [
         {
-          type: "ObjectId",
-          ref: "User"
+          userInfo: {
+            type: "ObjectId",
+            ref: "User"
+          },
+          jointDate: {
+            type: Number,
+            default: moment().unix()
+          }
+        }
+      ],
+      hasLeft: [
+        {
+          userInfo: {
+            type: "ObjectId",
+            ref: "User"
+          },
+          leftDate: {
+            type: Number,
+            default: moment().unix()
+          }
         }
       ]
     },

@@ -11,6 +11,7 @@ module.exports = async (fastify, options) => {
   }, async (request, reply) => {
     const { body } = request
 
+    body.email = body.email.toLowerCase()
     body.school = { name: _.trimStart(body.school, 'โรงเรียน') }
     const school = await fastify.mongoose.School.findOne({ name: body.school.name })
     if (!school) {
@@ -71,7 +72,8 @@ module.exports = async (fastify, options) => {
   fastify.post('/login', async (request, reply) => {
     const { email, password } = request.body
     
-    let user = await fastify.mongoose.User.findOne({ email })
+    let user = await fastify.mongoose.User.findOne({ email }).populate({ path: 'province', model: fastify.mongoose.Province, select: 'name' })
+    console.log(user.provinces)
     if (!user) throw fastify.httpErrors.badRequest('อีเมลหรือรหัสผ่านผิดพลาด')
 
     const isValidCredential = await bcrypt.compareSync(password, user.password.hashed)
@@ -81,14 +83,14 @@ module.exports = async (fastify, options) => {
 
     if (user.isBanned) throw fastify.httpErrors.badRequest('ผู้ใช้บัญชีนี้ถูกระงับการใช้งาน กรุกณาติดต่อผู้ดูแลระบบ')
 
-    const { _id, role, prefixName, firstName, lastName, gender, profileImage } = user.toObject()
+    const { _id, role, prefixName, firstName, lastName, gender, profileImage, department, school, province } = user.toObject()
 
     const [token] = await Promise.all([
       fastify.jwt.sign({ _id }),
       fastify.mongoose.User.updateOne({ _id }, { isLoggedOut: false })
     ])
 
-    return { role, prefixName, firstName, lastName, email, gender, profileImage: fastify.storage.getUrlProfileImage(profileImage), token }
+    return { role, prefixName, firstName, lastName, email, gender, department, school, province, profileImage: fastify.storage.getUrlProfileImage(profileImage), token }
   })
 
   fastify.post('/logout', {
@@ -112,7 +114,7 @@ module.exports = async (fastify, options) => {
     user.profileImage = user.profileImage ? fastify.storage.getUrlProfileImage(user.profileImage) : fastify.storage.getUrlDefaultProfileImage()
 
     // return user
-    return _.pick(user, ['prefixName', 'firstName', 'lastName', 'gender', 'department', 'province', 'profileImage', 'email', 'role', 'school'])
+    return _.pick(user, ['_id', 'prefixName', 'firstName', 'lastName', 'gender', 'department', 'province', 'profileImage', 'email', 'role', 'school'])
   })
 
   fastify.patch('/profile', {

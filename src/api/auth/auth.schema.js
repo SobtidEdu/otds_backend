@@ -1,4 +1,4 @@
-const { GENDER, ROLE } = require('../../config')
+const { GENDER, ROLE } = require('@root/config')
 module.exports = {
   register: {
     body: {
@@ -9,7 +9,6 @@ module.exports = {
           prefixName: { type: 'string' },
           firstName: { type: 'string' },
           lastName: { type: 'string' },
-          gender: { type: 'string', enum: Object.values(GENDER) },
           role: { type: 'string', enum: [ ROLE.STUDENT, ROLE.TEACHER ] },
           email: { 
             type: 'string',

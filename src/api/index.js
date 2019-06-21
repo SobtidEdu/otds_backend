@@ -20,7 +20,7 @@ module.exports = async (fastify, options) => {
       } catch (e) {
         console.log(e)
         messageTemp = schema[context].message
-
+        
         e.errors = e.errors.map(error => {
           let item = { keyword: error.keyword }
 
@@ -47,6 +47,6 @@ module.exports = async (fastify, options) => {
   fastify.register(require('./check'), { prefix: 'check' })
   fastify.register(require('./group'), { prefix: 'groups' })
   if (fastify.env.APP_ENV !== 'production') {
-    fastify.register(require('./dev'), { prefix: 'dev' })
+    fastify.get('/documentation', (request, reply) => reply.redirect('https://documenter.getpostman.com/view/6968221/S1Zz6pHb'))
   }
 }
