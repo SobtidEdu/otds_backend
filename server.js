@@ -99,9 +99,12 @@ fastify.register(
   {
     uri: `mongodb://${MONGO_USERNAME}:${MONGO_PASSWORD}@${MONGO_HOST}:${MONGO_PORT}/${MONGO_DBNAME}`,
     settings: {
-      // useNewUrlParser: true,
+      useNewUrlParser: true,
+      // config: {
+      //   autoIndex: true
+      // }
       useCreateIndex: true,
-      debug: true
+      // debug: true
     },
     models: require('./src/models')
   },

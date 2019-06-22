@@ -77,8 +77,8 @@ module.exports = {
           ref: "Group"
         },
         status: {
-          type: { type: String, enum: USERGROUP_STAUS },
-          name: { type: String }
+          type: String, 
+          enum: Object.values(USERGROUP_STAUS)
         },
       }
     ],
