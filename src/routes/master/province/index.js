@@ -3,13 +3,11 @@
 const schema = require('./province.schema')
 const csvParser = require('csvtojson')
 const moment = require('moment')
+const provinceList = require('./list')
 
 module.exports = async (fastify, options) => {
-  fastify.get('/', {
-    schema: schema.list
-  }, async (request, reply) => {
-    return await fastify.paginate(fastify.mongoose.Province, request.query)
-  })
+  
+  fastify.register(provinceList)
 
   fastify.post('/', {
     schema: schema.create

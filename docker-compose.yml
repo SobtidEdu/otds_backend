@@ -13,6 +13,7 @@ services:
     volumes:
       - ./src:/usr/src/app/src
       - ./storage:/usr/src/app/storage
+      - ./server.js:/usr/src/app/server.js
     #depends_on:
     #  - db
     # networks:

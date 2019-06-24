@@ -1,6 +1,6 @@
 #!/bin/sh
 
-name="otds_api"
+name="otds_backend"
 docker-compose down
-docker image rm otds_api
+docker image rm $name
 docker-compose up
