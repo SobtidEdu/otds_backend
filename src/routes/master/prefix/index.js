@@ -1,20 +1,25 @@
 'use strict'
 const schema = require('./prefix.schema')
-const csvParser = require('csvtojson')
+
+const prefixList = require('./list')
 
 module.exports = async (fastify, options) => {
-  fastify.get('/', {
-    schema: schema.list
-  }, async (request, reply) => {
-    return await fastify.paginate(fastify.mongoose.Prefix, request.query)
-  })
 
-  fastify.post('/', {
-    schema: schema.create
-  }, async (request, reply) => {
-    const prefix = await fastify.mongoose.Prefix.create(request.body)
-    return reply.status(201).send(prefix)
-  })
+  if (await fastify.mongoose.Prefix.countDocuments() == 0) {
+    const initialPrefixs = require('./initial.json');
+    for (let i = 0; i < initialPrefixs.length; i++) {
+      await fastify.mongoose.Prefix.create({ ...initialPrefixs[i], seq: i+1 })  
+    }
+  }
+
+  fastify.register(prefixList)
+
+  // fastify.post('/', {
+  //   schema: schema.create
+  // }, async (request, reply) => {
+  //   const prefix = await fastify.mongoose.Prefix.create(request.body)
+  //   return reply.status(201).send(prefix)
+  // })
 
   // fastify.post('/import', {
   //   schema: schema.import

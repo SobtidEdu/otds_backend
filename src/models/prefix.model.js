@@ -1,18 +1,22 @@
 'use strict'
 
-const mongoose = require('mongoose');
 const moment = require('moment');
-const ObjectId = mongoose.Schema.Types.ObjectId
 
 module.exports = {
   name: 'prefixs',
   alias: 'Prefix',
   schema: {
-    text: {
+    name: {
       type: String,
       required: true,
-      trim: true,
-      unique: true
+      trim: true
+    },
+    permission: {
+      teacher: { type: Boolean, default: true },
+      student: { type: Boolean, default: true }
+    },
+    seq: {
+      type: Number
     },
     createdAt: {
       type: Number,
