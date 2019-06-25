@@ -100,13 +100,9 @@ fastify.register(
     uri: `mongodb://${MONGO_USERNAME}:${MONGO_PASSWORD}@${MONGO_HOST}:${MONGO_PORT}/${MONGO_DBNAME}`,
     settings: {
       useNewUrlParser: true,
-      // config: {
-      //   autoIndex: true
-      // }
-      useCreateIndex: true,
-      // debug: true
+      useCreateIndex: true
     },
-    models: require('./src/models')
+    models: require('@src/models')
   },
 )
 
@@ -116,10 +112,9 @@ fastify.register(
 fastify.register(require('./src/routes'), { prefix: '/api' })
 
 fastify.setErrorHandler(async (error, request, reply) => {
-  console.debug(error)
   const errorResponse = { message: error.message, errors: {}, timestamp: moment().unix() }
   
-  if (error.validation) {
+  if (error.errors) {
     errorResponse.message = 'ข้อมูลไม่ถูกต้อง'
     errorResponse.errors = error.errors
     return reply.code(422).send(errorResponse)

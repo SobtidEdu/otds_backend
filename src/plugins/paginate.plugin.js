@@ -1,13 +1,14 @@
 const fp = require('fastify-plugin')
+const { PAGINATION_DEFAULT } = require('@config/pagination.config')
 
 module.exports = fp(async (fastify, options, next) => {
-  const { DEFAULT_PAGE_NO, DEFAULT_PAGE_LIMIT,DEFAULT_SORT_KEY } = fastify.config.PAGINATION
+  const { PAGE_NO, PAGE_LIMIT,SORT_KEY } = PAGINATION_DEFAULT
   
-  fastify.decorate('paginate', async (mongooseModel, aggregateBaseOptions = [], paginateOptions) => {
-    const page = paginateOptions.page || DEFAULT_PAGE_NO
-    const limit = paginateOptions.limit || DEFAULT_PAGE_LIMIT
+  fastify.decorate('paginate', async (mongooseModel, paginateOptions, aggregateBaseOptions = []) => {
+    const page = paginateOptions.page*1 || PAGE_NO
+    const limit = paginateOptions.limit*1 || PAGE_LIMIT
     const filters = {}
-    const sortKey = paginateOptions.sort ? Object.keys(paginateOptions.sort)[0] : DEFAULT_SORT_KEY
+    const sortKey = paginateOptions.sort ? Object.keys(paginateOptions.sort)[0] : SORT_KEY
     const sortMethod = paginateOptions.sort ? paginateOptions.sort[sortKey] : 'desc'
     const sort = {
       [sortKey]: sortMethod
@@ -24,9 +25,9 @@ module.exports = fp(async (fastify, options, next) => {
     }
 
     const skip = (page-1) * limit
-    
+
     const [items, total] = await Promise.all([
-      mongooseModel.aggregate(aggregateBaseOptions).match(filters).limit(limit).skip(skip).sort(sort),
+      mongooseModel.aggregate(aggregateBaseOptions).match(filters).limit(limit+skip).skip(skip).sort(sort),
       mongooseModel.aggregate(aggregateBaseOptions).match(filters).count("count")
     ])
     

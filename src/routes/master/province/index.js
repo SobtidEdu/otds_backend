@@ -1,39 +1,16 @@
 'use strict'
 
 const schema = require('./province.schema')
-const csvParser = require('csvtojson')
-const moment = require('moment')
+
 const provinceList = require('./list')
+const provinceCreate = require('./create')
+const provinceImport = require('./import')
 
 module.exports = async (fastify, options) => {
   
   fastify.register(provinceList)
-
-  fastify.post('/', {
-    schema: schema.create
-  }, async (request, reply) => {
-    const province = await fastify.mongoose.Province.create(request.body)
-    return reply.status(201).send(province)
-  })
-
-  fastify.post('/import', {
-    schema: schema.import
-  }, async (request, reply) => {
-    const { provincesImportFile } = request.raw.files
-    const csvData = provincesImportFile.data.toString('utf8')
-    const provinces = await csvParser().fromString(csvData)
-
-    for (let province of provinces) {
-      await fastify.mongoose.Province.findOneAndUpdate({
-        name: province['ชื่อจังหวัด*']
-      }, {
-        isActive: ['1', ''].includes(province['สถานะ']) ? true : false,
-        createdAt: moment().unix(),
-        updatedAt: moment().unix(),
-      }, { upsert: true })
-    }
-    return { message: 'นำเข้าไฟล์จังหวัดเรียบร้อย' }
-  })
+  fastify.register(provinceCreate)
+  fastify.register(provinceImport)
 
   fastify.patch('/', {
     schema: schema.update

@@ -15,13 +15,14 @@ module.exports = async (fastify, options) => {
   fastify.decorate('validate', async (schema, request) => {
     for (let context in schema) {
       const validate = ajv.compile(schema[context].validation)
-      try {
-        const result = await validate(request[context])
-      } catch (e) {
-        console.log(e)
+      const result = await validate(request[context])
+      if (!result) {
+        
+        const e = new Error();
+
         messageTemp = schema[context].message
         
-        e.errors = e.errors.map(error => {
+        e.errors = validate.errors.map(error => {
           let item = { keyword: error.keyword }
 
           if (error.keyword === 'required') {
@@ -29,17 +30,38 @@ module.exports = async (fastify, options) => {
           } else {
             item.property = error.dataPath.substring(1)
           }
-          console.log(item)
+          
           item.message = messageTemp[item.property][item.keyword] || error.message
-
           return item
         })
 
         throw e
       }
     }
+    //     console.log(validate.errors)
+    //   } catch (e) {
+    //     console.log(e)
+    //     messageTemp = schema[context].message
+        
+    //     e.errors = e.errors.map(error => {
+    //       let item = { keyword: error.keyword }
+
+    //       if (error.keyword === 'required') {
+    //         item.property = error.params.missingProperty
+    //       } else {
+    //         item.property = error.dataPath.substring(1)
+    //       }
+    //       console.log(item)
+    //       item.message = messageTemp[item.property][item.keyword] || error.message
+
+    //       return item
+    //     })
+
+    //     throw e
+    //   }
+    // }
     
-    return;
+    // return;
   })
 
   fastify.register(require('./auth'), { prefix: 'auth' })
@@ -48,5 +70,6 @@ module.exports = async (fastify, options) => {
   fastify.register(require('./group'), { prefix: 'groups' })
   if (fastify.env.APP_ENV !== 'production') {
     fastify.get('/documentation', (request, reply) => reply.redirect('https://documenter.getpostman.com/view/6968221/S1Zz6pHb'))
+    fastify.mongoose.instance.set('debug', true)
   }
 }

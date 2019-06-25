@@ -1,51 +1,64 @@
 'use strict'
 
-module.exports = async (fastify, )
-const schema = {
-  querystring: {
-    validation: {
-      type: 'object',
-      properties: {
-        page: {
-          type: 'integer',
-          minimum: 1
-        },
-        limit: { 
-          type: 'integer',
-          enum: [10, 25, 50, 100]
-        },
-        sort: {
-          type: 'object',
-          properties: {
-            name: { type: 'string', enum: ['asc', 'desc'] },
-            isActived: { type: 'string', enum: ['asc', 'desc'] },
-            createdAt: { type: 'string', enum: ['asc', 'desc'] },
-            updatedAt: { type: 'string', enum: ['asc', 'desc'] }
-          }
-        },
-        filters: {
-          type: 'object',
-          properties: {
-            name: { type: 'string' },
-            isActived: { type: 'boolean' }
+const { ROLE } = require('@config/user.config')
+
+module.exports = async (fastify, options) => {
+  const schema = {
+    query: {
+      validation: {
+        type: 'object',
+        properties: {
+          page: {
+            type: 'integer',
+            minimum: 1
+          },
+          limit: { 
+            type: 'integer',
+            enum: [10, 25, 50, 100]
+          },
+          sort: {
+            type: 'object',
+            properties: {
+              name: { type: 'string', enum: ['asc', 'desc'] },
+              isActived: { type: 'string', enum: ['asc', 'desc'] },
+              createdAt: { type: 'string', enum: ['asc', 'desc'] },
+              updatedAt: { type: 'string', enum: ['asc', 'desc'] }
+            }
+          },
+          filters: {
+            type: 'object',
+            properties: {
+              name: { type: 'string' },
+              isActived: { type: 'boolean' }
+            }
           }
         }
-      }
-    },
-    message: {
-      page: {
-        format: 'page ต้องเป็นตัวเลขจำนวนเต็มบวกและมีค่าตั้งแต่ 1 ขึ้นไป'
       },
-      limit: 'limit ต้องเป็นตัวเลขจำนวนเต็มบวกและมีค่าได้แค่ 10, 25, 50 หรือ 100 เท่านั้น',
-      sort: 'sort ต้องเป็นประเภท Object เท่านั้น และ Property ควรจะเป็น 1 ในฟิล์ดของข้อมูล มีค่าเป็นได้แค่ asc หรือ desc',
-      filters: 'sort ต้องเป็นประเภท Object เท่านั้น และ Property ควรจะเป็น 1 ในฟิล์ดของข้อมูล',
+      message: {
+        page: {
+          type: fastify.message('errors.pagination.page.type')
+        },
+        limit: {
+          type: fastify.message('errors.pagination.limit.type'),
+          enum: fastify.message('errors.pagination.limit.enum')
+        }
+      }
     }
   }
-}
 
-const handler = async (request) => {
-  console.log(this)
-  return this.paginate(this.mongoose.Province, request.query)
-}
+  fastify.get('/', 
+  { 
+    preValidation: [
+      (request) => fastify.validate(schema, request),
+      fastify.authenticate({ allowGuest: true })
+    ]
+  }, async (request) => {
+    const { query } = request
 
-module.exports = { handler, schema }
+    if (!request.user || request.user.role !== ROLE.ADMIN) {
+      query.filters = Object.assign(query.filters || {}, {isActive: true})
+    }
+    
+    return fastify.paginate(fastify.mongoose.Province, query)
+  })
+}
