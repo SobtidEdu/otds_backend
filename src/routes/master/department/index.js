@@ -1,20 +1,25 @@
 'use strict'
-const schema = require('./department.schema')
-const csvParser = require('csvtojson')
+// const schema = require('./department.schema')
+const departmentList = require('./list')
+// const csvParser = require('csvtojson')
 
 module.exports = async (fastify, options) => {
-  fastify.get('/', {
-    schema: schema.list
-  }, async (request, reply) => {
-    return await fastify.paginate(fastify.mongoose.Department, request.query)
-  })
+  
+  if (await fastify.mongoose.Department.countDocuments() == 0) {
+    const initialDepartments = require('./initial.json');
+    for (let i = 0; i < initialDepartments.length; i++) {
+      await fastify.mongoose.Department.create({ ...initialDepartments[i], seq: i+1 })  
+    }
+  }
 
-  fastify.post('/', {
-    schema: schema.create
-  }, async (request, reply) => {
-    const province = await fastify.mongoose.Department.create(request.body)
-    return reply.status(201).send(province)
-  })
+  fastify.register(departmentList)
+
+  // fastify.post('/', {
+  //   schema: schema.create
+  // }, async (request, reply) => {
+  //   const province = await fastify.mongoose.Department.create(request.body)
+  //   return reply.status(201).send(province)
+  // })
 
   // fastify.post('/import', {
   //   schema: schema.import
@@ -42,10 +47,10 @@ module.exports = async (fastify, options) => {
   //   return { message: `รายการจังหวัดถูกแก้ไขแล้ว ${result.updatedCount} รายการ` }
   // })
 
-  fastify.delete('/', {
-    schema: schema.delete
-  }, async (request, reply) => {
-    const result = await fastify.mongoose.Department.remove({_id: { $in: request.query._id }})
-    return { message: `รายการสังกัดถูกลบแล้ว ${result.deletedCount} รายการ` }
-  })
+  // fastify.delete('/', {
+  //   schema: schema.delete
+  // }, async (request, reply) => {
+  //   const result = await fastify.mongoose.Department.remove({_id: { $in: request.query._id }})
+  //   return { message: `รายการสังกัดถูกลบแล้ว ${result.deletedCount} รายการ` }
+  // })
 }

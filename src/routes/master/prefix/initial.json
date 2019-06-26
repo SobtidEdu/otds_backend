@@ -1,35 +1,35 @@
 [
   {
     "name": "ด.ช.",
-    "permission": {
+    "visible": {
       "teacher": false,
       "student": true
     }
   },
   {
     "name": "ด.ญ.",
-    "permission": {
+    "visible": {
       "teacher": false,
       "student": true
     }
   },
   {
     "name": "นาย",
-    "permission": {
+    "visible": {
       "teacher": true,
       "student": true
     }
   },
   {
     "name": "นาง",
-    "permission": {
+    "visible": {
       "teacher": true,
       "student": false
     }
   },
   {
     "name": "นางสาว",
-    "permission": {
+    "visible": {
       "teacher": true,
       "student": true
     }

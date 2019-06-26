@@ -112,6 +112,7 @@ fastify.register(
 fastify.register(require('./src/routes'), { prefix: '/api' })
 
 fastify.setErrorHandler(async (error, request, reply) => {
+  console.log(error)
   const errorResponse = { message: error.message, errors: {}, timestamp: moment().unix() }
   
   if (error.errors) {

@@ -14,6 +14,9 @@ module.exports = {
       trim: true,
       unique: true
     },
+    seq: {
+      type: Number
+    },
     isActive: {
       type: Boolean,
       default: true

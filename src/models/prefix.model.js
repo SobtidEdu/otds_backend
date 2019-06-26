@@ -11,7 +11,7 @@ module.exports = {
       required: true,
       trim: true
     },
-    permission: {
+    visible: {
       teacher: { type: Boolean, default: true },
       student: { type: Boolean, default: true }
     },
