@@ -25,6 +25,7 @@ module.exports = async (fastify, options) => {
         name: province['ชื่อจังหวัด*']
       }, {
         isActive: ['1', ''].includes(province['สถานะ']) ? true : false,
+        region: province['ภาค'],
         createdAt: moment().unix(),
         updatedAt: moment().unix(),
       }, { upsert: true })

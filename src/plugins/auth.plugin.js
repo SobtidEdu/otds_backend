@@ -1,7 +1,7 @@
 const fp = require('fastify-plugin')
 
 module.exports = fp( async (fastify, options) => {
-  fastify.decorate('authenticate', (options) => {
+  fastify.decorate('authenticate', (options = { allowGuest: false }) => {
 
     return async (request, reply) => {
       let payload = {}

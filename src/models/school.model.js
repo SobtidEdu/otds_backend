@@ -1,3 +1,7 @@
+'use strict'
+
+const moment = require('moment');
+
 module.exports = {
   name: 'schools',
   alias: 'School',
@@ -6,38 +10,30 @@ module.exports = {
       type: String,
       unique: true
     },
-    addressNo: {
-      type: String,
+    addressNo: { type: String },
+    villageNo: { type: String },
+    lane: { type: String },
+    road: { type: String },
+    subDistrict: { type: String },
+    district: { type: String },
+    postalCode: { type: String },
+    department: { type: String },
+    province: {
+      type: "ObjectId",
+      ref: "Province"
     },
-    villageNo: {
-      type: String,
-    },
-    lane: {
-      type: String,
-    },
-    road: {
-      type: String,
-    },
-    subDistrict: {
-      type: String,
-    },
-    district: {
-      type: String,
-    },
-    postalCode: {
-      type: String,
-    },
+    remark: { type: String },
     isActive: {
       type: Boolean,
       default: true
     },
     createdAt: {
-      type: Date,
-      default: new Date
+      type: Number,
+      default: moment().unix()
     },
     updatedAt: {
-      type: Date,
-      default: new Date
+      type: Number,
+      default: moment().unix()
     }
   },
 }

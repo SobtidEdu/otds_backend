@@ -44,16 +44,50 @@ module.exports = {
       enum: Object.values(ROLE),
       default: ROLE.STUDENT
     },
-    department: {
-      type: String,
-    },
     school: {
-      type: { type: String, enum: ['system', 'other'] },
-      name: { type: String }
-    },
-    province: {
-      type: "ObjectId",
-      ref: "Province"
+      name: {
+        text: { type: String },
+        isModified: { type: Boolean },
+      },
+      addressNo: {
+        text: { type: String },
+        isModified: { type: Boolean },
+      },
+      villageNo: {
+        text: { type: String },
+        isModified: { type: Boolean },
+      },
+      lane: {
+        text: { type: String },
+        isModified: { type: Boolean },
+      },
+      road: {
+        text: { type: String },
+        isModified: { type: Boolean },
+      },
+      subDistrict: {
+        text: { type: String },
+        isModified: { type: Boolean },
+      },
+      district: {
+        text: { type: String },
+        isModified: { type: Boolean },
+      },
+      postalCode: {
+        text: { type: String },
+        isModified: { type: Boolean },
+      },
+      department: {
+        text: { type: String },
+        isModified: { type: Boolean },
+      },
+      province: {
+        id: {
+          type: "ObjectId",
+          ref: "Province"
+        },
+        isModified: { type: Boolean }
+      },
     },
     profileImage: {
       type: String
@@ -69,6 +103,10 @@ module.exports = {
     isConfirmationEmail: {
       type: Boolean,
       default: false
+    },
+    isSeenModified: {
+      type: Boolean,
+      default: true
     },
     groups: [
       {

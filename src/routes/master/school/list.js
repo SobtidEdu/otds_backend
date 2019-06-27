@@ -62,6 +62,6 @@ module.exports = async (fastify, options) => {
       aggregate = [{ $project: { name: 1, isActive: 1 } }]
     }
     
-    return fastify.paginate(fastify.mongoose.Province, query, aggregate)
+    return fastify.paginate(fastify.mongoose.School, query, aggregate)
   })
 }

@@ -1,43 +1,19 @@
 'use strict'
-const schema = require('./school.schema')
-const csvParser = require('csvtojson')
-const _ = require('lodash')
-const moment = require('moment')
+
+const schoolImport = require('./import')
+const schoolList = require('./list')
+const schoolDetail = require('./detail')
 
 module.exports = async (fastify, options) => {
-  fastify.get('/', {
-    schema: schema.list
-  }, async (request, reply) => {
-    return await fastify.paginate(fastify.mongoose.School, request.query)
-  })
+  fastify.register(schoolList)
+  fastify.register(schoolDetail)
 
   // fastify.post('/', async (request, reply) => {
   //   const school = await fastify.mongoose.School.create(request.body)
   //   return reply.status(201).send(school)
   // })
 
-  // fastify.post('/import', async (request, reply) => {
-  //   const { schoolsImportFile } = request.raw.files
-  //   const csvData = schoolsImportFile.data.toString('utf8')
-  //   const schools = await csvParser().fromString(csvData)
-
-  //   for (let school of schools) {
-  //     const province = await fastify.mongoose.Province.findOne({ name: school['ชื่อจังหวัด*'] })
-  //     if (province) {
-  //       await fastify.mongoose.School.findOneAndUpdate({
-  //         name: school['ชื่อโรงเรียน*']
-  //       }, {
-  //         province: province._id,
-  //         isActive: ['1', ''].includes(school['สถานะ']) ? true : false,
-  //         createdAt: moment().unix(),
-  //         updatedAt: moment().unix(),
-  //       }, { upsert: true })
-  //     } else {
-  //       console.log(`Not found province ${school['ชื่อจังหวัด*']}`)
-  //     }
-  //   }
-  //   return { message: 'นำเข้าไฟล์โรงเรียนเรียบร้อย' }
-  // })
+  fastify.register(schoolImport)
 
   // fastify.patch('/:_id', async (request, reply) => {
   //   const { _id } = request.params
