@@ -1,5 +1,5 @@
 const fp = require('fastify-plugin')
-const { PAGINATION_DEFAULT } = require('@config/pagination.config')
+const { PAGINATION_DEFAULT } = require('@config/pagination')
 
 module.exports = fp(async (fastify, options, next) => {
   const { PAGE_NO, PAGE_LIMIT,SORT_KEY } = PAGINATION_DEFAULT

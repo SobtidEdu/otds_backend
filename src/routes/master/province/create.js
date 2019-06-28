@@ -1,5 +1,5 @@
 'use strict'
-const { ROLE } = require('@config/user.config')
+const { ROLE } = require('@config/user')
 module.exports = async (fastify, options) => {
   const schema = {}
 

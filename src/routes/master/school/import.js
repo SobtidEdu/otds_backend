@@ -1,6 +1,6 @@
 'use strict'
 
-const { ROLE } = require('@config/user.config')
+const { ROLE } = require('@config/user')
 const csvParser = require('csvtojson')
 const moment = require('moment')
 

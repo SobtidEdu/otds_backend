@@ -2,52 +2,11 @@
 const bcrypt = require('bcrypt')
 const _ = require('lodash')
 const schema = require('./auth.schema')
-const uuid = require('uuid/v4')
+const authRegister = require('./register')
 
 module.exports = async (fastify, options) => {
-  fastify.post('/register', {
-    preValidation: async (request) => fastify.validate(schema.register, request),
-    bodyLimit: 1248576 // limit 1.2 mb
-  }, async (request, reply) => {
-    const { body } = request
 
-    body.email = body.email.toLowerCase()
-    body.school = { name: _.trimStart(body.school, 'โรงเรียน') }
-    const school = await fastify.mongoose.School.findOne({ name: body.school.name })
-    if (!school) {
-      body.school.type = fastify.config.SCHOOL_TYPE.OTHER
-    } else {
-      body.school.type = fastify.config.SCHOOL_TYPE.SYSTEM
-    }
-
-    if (body.profileImage) {
-      const filename = `profile-${uuid()}`
-      const imageInfo = fastify.storage.diskProfileImage(body.profileImage, filename)
-      
-      body.profileImage = imageInfo.fileName
-    }
-
-    const salt = 10;
-    const hashed = bcrypt.hashSync(body.password, salt)
-    body.password = {
-      hashed,
-      algo: 'bcrypt'
-    }
-    
-    const html = await fastify.htmlTemplate.getConfirmationRegisterTemplate(body)
-
-    await Promise.all([
-      fastify.mongoose.User.create(request.body),
-      fastify.nodemailer.sendMail({
-        from: fastify.env.EMAIL_FROM,
-        to: body.email,
-        subject: 'ยืนยันการลงทะเบียน OTDS',
-        html
-      })
-    ])
-    
-    return { message: 'กรุณาเช็คกล่อง email และยืนยันการลงทะเบียน' }
-  })
+  fastify.register(authRegister)
 
   fastify.get('/confirm-email/:token', async (request, reply) => {
     const { token } = request.params

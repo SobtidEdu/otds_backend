@@ -1,6 +1,6 @@
 'use strict'
 
-const { ROLE } = require('@config/user.config')
+const { ROLE } = require('@config/user')
 
 module.exports = async (fastify, options) => {
   const schema = {
@@ -57,7 +57,7 @@ module.exports = async (fastify, options) => {
     let aggregate = []
 
     if (!request.user || request.user.role !== ROLE.ADMIN) {
-      query.filters = Object.assign(query.filters || {}, {isActive: 1})
+      query.filters = Object.assign(query.filters || {}, {isActive: true})
       query.sort = Object.assign(query.sort || {}, {seq: 1})
       aggregate = [
         { $project: { name: 1, isActive: 1 } }

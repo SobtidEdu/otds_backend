@@ -15,14 +15,23 @@ module.exports = async (fastify, options) => {
   fastify.decorate('validate', async (schema, request) => {
     for (let context in schema) {
       const validate = ajv.compile(schema[context].validation)
-      const result = await validate(request[context])
-      if (!result) {
-        
-        const e = new Error();
 
-        messageTemp = schema[context].message
+      try {
+        const result = await validate(request[context])
+      
+        if (!result) {
+          const e = new Error();
+          
+          e.errors = validate.errors
+
+          throw e
+        }
+      } catch (e) {
         
-        e.errors = validate.errors.map(error => {
+        messageTemp = schema[context].message
+          
+        e.errors = e.errors.map(error => {
+          
           let item = { keyword: error.keyword }
 
           if (error.keyword === 'required') {
@@ -35,8 +44,9 @@ module.exports = async (fastify, options) => {
           return item
         })
 
-        throw e
+        throw e 
       }
+
     }
     //     console.log(validate.errors)
     //   } catch (e) {
