@@ -7,7 +7,7 @@ module.exports = fp( async (fastify, options) => {
       type: 'string',
       validate: async (schema, data) => {
         if (schema.prop === 'email') data = data.toLowerCase()
-        const rows = await fastify.mongoose.instance.models[schema.collection].count({ [schema.prop]: data })
+        const rows = await fastify.mongoose.instance.models[schema.collection].countDocuments({ [schema.prop]: data })
         return rows === 0
       }
     },
