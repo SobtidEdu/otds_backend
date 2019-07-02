@@ -75,14 +75,14 @@ fastify.register(require('fastify-static'), {
 /*****
  * Internal Plugin
  *****/ 
-fastify.register(require('./src/plugins/paginate.plugin'))
-fastify.register(require('./src/plugins/handle-error.plugin'))
-fastify.register(require('./src/plugins/utils.plugin'))
-fastify.register(require('./src/plugins/auth.plugin'))
-fastify.register(require('./src/plugins/html-template.plugin'))
-fastify.register(require('./src/plugins/validators.plugin'))
-fastify.register(require('./src/plugins/storage.plugin'))
-fastify.register(require('./src/plugins/language.plugin'))
+fastify.register(require('@src/plugins/paginate.plugin'))
+fastify.register(require('@src/plugins/handle-error.plugin'))
+fastify.register(require('@src/plugins/utils.plugin'))
+fastify.register(require('@src/plugins/auth.plugin'))
+fastify.register(require('@src/plugins/html-template.plugin'))
+fastify.register(require('@src/plugins/validators.plugin'))
+fastify.register(require('@src/plugins/storage.plugin'))
+fastify.register(require('@src/plugins/language.plugin'))
 
 /*****
  * Database Connection 
