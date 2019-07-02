@@ -1,6 +1,11 @@
-module.exports = {
-  list: {
-    querystring: {
+'use strict'
+
+const { ROLE } = require('@root/config')
+
+module.exports = async (fastify, options) => {
+
+  const schema = {
+    query: {
       validation: {
         type: 'object',
         properties: {
@@ -22,7 +27,6 @@ module.exports = {
             }
           },
           filters: {
-            type: 'object',
             properties: {
               name: { type: 'string' }
             }
@@ -38,46 +42,59 @@ module.exports = {
         filters: 'sort ต้องเป็นประเภท Object เท่านั้น และ Property ควรจะเป็น 1 ในฟิล์ดของข้อมูล',
       }
     }
-  },
-  create: {
-    body: {
-      validation: {
-        $async: true,
-        type: 'object',
-        properties: {
-          name: {
-            type: 'string',
-            minLength: 3,
-            maxLength: 120
-          },
-          logo: {
-            type: 'string',
-            contentEncoding: "base64",
-            contentMediaType: "image/png"
+  }
+
+  fastify.get('/', {
+    preValidation: [
+      (request) => fastify.validate(schema, request),
+      fastify.authenticate()
+    ]
+  }, async (request, reply) => {
+
+    const { user, query } = request;
+
+    if (user.role === ROLE.STUDENT) {
+      const baseOptions = [
+        { $match: { 'students.inGroup.userInfo': user._id   } },
+        { 
+          $lookup: {
+            from: 'users',
+            localField: 'owner',
+            foreignField: '_id',
+            as: 'owner'
           }
         },
-        required: ['name'],
-      },
-      message: {
-        name: {
-          required: 'กรุณากรอกชื่อกลุ่ม',
-          minLength: 'กรุณากรอกตัวอักษรมากกว่า 5 และไม่เกิน 120 ตัวอักษร'
+        { $unwind: "$owner" },
+        {
+          $project: { 
+            _id: 1,
+            name: 1,
+            code: 1,
+            logo: 1,
+            ownerName: { $concat: [ "$owner.firstName", " ", "$owner.lastName"] }, 
+            createdAt: 1
+          }
         }
-      }
+      ]
+      const results = await fastify.paginate(fastify.mongoose.Group, query, baseOptions)
+      return results
+
+    } else {
+      const baseOptions = [
+        { $match: { owner: user._id} },
+        {
+          $project: { 
+            _id: 1,
+            name: 1,
+            owner: 1,
+            studentCount: { $size: "$students.inGroup" },
+            logo: 1,
+            createdAt: 1
+          }
+        }
+      ]
+
+      return await fastify.paginate(fastify.mongoose.Group, query, baseOptions)
     }
-  },
-  update: {
-
-  },
-  delete: {
-
-  },
-  import: {
-    // body: {
-    //   type: 'object',
-    //   properties: {
-    //     file
-    //   }
-    // }
-  }
+  })
 }

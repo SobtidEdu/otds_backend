@@ -29,9 +29,9 @@ module.exports = async (fastify, options) => {
       } catch (e) {
         
         messageTemp = schema[context].message
-          
+
         e.errors = e.errors.map(error => {
-          
+          console.log(error)
           let item = { keyword: error.keyword }
 
           if (error.keyword === 'required') {
@@ -39,7 +39,7 @@ module.exports = async (fastify, options) => {
           } else {
             item.property = error.dataPath.substring(1)
           }
-          
+
           item.message = messageTemp[item.property][item.keyword] || error.message
           return item
         })

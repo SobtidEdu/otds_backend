@@ -12,7 +12,7 @@ module.exports = fp(async (fastify, options, next) => {
     const sort = {
       [sortKey]: sortMethod
     }
-
+    
     indexOfMatchOption = aggregateBaseOptions.findIndex(option => option['$match'] !== undefined )
     let matchOption = { $match: {} }
     if (indexOfMatchOption > -1) {

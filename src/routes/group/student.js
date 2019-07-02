@@ -18,7 +18,7 @@ module.exports = async (fastify, options) => {
 
     const { params } = request;
 
-    const group = await fastify.mongoose.Group.findOne({ _id: params.groupId }).populate({path: 'students.requestToJoin.userInfo', model: fastify.mongoose.User, select: 'prefixName firstName lastName school profileImage' })
+    const group = await fastify.mongoose.Group.find({ _id: params.groupId }).populate({path: 'students.requestToJoin.userInfo', model: fastify.mongoose.User, select: 'prefixName firstName lastName school profileImage' })
     if (!group) throw  fastify.httpErrors.notFound(fastify.message('group.notFound'))
     
     const { requestToJoin } = group.students
