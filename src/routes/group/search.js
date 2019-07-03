@@ -20,7 +20,7 @@ module.exports = async (fastify, options) => {
         $match: {
           $or: [
             { name: new RegExp('^'+query.q, 'i') },
-            // { code: new RegExp(query.q, 'i') },
+            { code: new RegExp('^'+query.q, 'i') },
             // { 'onwer.firstName': new RegExp(query.q, 'i') },
             // { 'onwer.lastName': new RegExp(query.q, 'i') }
           ]

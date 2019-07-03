@@ -6,10 +6,10 @@ const groupCreate = require('./create')
 const groupUpdate = require('./update')
 const groupDelete = require('./delete')
 
-const listOfRequestor = require('./list-requestor')
-const studentRequestToJoinGroup = require('./request-join')
-const approveStudentToJoinGroup = require('./approve')
-const studentCancelRequestToJoinGroup = require('./cancel')
+const listOfRequestor = require('./student/list-requestor')
+const studentRequestToJoinGroup = require('./student/request-join')
+const approveStudentToJoinGroup = require('./student/approve')
+const studentLeaveGroup = require('./student/leave')
 
 
 module.exports = async (fastify, options) => {
@@ -20,11 +20,10 @@ module.exports = async (fastify, options) => {
   fastify.register(groupUpdate)
   fastify.register(groupDelete)
 
+  // STUDENT ZONE //
   fastify.register(listOfRequestor)
   fastify.register(studentRequestToJoinGroup)
-  fastify.register(studentCancelRequestToJoinGroup)
+  
   fastify.register(approveStudentToJoinGroup)
-
-  // fastify.register(require('./student'))
-  // fastify.register(require('./student'))
+  fastify.register(studentLeaveGroup)
 }

@@ -34,8 +34,8 @@ module.exports = async function(fastify, opts, next) {
       const requestors = studentIds.map(student => ({ userInfo: student }))
 
       await Promise.all([
-        fastify.mongoose.Group.updateMany({_id: group._id}, { $pull: { 'students.requestToJoin': { $in: { requestors } } } }),
-        fastify.mongoose.Group.updateMany({_id: group._id}, { $push: { 'students.inGroup': requestors } }),
+        fastify.mongoose.Group.updateOne({_id: group._id}, { $pull: { 'students.requestToJoin': { userInfo: {$in: studentIds } } }}),
+        fastify.mongoose.Group.updateOne({_id: group._id}, { $push: { 'students.inGroup': requestors } }),
         fastify.mongoose.User.updateMany({ _id: { $in: studentIds }, 'groups.status': GROUP_STAUS.REQUEST }, { $set: { 'groups.$.status': GROUP_STAUS.JOIN } } )
       ])
 
