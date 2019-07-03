@@ -6,8 +6,10 @@ const groupCreate = require('./create')
 const groupUpdate = require('./update')
 const groupDelete = require('./delete')
 
-const studentRequestToJoinGroup = require('./request-join')
 const listOfRequestor = require('./list-requestor')
+const studentRequestToJoinGroup = require('./request-join')
+const approveStudentToJoinGroup = require('./approve')
+
 
 module.exports = async (fastify, options) => {
 
@@ -19,6 +21,7 @@ module.exports = async (fastify, options) => {
 
   fastify.register(listOfRequestor)
   fastify.register(studentRequestToJoinGroup)
+  fastify.register(approveStudentToJoinGroup)
 
   // fastify.register(require('./student'))
   // fastify.register(require('./student'))
