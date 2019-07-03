@@ -22,11 +22,11 @@ module.exports = async function(fastify, opts, next) {
       throw fastify.httpErrors.badRequest(fastify.message('group.did_not_in_group'))
     }
 
-    const requestor = { userInfo: user._id }
+    const student = { userInfo: user._id }
 
     await Promise.all([
-      fastify.mongoose.Group.updateOne({_id: group._id}, { $pull: { 'students.inGroup': requestor } }),
-      fastify.mongoose.Group.updateOne({_id: group._id}, { $push: { 'students.hasLeft': requestor } }),
+      fastify.mongoose.Group.updateOne({_id: group._id}, { $pull: { 'students.inGroup': student } }),
+      fastify.mongoose.Group.updateOne({_id: group._id}, { $push: { 'students.hasLeft': student } }),
       fastify.mongoose.User.updateOne({_id: user._id}, { $pull: { groups: { info: group._id } } })
     ])
 
