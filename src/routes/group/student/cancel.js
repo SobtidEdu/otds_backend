@@ -1,6 +1,6 @@
 'use strict' 
 
-const { ROLE, GROUP_STAUS } = require('@config/user')
+const { ROLE } = require('@config/user')
 
 module.exports = async function(fastify, opts, next) { 
     const schema = {}
