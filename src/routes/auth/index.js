@@ -32,7 +32,6 @@ module.exports = async (fastify, options) => {
     const { email, password } = request.body
     
     let user = await fastify.mongoose.User.findOne({ email }).populate({ path: 'province', model: fastify.mongoose.Province, select: 'name' })
-    console.log(user.provinces)
     if (!user) throw fastify.httpErrors.badRequest('อีเมลหรือรหัสผ่านผิดพลาด')
 
     const isValidCredential = await bcrypt.compareSync(password, user.password.hashed)
