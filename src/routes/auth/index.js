@@ -54,7 +54,7 @@ module.exports = async (fastify, options) => {
 
   fastify.post('/logout', {
     preValidation: [
-      fastify.authenticate
+      fastify.authenticate()
     ]
   },
   async (request, reply) => {
@@ -65,12 +65,14 @@ module.exports = async (fastify, options) => {
 
   fastify.get('/profile', {
     preValidation: [
-      fastify.authenticate
+      fastify.authenticate()
     ]
   },
   async (request, reply) => {
     const { user } = request
     user.profileImage = user.profileImage ? fastify.storage.getUrlProfileImage(user.profileImage) : fastify.storage.getUrlDefaultProfileImage()
+
+    console.log(user)
 
     // return user
     return _.pick(user, ['_id', 'prefixName', 'firstName', 'lastName', 'gender', 'department', 'province', 'profileImage', 'email', 'role', 'school'])
@@ -78,7 +80,7 @@ module.exports = async (fastify, options) => {
 
   fastify.patch('/profile', {
     preValidation: [
-      fastify.authenticate
+      fastify.authenticate()
     ]
   },
   async (request, reply) => {
