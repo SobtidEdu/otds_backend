@@ -1,11 +1,13 @@
 const fp = require('fastify-plugin')
 const mustache   = require('mustache');
 const fs = require('fs');
+const path = require('path');
 
 module.exports = fp( async (fastify, options) => {
   fastify.decorate('htmlTemplate', {
     getConfirmationRegisterTemplate: async (register) => {
-      const content = fs.readFileSync(`${__dirname}/../templates/email/register-confirmation.html`, { encoding: 'utf-8' })
+      const filePath = path.resolve(__dirname, '../../', 'storage/html/register-confirmation.html')
+      const content = fs.readFileSync(filePath, { encoding: 'utf-8' })
       
       let altSignOptions = Object.assign({
         subject: 'register-confirmation'
