@@ -23,6 +23,9 @@ module.exports = fp( async (fastify, options) => {
     },
     getUrlGroupLogo: (filename) => {
       return `${fastify.env.APP_URL}/${fastify.config.GROUP_LOGO_PATH}/${filename}`
-    }
+    },
+    getUrlDefaultGroupLogo: () => {
+      return `${fastify.env.APP_URL}/${fastify.config.GROUP_LOGO_PATH}/default.png`
+    },
   })
 })
