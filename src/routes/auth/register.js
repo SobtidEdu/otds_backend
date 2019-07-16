@@ -92,4 +92,21 @@ module.exports = async (fastify, opts) => {
     return { message: 'กรุณาเช็คกล่อง email และยืนยันการลงทะเบียน' }
   })
 
+  fastify.post('/confirm-email', async (request, reply) => {
+    const { token } = request.body
+  
+    const decode = fastify.jwt.decode(token)
+    if (!decode) return fastify.httpErrors.notFound()
+    
+    const { email } = decode
+    let user = await fastify.mongoose.User.findOne({ email })
+    if (!user) return fastify.httpErrors.notFound()
+
+    const { _id, prefixName, firstName, lastName } = user
+    await fastify.mongoose.User.updateOne({ _id}, { isConfirmationEmail: true })
+
+    const jwtToken = fastify.jwt.sign({ _id })
+
+    return { role, prefixName, firstName, lastName, profileImage: fastify.storage.getUrlProfileImage(profileImage), jwtToken }
+  })
 }

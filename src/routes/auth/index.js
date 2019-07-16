@@ -8,26 +8,6 @@ module.exports = async (fastify, options) => {
 
   fastify.register(authRegister)
 
-  fastify.get('/confirm-email/:token', async (request, reply) => {
-    const { token } = request.params
-  
-    const decode = fastify.jwt.decode(token)
-    if (!decode) return fastify.httpErrors.notFound()
-    
-    const { email } = decode
-    let user = await fastify.mongoose.User.findOne({ email })
-    if (!user) return fastify.httpErrors.notFound()
-
-    const { _id } = user
-    await fastify.mongoose.User.updateOne({ _id}, { isConfirmationEmail: true })
-
-    return reply.redirect(fastify.env.CONFIRMED_EMAIL_LINK)
-  })
-
-  fastify.get('/confirmed', async (request, reply) => {
-    return reply.send('ยืนยันอีเมลเรียบร้อย')
-  })
-
   fastify.post('/login', async (request, reply) => {
     const { email, password } = request.body
     
