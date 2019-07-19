@@ -64,7 +64,7 @@ fastify.register(require('fastify-nodemailer'), {
 })
 fastify.register(require('fastify-cors'), { 
   origin: true,
-  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+  methods: ['GET', 'POST', 'PATCH', 'PUT', 'DELETE', 'OPTIONS'],
   allowedHeaders: ['Content-Type', 'Authorization']
 })
 fastify.register(require('fastify-static'), {
