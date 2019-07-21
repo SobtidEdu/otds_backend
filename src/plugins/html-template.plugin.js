@@ -15,7 +15,7 @@ module.exports = fp( async (fastify, options) => {
       }, fastify.jwt.options.sign)
       
       const token = await fastify.jwt.sign({ email: register.email }, altSignOptions)
-      const link = `${fastify.env.APP_FRONTEND_URL}/pathTo/${token}`
+      const link = `${fastify.env.APP_FRONTEND_URL}/auth?token=${token}`
       const params = {
         prefixName: register.prefixName,
         firstName: register.firstName,

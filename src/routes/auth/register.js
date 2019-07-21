@@ -102,7 +102,7 @@ module.exports = async (fastify, opts) => {
     let user = await fastify.mongoose.User.findOne({ email })
     if (!user) return fastify.httpErrors.notFound()
 
-    const { _id, prefixName, firstName, lastName } = user
+    const { _id, prefixName, firstName, lastName, role, profileImage } = user
     await fastify.mongoose.User.updateOne({ _id}, { isConfirmationEmail: true })
 
     const jwtToken = fastify.jwt.sign({ _id })
