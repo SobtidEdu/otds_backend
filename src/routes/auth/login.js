@@ -22,6 +22,7 @@ module.exports = async (fastify, opts) => {
       fastify.jwt.sign({ _id }),
       fastify.mongoose.User.updateOne({ _id }, { isLoggedOut: false })
     ])
+    console.log(profileImage)
 
     return { role, prefixName, firstName, lastName, email, gender, department, school, province, profileImage: fastify.storage.getUrlProfileImage(profileImage), token }
   })

@@ -15,7 +15,7 @@ module.exports = async (fastify, options) => {
   },
   async (request, reply) => {
     const { user } = request
-    user.profileImage = user.profileImage ? fastify.storage.getUrlProfileImage(user.profileImage) : fastify.storage.getUrlDefaultProfileImage()
+    user.profileImage = fastify.storage.getUrlProfileImage(user.profileImage)
 
     console.log(user)
 
