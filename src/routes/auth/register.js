@@ -107,6 +107,6 @@ module.exports = async (fastify, opts) => {
 
     const jwtToken = fastify.jwt.sign({ _id })
 
-    return { role, prefixName, firstName, lastName, profileImage: fastify.storage.getUrlProfileImage(profileImage), token }
+    return { role, prefixName, firstName, lastName, profileImage: fastify.storage.getUrlProfileImage(profileImage), token: jwtToken }
   })
 }
