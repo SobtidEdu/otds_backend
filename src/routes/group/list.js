@@ -86,6 +86,7 @@ module.exports = async (fastify, options) => {
           $project: { 
             _id: 1,
             name: 1,
+            code: 1,
             owner: 1,
             studentCount: { $size: "$students.inGroup" },
             logo: 1,

@@ -2,7 +2,7 @@
 
 const { ROLE } = require('@config/user')
 
-module.exports = async function(fastify, opts, next) { 
+module.exports = async (fastify, opts, next) => { 
     const schema = {}
 
     fastify.patch('/:groupId/students/reject', {
@@ -22,7 +22,7 @@ module.exports = async function(fastify, opts, next) {
       const { requestToJoin, inGroup } = group.students
 
       if (inGroup.filter(student => studentIds.includes(student.userInfo.toString())).length > 0) {
-        throw fastify.httpErrors.badRequest('มีจำนวนนักเรียนอย่างน้อย 1 คนอยู่ในระบบแล้ว')
+        throw fastify.httpErrors.badRequest('มีจำนวนนักเรียนอย่างน้อย 1 คนอยู่ในกลุ่มแล้ว')
       }
 
       studentIds.forEach(studentId => {
@@ -37,5 +37,5 @@ module.exports = async function(fastify, opts, next) {
       ])
 
       return { message: fastify.message('group.rejected') }
-    })
+  })
 }

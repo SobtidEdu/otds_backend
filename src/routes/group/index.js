@@ -13,6 +13,7 @@ const studentCancelToJoinGroup = require('./student/cancel')
 const approveStudentToJoinGroup = require('./student/approve')
 const rejectStudentToJoinGroup = require('./student/reject')
 const studentLeaveGroup = require('./student/leave')
+const removeStudentFormGroup = require('./student/remove')
 
 
 module.exports = async (fastify, options) => {
@@ -31,4 +32,5 @@ module.exports = async (fastify, options) => {
   fastify.register(approveStudentToJoinGroup)
   fastify.register(rejectStudentToJoinGroup)
   fastify.register(studentLeaveGroup)
+  fastify.register(removeStudentFormGroup)
 }
