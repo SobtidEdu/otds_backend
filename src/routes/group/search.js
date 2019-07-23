@@ -48,7 +48,7 @@ module.exports = async (fastify, options) => {
     ]
 
     const searchedGroup = fastify.paginate(fastify.mongoose.Group, query, baseAggregateOptions)
-    searchedGroup.item = searchedGroup.item.map(group => {
+    searchedGroup.items = searchedGroup.items.map(group => {
       group.logo = fastify.storage.getUrlGroupLogo(group)
       return group
     })
