@@ -41,7 +41,7 @@ module.exports = async function(fastify, opts, next) {
       const results = await fastify.paginate(fastify.mongoose.Group, query, baseAggregateOptions)
 
       results.items = results.items.map(item => ({
-          profileImage: item.student[0].profileImage,
+          profileImage: fastify.storage.getUrlProfileImage(item.student[0].profileImage),
           studentId: item.student[0]._id,
           studentName: `${item.student[0].firstName} ${item.student[0].lastName}`,
           schoolName: item.student[0].school.name.text,
