@@ -41,7 +41,7 @@ module.exports = async function(fastify, opts, next) {
           groups: { $elemMatch: { info: group._id, status: GROUP_STAUS.REQUEST } }
         }, { 
           $set: { 
-            'groups.$.updatedAt': moment().unix(), 
+            'groups.$.joinAt': moment().unix(), 
             'groups.$.status': GROUP_STAUS.JOIN 
           } 
         })

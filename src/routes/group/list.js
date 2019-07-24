@@ -1,6 +1,6 @@
 'use strict'
 
-const { ROLE } = require('@root/config')
+const { ROLE, GROUP_STAUS } = require('@config/user')
 
 module.exports = async (fastify, options) => {
 
@@ -91,8 +91,8 @@ module.exports = async (fastify, options) => {
 
       groups.items =  groups.items.map((group) => {
         const myGroup = myGroups.find(myGroup => myGroup.info.toString() === group._id.toString())
-        group.updatedAt = myGroup.updatedAt
         group.status = myGroup.status
+        if (group.status === GROUP_STAUS.JOIN ) group.joinAt = myGroup.joinAt
         group.logo = fastify.storage.getUrlGroupLogo(group.logo)
         return group
       })

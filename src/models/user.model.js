@@ -117,10 +117,6 @@ module.exports = {
         status: {
           type: String, 
           enum: Object.values(USERGROUP_STAUS)
-        },
-        updatedAt: {
-          type: Number,
-          default: moment().unix()
         }
       }
     ],
