@@ -57,6 +57,7 @@ module.exports = async (fastify, options) => {
     searchedGroup.items = searchedGroup.items
     .map(group => {
       group.logo = fastify.storage.getUrlGroupLogo(group.logo)
+      group.status = 'none'
       return group
     })
 
