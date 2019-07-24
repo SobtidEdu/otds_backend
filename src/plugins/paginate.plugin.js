@@ -30,7 +30,7 @@ module.exports = fp(async (fastify, options, next) => {
       }
     }
 
-    aggregateBaseOptions.push(matchOption)
+    aggregateBaseOptions.unshift(matchOption)
 
     // console.log(aggregateBaseOptions)
 

@@ -55,7 +55,14 @@ module.exports = async (fastify, options) => {
 
     if (user.role === ROLE.STUDENT) {
       const baseOptions = [
-        { $match: { 'students.inGroup.userInfo': user._id   } },
+        { 
+          $match: {
+            $or: [
+              { 'students.requestToJoin': {$elemMatch: { userInfo: user._id } } },
+              { 'students.inGroup': {$elemMatch: { userInfo: user._id } } }
+            ]
+          }
+        },
         { 
           $lookup: {
             from: 'users',
@@ -71,13 +78,24 @@ module.exports = async (fastify, options) => {
             name: 1,
             code: 1,
             logo: 1,
-            ownerName: { $concat: [ "$owner.firstName", " ", "$owner.lastName"] }, 
+            ownerName: { $concat: [ "$owner.firstName", " ", "$owner.lastName"] },
+            status: 1,
             createdAt: 1
           }
-        }
+        },
       ]
-      const results = await fastify.paginate(fastify.mongoose.Group, query, baseOptions)
-      return results
+
+      const myGroups = user.groups.toObject()
+
+      const groups = await fastify.paginate(fastify.mongoose.Group, query, baseOptions)
+
+      groups.items =  groups.items.map((group) => {
+        group.status = myGroups.find(myGroup => myGroup.info.toString() === group._id.toString()).status
+        group.logo = fastify.storage.getUrlGroupLogo(group.logo)
+        return group
+      })
+
+      return groups
 
     } else {
       const baseOptions = [
@@ -94,8 +112,9 @@ module.exports = async (fastify, options) => {
           }
         }
       ]
-
+      
       const groups = await fastify.paginate(fastify.mongoose.Group, query, baseOptions)
+      
       groups.items =  groups.items.map((group) => {
         group.logo = fastify.storage.getUrlGroupLogo(group.logo)
         return group
