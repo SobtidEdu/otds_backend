@@ -90,13 +90,14 @@ module.exports = async (fastify, options) => {
       const groups = await fastify.paginate(fastify.mongoose.Group, query, baseOptions)
 
       groups.items =  groups.items.map((group) => {
-        group.status = myGroups.find(myGroup => myGroup.info.toString() === group._id.toString()).status
+        const myGroup = myGroups.find(myGroup => myGroup.info.toString() === group._id.toString())
+        group.updatedAt = myGroup.updatedAt
+        group.status = myGroup.status
         group.logo = fastify.storage.getUrlGroupLogo(group.logo)
         return group
       })
 
-      return groups
-
+      return groups 
     } else {
       const baseOptions = [
         { $match: { owner: user._id} },

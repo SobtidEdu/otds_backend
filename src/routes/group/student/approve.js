@@ -1,5 +1,5 @@
 'use strict' 
-
+const  moment = require('moment')
 const { ROLE, GROUP_STAUS } = require('@config/user')
 
 module.exports = async function(fastify, opts, next) { 
@@ -36,7 +36,15 @@ module.exports = async function(fastify, opts, next) {
       await Promise.all([
         fastify.mongoose.Group.updateOne({_id: group._id}, { $pull: { 'students.requestToJoin': { userInfo: {$in: studentIds } } }}),
         fastify.mongoose.Group.updateOne({_id: group._id}, { $push: { 'students.inGroup': requestors } }),
-        fastify.mongoose.User.updateMany({ _id: { $in: studentIds }, 'groups.status': GROUP_STAUS.REQUEST }, { $set: { 'groups.$.status': GROUP_STAUS.JOIN } } )
+        fastify.mongoose.User.updateMany({
+          _id: { $in: studentIds },
+          groups: { $elemMatch: { info: group._id, status: GROUP_STAUS.REQUEST } }
+        }, { 
+          $set: { 
+            'groups.$.updatedAt': moment().unix(), 
+            'groups.$.status': GROUP_STAUS.JOIN 
+          } 
+        })
       ])
 
       return { message: fastify.message('group.approval') }
