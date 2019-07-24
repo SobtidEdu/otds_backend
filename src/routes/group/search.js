@@ -11,9 +11,11 @@ module.exports = async (fastify, options) => {
     ]
   }, async (request) => {
 
-    const { query } = request;
+    const { user, query } = request;
 
     if (!query.q) return []
+
+    const myGroupIdArray = Array.from(user.groups.map(group => group.info))
 
     let baseAggregateOptions = [
       {
@@ -23,7 +25,10 @@ module.exports = async (fastify, options) => {
             { code: new RegExp('^'+query.q, 'i') },
             // { 'onwer.firstName': new RegExp(query.q, 'i') },
             // { 'onwer.lastName': new RegExp(query.q, 'i') }
-          ]
+          ],
+          $and: [
+            { _id: { $nin: myGroupIdArray } }
+          ] 
         },
       },
       { 
@@ -48,7 +53,9 @@ module.exports = async (fastify, options) => {
     ]
 
     const searchedGroup = await fastify.paginate(fastify.mongoose.Group, query, baseAggregateOptions)
-    searchedGroup.items = searchedGroup.items.map(group => {
+
+    searchedGroup.items = searchedGroup.items
+    .map(group => {
       group.logo = fastify.storage.getUrlGroupLogo(group.logo)
       return group
     })
