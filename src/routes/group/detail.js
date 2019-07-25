@@ -19,6 +19,7 @@ module.exports = async (fastify, options) => {
     const myGroup = user.groups.toObject().find(myGroup => myGroup.info.toString() === group._id.toString())
 
     const groupDetail = { 
+      logo: fastify.storage.getUrlGroupLogo(group.logo),
       name: group.name,
       code: group.code,
       studentCount: group.students.inGroup.length,
