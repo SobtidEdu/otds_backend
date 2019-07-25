@@ -1,6 +1,7 @@
 'use strict'
 
 const groupList = require('./list')
+const groupDetail = require('./detail')
 const groupSearch = require('./search')
 const groupCreate = require('./create')
 const groupUpdate = require('./update')
@@ -19,6 +20,7 @@ const removeStudentFormGroup = require('./student/remove')
 module.exports = async (fastify, options) => {
 
   fastify.register(groupList)
+  fastify.register(groupDetail)
   fastify.register(groupSearch)
   fastify.register(groupCreate)
   fastify.register(groupUpdate)
