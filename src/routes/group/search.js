@@ -18,20 +18,6 @@ module.exports = async (fastify, options) => {
     const myGroupIdArray = Array.from(user.groups.map(group => group.info))
 
     let baseAggregateOptions = [
-      {
-        $match: {
-          $or: [
-            { _id: query.q },
-            { name: new RegExp('^'+query.q, 'i') },
-            { code: new RegExp('^'+query.q, 'i') },
-            // { 'onwer.firstName': new RegExp(query.q, 'i') },
-            // { 'onwer.lastName': new RegExp(query.q, 'i') }
-          ],
-          $and: [
-            { _id: { $nin: myGroupIdArray } }
-          ] 
-        },
-      },
       { 
         $lookup: {
           from: 'users',
@@ -42,13 +28,27 @@ module.exports = async (fastify, options) => {
       },
       { $unwind: "$owner" },
       {
-        $project: { 
+        $project: {
           _id: 1,
           name: 1,
           code: 1,
           logo: 1,
           ownerName: { $concat: [ "$owner.firstName", " ", "$owner.lastName"] }, 
           createdAt: 1
+        }
+      },
+      {
+        $match: { 
+          $or: [
+            { name: query.q },
+            { code: query.q },
+            { ownerName: new RegExp(`^${query.q}`, 'i') },
+              // { ownerName: new RegExp('^'+query.q, 'i') },
+              // { 'onwer.lastName': new RegExp(query.q, 'i') }
+          ],
+          $and: [
+            { _id: { $nin: myGroupIdArray } }
+          ] 
         }
       }
     ]

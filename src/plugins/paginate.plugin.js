@@ -15,10 +15,10 @@ module.exports = fp(async (fastify, options, next) => {
     
     indexOfMatchOption = aggregateBaseOptions.findIndex(option => option['$match'] !== undefined )
     let matchOption = { $match: {} }
-    if (indexOfMatchOption > -1) {
-      matchOption = aggregateBaseOptions[indexOfMatchOption]
-      aggregateBaseOptions.splice(indexOfMatchOption, 1)
-    }
+    // if (indexOfMatchOption > -1) {
+    //   matchOption = aggregateBaseOptions[indexOfMatchOption]
+    //   aggregateBaseOptions.splice(indexOfMatchOption, 1)
+    // }
 
     if (paginateOptions.filters) {
       for (let prop in paginateOptions.filters) {
