@@ -11,21 +11,13 @@ module.exports = async (fastify, options) => {
     ]
   }, async (request) => {
 
-    const { query } = request;
+    const { user, query } = request;
 
     if (!query.q) return []
 
+    const myGroupIdArray = Array.from(user.groups.map(group => group.info))
+
     let baseAggregateOptions = [
-      {
-        $match: {
-          $or: [
-            { name: new RegExp('^'+query.q, 'i') },
-            { code: new RegExp('^'+query.q, 'i') },
-            // { 'onwer.firstName': new RegExp(query.q, 'i') },
-            // { 'onwer.lastName': new RegExp(query.q, 'i') }
-          ]
-        },
-      },
       { 
         $lookup: {
           from: 'users',
@@ -36,7 +28,7 @@ module.exports = async (fastify, options) => {
       },
       { $unwind: "$owner" },
       {
-        $project: { 
+        $project: {
           _id: 1,
           name: 1,
           code: 1,
@@ -44,9 +36,32 @@ module.exports = async (fastify, options) => {
           ownerName: { $concat: [ "$owner.firstName", " ", "$owner.lastName"] }, 
           createdAt: 1
         }
+      },
+      {
+        $match: { 
+          $or: [
+            { name: query.q },
+            { code: query.q },
+            { ownerName: new RegExp(`^${query.q}`, 'i') },
+              // { ownerName: new RegExp('^'+query.q, 'i') },
+              // { 'onwer.lastName': new RegExp(query.q, 'i') }
+          ],
+          $and: [
+            { _id: { $nin: myGroupIdArray } }
+          ] 
+        }
       }
     ]
 
-    return fastify.paginate(fastify.mongoose.Group, query, baseAggregateOptions)
+    const searchedGroup = await fastify.paginate(fastify.mongoose.Group, query, baseAggregateOptions)
+
+    searchedGroup.items = searchedGroup.items
+    .map(group => {
+      group.logo = fastify.storage.getUrlGroupLogo(group.logo)
+      group.status = 'none'
+      return group
+    })
+
+    return searchedGroup
   })
 }
