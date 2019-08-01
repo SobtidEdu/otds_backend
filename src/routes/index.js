@@ -76,6 +76,7 @@ module.exports = async (fastify, options) => {
 
   fastify.register(require('./auth'), { prefix: 'auth' })
   fastify.register(require('./master'), { prefix: 'master' })
+  // fastify.register(require('./user'), { prefix: 'users' })
   fastify.register(require('./check'), { prefix: 'check' })
   fastify.register(require('./group'), { prefix: 'groups' })
   fastify.register(require('./exam'), { prefix: 'exams' })
