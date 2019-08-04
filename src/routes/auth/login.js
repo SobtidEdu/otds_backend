@@ -1,6 +1,7 @@
 'use strict' 
 
 const bcrypt = require('bcrypt')
+const moment = require('moment')
 
 module.exports = async (fastify, opts) => { 
   fastify.post('/login', async (request) => {
@@ -20,7 +21,7 @@ module.exports = async (fastify, opts) => {
 
     const [token] = await Promise.all([
       fastify.jwt.sign({ _id }),
-      fastify.mongoose.User.updateOne({ _id }, { isLoggedOut: false })
+      fastify.mongoose.User.updateOne({ _id }, { isLoggedOut: false, lastLoggedInAt: moment().unix() })
     ])
     console.log(profileImage)
 
