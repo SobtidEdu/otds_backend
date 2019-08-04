@@ -12,7 +12,7 @@ module.exports = fp( async (fastify, options) => {
         throw e
       }
       
-      const user = await fastify.mongoose.User.findOne({ _id: payload._id }).select('-password')
+      const user = await fastify.mongoose.User.findOne({ _id: payload._id })
       
       if (!user) throw fastify.httpErrors.unauthorized()
     

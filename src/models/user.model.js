@@ -120,6 +120,9 @@ module.exports = {
         }
       }
     ],
+    lastLoggedInAt: {
+      type: Number
+    },
     createdAt: {
       type: Number,
       default: moment().unix()
