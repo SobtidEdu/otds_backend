@@ -25,20 +25,20 @@ const mapExamParams = (user, params) => {
 }
 
 const generalExamType = (user, params) => {
-  const params = {
+  const exam = {
     RequestedName: composeRequestName(user),
     RequestType: getRequestType(user),
     RequestedNo: `${composeRequestName(user)}FixedRandomTestset${getRequestType(user)}${moemnt.defaultFormat('YYYYMMDDHHmmSSS')}`,
     TestSetType: getTestSetType(params.quantity),
     ItemType: EXAM_TYPE.GENERAL,
-    KeyStage: params.learningArea,
+    KeyStage: params.subject,
     NoItems: params.quantity,
     ComplexityLevel: params.level
   }
 
-  Object.assign(params, mapCriterion(params))
+  Object.assign(exam, mapCriterion(params))
 
-  return params
+  return exam
 }
 
 const composeRequestName = (user) => `${ures.firstName} ${user.lastName}`

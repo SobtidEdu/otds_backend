@@ -5,4 +5,6 @@ module.exports = [
   require('./department.model'),
   require('./prefix.model'),
   require('./group.model'),
+  require('./subject.model'),
+  require('./contact.model'),
 ]
