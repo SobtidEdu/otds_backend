@@ -27,6 +27,13 @@ module.exports = async (fastify, opts) => {
   async (request) => {
     const { user, body } = request
     
+    if (body.password == null) {
+      delete body.password
+    }
+    if (body.profileImage == null) {
+      delete body.profileImage
+    } 
+
     body.school.name.text = _.trimStart(body.school.name.text, 'โรงเรียน')
 
     _.forIn(body.school, function(value, key) {
@@ -43,7 +50,7 @@ module.exports = async (fastify, opts) => {
       body.profileImage = imageInfo.fileName
     }
 
-    if (body.password && body.password !== null && body.password !== '') {
+    if (body.password) {
       const isValidCredential = await bcrypt.compareSync(body.password.old, user.password.hashed)
       if (!isValidCredential) {
         throw fastify.httpErrors.badRequest('รหัสผ่านผิดไม่ถูกต้อง')
@@ -54,7 +61,7 @@ module.exports = async (fastify, opts) => {
         hashed,
         algo: 'bcrypt'
       }
-    }
+    } else
     
     await fastify.mongoose.User.updateOne({ _id: user._id }, body)
     
