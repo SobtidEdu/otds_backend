@@ -43,7 +43,7 @@ module.exports = async (fastify, opts) => {
       body.profileImage = imageInfo.fileName
     }
 
-    if (body.password) {
+    if (body.password && body.password !== null && body.password !== '') {
       const isValidCredential = await bcrypt.compareSync(body.password.old, user.password.hashed)
       if (!isValidCredential) {
         throw fastify.httpErrors.badRequest('รหัสผ่านผิดไม่ถูกต้อง')
