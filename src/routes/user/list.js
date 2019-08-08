@@ -30,7 +30,13 @@ module.exports = async (fastify, opts) => {
         }
       }
     ]
+
+    const results = await fastify.paginate(fastify.mongoose.User, query, baseOptions)
+
+    results.items = results.items.map(item => Object.assign(item, {
+      profileImage: fastify.storage.getUrlProfileImage(item.profileImage)
+    }))
     
-    return fastify.paginate(fastify.mongoose.User, query, baseOptions)
+    return results
   })
 }
