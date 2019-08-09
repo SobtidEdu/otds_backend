@@ -83,6 +83,7 @@ fastify.register(require('@src/plugins/html-template.plugin'))
 fastify.register(require('@src/plugins/validators.plugin'))
 fastify.register(require('@src/plugins/storage.plugin'))
 fastify.register(require('@src/plugins/language.plugin'))
+fastify.register(require('@src/plugins/otims.plugin'))
 
 /*****
  * Database Connection 
