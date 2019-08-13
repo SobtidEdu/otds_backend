@@ -20,20 +20,52 @@ module.exports = async (fastify, opts) => {
 
     body.email = body.email.toLowerCase()
     body.school.name.text = _.trimStart(body.school.name.text, 'โรงเรียน')
+    const school = await fastify.mongoose.School.findOne({ name: body.school.name.text })
 
-    _.forIn(body.school, function(value, key) {
-      if (value.isModified == true) {
-        user.isSeenModified = false
-        return 
-      }
-    })
-
-    if (body.profileImage) {
-      const filename = `profile-${user._id}`
-      const imageInfo = fastify.storage.diskProfileImage(body.profileImage, filename)
-      
-      body.profileImage = imageInfo.fileName
+    body.school = {
+      name: {
+        text: body.school.name.text,
+        isModified: false
+      },
+      addressNo: {
+        text: school.addressNo,
+        isModified: false
+      },
+      villageNo: {
+        text: school.villageNo,
+        isModified: false,
+      },
+      lane: {
+        text: school.lane,
+        isModified: false,
+      },
+      road: {
+        text: school.road,
+        isModified: false,
+      },
+      district: {
+        text: school.district,
+        isModified: false,
+      },
+      subDistrict: {
+        text: school.subDistrict,
+        isModified: false,
+      },
+      postalCode: {
+        text: school.postalCode,
+        isModified: false,
+      },
+      department: {
+        text: school.department,
+        isModified: false,
+      },
+      department: {
+        text: body.school.province.id,
+        isModified: false,
+      },
     }
+
+    user.isSeenModified = true
 
     const salt = 10;
     const hashed = bcrypt.hashSync(body.password, salt)
