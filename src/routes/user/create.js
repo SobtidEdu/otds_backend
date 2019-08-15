@@ -19,6 +19,16 @@ module.exports = async (fastify, opts) => {
     let user = new fastify.mongoose.User
 
     body.email = body.email.toLowerCase()
+    
+    let findField = 'email'
+    if (body.username) {
+      findField = 'username'
+    }
+
+    if (await fastify.mongoose.User.findOne({ [findField]: body[findField] })) {
+      return fastify.httpErrors.badRequest('Username or email has been duplicated')
+    }
+
     body.school.name.text = _.trimStart(body.school.name.text, 'โรงเรียน')
     const school = await fastify.mongoose.School.findOne({ name: body.school.name.text })
 
@@ -27,42 +37,47 @@ module.exports = async (fastify, opts) => {
         text: body.school.name.text,
         isModified: false
       },
-      addressNo: {
-        text: school.addressNo,
-        isModified: false
-      },
-      villageNo: {
-        text: school.villageNo,
+      province: {
+        id: body.school.province.id,
         isModified: false,
-      },
-      lane: {
-        text: school.lane,
-        isModified: false,
-      },
-      road: {
-        text: school.road,
-        isModified: false,
-      },
-      district: {
-        text: school.district,
-        isModified: false,
-      },
-      subDistrict: {
-        text: school.subDistrict,
-        isModified: false,
-      },
-      postalCode: {
-        text: school.postalCode,
-        isModified: false,
-      },
-      department: {
-        text: school.department,
-        isModified: false,
-      },
-      department: {
-        text: body.school.province.id,
-        isModified: false,
-      },
+      }
+    }
+
+    if (body.role === ROLE.STUDENT) {
+      Object.assign(body.school, {
+        addressNo: {
+          text: school.addressNo,
+          isModified: false
+        },
+        villageNo: {
+          text: school.villageNo,
+          isModified: false,
+        },
+        lane: {
+          text: school.lane,
+          isModified: false,
+        },
+        road: {
+          text: school.road,
+          isModified: false,
+        },
+        district: {
+          text: school.district,
+          isModified: false,
+        },
+        subDistrict: {
+          text: school.subDistrict,
+          isModified: false,
+        },
+        postalCode: {
+          text: school.postalCode,
+          isModified: false,
+        },
+        department: {
+          text: school.department,
+          isModified: false,
+        }
+      })
     }
 
     user.isSeenModified = true
