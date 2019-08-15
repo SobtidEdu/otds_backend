@@ -1,15 +1,5 @@
 require('module-alias/register')
 require('dotenv').config()
-// const Ajv = require('ajv')
-// const ajv = new Ajv({
-//   // the fastify defaults (if needed)
-//   removeAdditional: true,
-//   useDefaults: true,
-//   coerceTypes: true,
-//   allErrors: true,
-//   jsonPointers: true
-// })
-// require('ajv-errors')(ajv);
 const qs = require('qs')
 const fileUpload = require('fastify-file-upload')
 const moment = require('moment')

@@ -19,14 +19,14 @@ module.exports = async (fastify, opts) => {
     let user = new fastify.mongoose.User
 
     body.email = body.email.toLowerCase()
-    
-    let findField = 'email'
-    if (body.username) {
-      findField = 'username'
-    }
 
-    if (await fastify.mongoose.User.findOne({ [findField]: body[findField] })) {
-      return fastify.httpErrors.badRequest('Username or email has been duplicated')
+    if (body.username && body.email) {
+      if (await fastify.mongoose.User.findOne({ $or: [ {username: body.username}, {email: body.email} ] })) return fastify.httpErrors.badRequest('Username or email has been duplicated')
+    }
+    else if (body.email) {
+      if (await fastify.mongoose.User.findOne({ email: body.email })) return fastify.httpErrors.badRequest('Username or email has been duplicated')
+    } else {
+      if (await fastify.mongoose.User.findOne({ username: body.username })) return fastify.httpErrors.badRequest('Username or email has been duplicated')
     }
 
     body.school.name.text = _.trimStart(body.school.name.text, 'โรงเรียน')

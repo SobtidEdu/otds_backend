@@ -12,6 +12,7 @@ module.exports = {
       trim: true,
       unique: true
     },
+    code: { type: String },
     seq: {
       type: Number
     },
