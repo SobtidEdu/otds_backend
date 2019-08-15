@@ -126,7 +126,7 @@ module.exports = async (fastify, opts) => {
       })
     }
 
-    return { message: 'นำเข้าไฟล์โรงเรียนเรียบร้อย' }
+    return { message: 'นำเข้าไฟล์ผู้ใช้เรียบร้อย' }
   })
 }
 
