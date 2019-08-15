@@ -19,9 +19,9 @@ const fastify = require('fastify')({
  * Bootstrap
  *****/
 fastify.decorate('env', process.env)
-fastify.decorate('config', require('@root/config'))
-if (!fs.existsSync(fastify.config.PROFILE_IMAGE_PATH)) {
-  fs.mkdirSync(fastify.config.PROFILE_IMAGE_PATH, { recursive: true, mode: 0755 })
+const { TEMP_UPLOAD_PATH } = require('@config/storage')
+if (!fs.existsSync(TEMP_UPLOAD_PATH)) {
+  fs.mkdirSync(TEMP_UPLOAD_PATH, { recursive: true, mode: 0755 })
 }
 
 /*****
