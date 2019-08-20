@@ -53,7 +53,7 @@ module.exports = async (fastify, options) => {
           district: school[5],
           subDistrict: school[6],
           postalCode: school[8],
-          isActive: ['1', ''].includes(school[10]) ? true : false,
+          isActive: ['1', null].includes(school[10]) ? true : false,
           department: department ? department.name : '',
           remark: school[11],
           createdAt: moment().unix(),
