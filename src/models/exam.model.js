@@ -15,11 +15,19 @@ module.exports = {
     grade: { type: String },
     level: { type: String },
     type: { type: String },
-    questionQuantity: { type: Number },
-    lassons: [
+    quantity: { type: Number },
+    examSetTotal: { type: Number },
+    criterion: { type: String },
+    lessons: [
       {
         name: { type: String },
         quantity: { type: Number },
+      }
+    ],
+    indicators: [
+      {
+        name: { type: String },
+        quantity: { type: Number }
       }
     ],
     strands: [
@@ -32,9 +40,11 @@ module.exports = {
     name: { type: String },
     description: { type: String },
     quantity: { type: Number },
-    haveHowTo: { type: Boolean },
-    haveSolution: { type: Boolean },
+    displayHowTo: { type: Boolean },
+    displaySolution: { type: Boolean },
     oneTimeDone: { type: Boolean },
+    isSuggestion: { type: Boolean },
+    withoutRegistered: { type: Boolean },
     createdAt: {
       type: Number,
       default: moment().unix()

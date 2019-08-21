@@ -68,6 +68,19 @@ module.exports = fp(async (fastify, options) => {
         }
       }
       return indicators
+    },
+
+    createExamset: async (params = {}) => {
+      params.RequestedName = OTIMS_USER
+      params.RequestedNo = `${OTIMS_USER}FixedRandomTestset${params.RequestType}${moment().format('YYYYMMDDHHmmSSS')}`
+
+      return params
+      // return instance.get(`/ws/RequestFixedRandomTestset`, { params })
+      // .then(response => response.data.map(lesson => ({
+      //   code: lesson.id,
+      //   name: lesson.name,
+      //   noitems: lesson.noitems
+      // })))
     }
   })
 })

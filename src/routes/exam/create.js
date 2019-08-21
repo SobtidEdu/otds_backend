@@ -1,7 +1,7 @@
 'use strict' 
 
 const { ROLE } = require('@config/user')
-const { CRITERION, EXAM_TYPE } = require('@config/exam')
+const { CRITERION, EXAM_TYPE, LEVEL } = require('@config/exam')
 const moment = require('moment')
 
 module.exports = async (fastify) => { 
@@ -14,26 +14,38 @@ module.exports = async (fastify) => {
       fastify.authenticate()
     ]
   }, async (request) => {
+    
     const { user, body } = request
+    
+    body.owner = user._id
+    body.bankType = body.bankType ? fastify.utils.capitalize(body.bankType) : 'Public'
+    
     const params = mapExamParams(user, body)
+
+    return await fastify.otimsApi.createExamset(params)
+
     return params
   })
 }
 
 const mapExamParams = (user, params) => {
-  if (params.itemType == EXAM_TYPE.GENERAL) return generalExamType(user, params)
+  if (params.type == EXAM_TYPE.GENERAL) return generalExamType(user, params)
 }
 
 const generalExamType = (user, params) => {
   const exam = {
-    RequestedName: composeRequestName(user),
     RequestType: getRequestType(user),
-    RequestedNo: `${composeRequestName(user)}FixedRandomTestset${getRequestType(user)}${moment().format('YYYYMMDDHHmmSSS')}`,
-    TestSetType: getTestSetType(params.quantity),
-    ItemType: EXAM_TYPE.GENERAL,
-    KeyStage: params.subject,
+    TestSetType: getTestSetType(params.examSetTotal),
+    ItemType: params.type,
+    KeyStage: params.grade,
+    LearningArea: params.subject,
     NoItems: params.quantity,
-    ComplexityLevel: params.level
+    ComplexityLevel: getCompleixityLevel(params.level),
+    BankType: params.bankType,
+    FollowIndicator: false, // Initial
+    FollowStrand: false, // Initial
+    FollowLesson: false, // Initial
+    NoStudents: params.examSetTotal
   }
 
   Object.assign(exam, mapCriterion(params))
@@ -41,14 +53,25 @@ const generalExamType = (user, params) => {
   return exam
 }
 
-const composeRequestName = (user) => `${ures.firstName} ${user.lastName}`
-
 const getRequestType = (user) => user.role == ROLE.STUDENT ? 2 : 1
 
 const getTestSetType = (quantity) => quantity > 1 ? 'RI' : 'FI'
 
+const getCompleixityLevel = (level) => level.map(l => {
+  switch (l) {
+    case LEVEL.EASY: return 1
+    case LEVEL.NORMAL: return 2
+    case LEVEL.HARD: return 3
+  }
+}).join(',')
+
 const mapCriterion = (params) => {
   switch (params.criterion) {
+    case CRITERION.LESSON:
+      return {
+        FollowLesson: true,
+        Lesson: params.lessons.map(lesson => `${lesson.code},${lesson.quantity}`).join(';')
+      }
     case CRITERION.INDICATOR:
       return {
         FollowIndicator: true,
@@ -59,6 +82,6 @@ const mapCriterion = (params) => {
         FollowStrand: true,
         Strand: params.strands.map(strand => `${strand.code},${strand.quantity}`).join(';')
       }
-    default:
+    default: return {}
   }
 }
