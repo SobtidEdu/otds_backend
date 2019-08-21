@@ -1,6 +1,7 @@
 'use strict' 
 
 const moemnt = require('moment')
+const axios = require('axios')
 
 module.exports = async (fastify) => { 
 
@@ -13,29 +14,16 @@ module.exports = async (fastify) => {
     ]
   }, async (request) => {
     const { user, query } = request
-    return [
-      {
-        "code": 1,
-        "name": "จำนวนนับ 1 ถึง 10 และ 0",
-        "noitems": 1
-      },
-      {
-        "code": 2,
-        "name": "การบวกจำนวนสองจำนวนที่ผลบวกไม่เกิน 10",
-        "noitems": 1
-      },
-      {
-        "code": 3,
-        "name": "การลบจำนวนสองจำนวนที่ตัวตั้งไม่เกิน 10",
-        "noitems": 1
-      },
-      {
-        "code": 4,
-        "name": "การลบจำนวนสองจำนวนที่ตัวตั้งไม่เกิน 10",
-        "noitems": 1
-      }
-    ]
-    // const response = await fastify.otimsApi.getLesson(query)
-    // return response
+    const params = {}
+    if (query.subject) {
+      params.learning_area = query.subject
+    }
+    if (query.years) {
+      params.course = query.years[0]
+    }
+    if (query.grade) {
+      params.key_stage = query.grade
+    }
+    return await fastify.otimsApi.getLessons(params)
   })
 }

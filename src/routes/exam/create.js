@@ -2,7 +2,7 @@
 
 const { ROLE } = require('@config/user')
 const { CRITERION, EXAM_TYPE } = require('@config/exam')
-const moemnt = require('moment')
+const moment = require('moment')
 
 module.exports = async (fastify) => { 
 
@@ -28,7 +28,7 @@ const generalExamType = (user, params) => {
   const exam = {
     RequestedName: composeRequestName(user),
     RequestType: getRequestType(user),
-    RequestedNo: `${composeRequestName(user)}FixedRandomTestset${getRequestType(user)}${moemnt.defaultFormat('YYYYMMDDHHmmSSS')}`,
+    RequestedNo: `${composeRequestName(user)}FixedRandomTestset${getRequestType(user)}${moment().format('YYYYMMDDHHmmSSS')}`,
     TestSetType: getTestSetType(params.quantity),
     ItemType: EXAM_TYPE.GENERAL,
     KeyStage: params.subject,
