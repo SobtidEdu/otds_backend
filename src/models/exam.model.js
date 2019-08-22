@@ -7,44 +7,23 @@ module.exports = {
   name: 'exams',
   alias: 'Exam',
   schema: {
-    owner: {
+    exam: {
       type: "ObjectId",
-      ref: "User"
+      ref: "ExamSet"
     },
-    subject: { type: String },
-    grade: { type: String },
-    level: { type: String },
-    type: { type: String },
-    quantity: { type: Number },
-    examSetTotal: { type: Number },
-    criterion: { type: String },
-    lessons: [
+    testSetId: { type: String },
+    questions: [
       {
-        name: { type: String },
-        quantity: { type: Number },
+        seq: { type: Number },
+        id: { type: String },
+        type: { type: String },
+        text: { type: String },
+        suggestedTime: { type: Number },
+        explanation: { type: String },
+        answerType: { type: String },
+        answers: []
       }
     ],
-    indicators: [
-      {
-        name: { type: String },
-        quantity: { type: Number }
-      }
-    ],
-    strands: [
-      {
-        name: { type: String },
-        quantity: { type: Number }
-      }
-    ],
-    duration: { type: Number },
-    name: { type: String },
-    description: { type: String },
-    quantity: { type: Number },
-    displayHowTo: { type: Boolean },
-    displaySolution: { type: Boolean },
-    oneTimeDone: { type: Boolean },
-    isSuggestion: { type: Boolean },
-    withoutRegistered: { type: Boolean },
     createdAt: {
       type: Number,
       default: moment().unix()
