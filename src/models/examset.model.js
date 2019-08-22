@@ -13,7 +13,7 @@ module.exports = {
     },
     subject: { type: String },
     grade: { type: String },
-    level: { type: String },
+    level: [{ type: String }],
     type: { type: String },
     quantity: { type: Number },
     examSetTotal: { type: Number },
