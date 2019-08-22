@@ -21,7 +21,6 @@ module.exports = {
       text: { type: String },
       suggestedTime: { type: Number },
       explanation: { type: String },
-      answers: []
     }, { strict: false})],
     createdAt: {
       type: Number,
