@@ -28,7 +28,7 @@ module.exports = async (fastify) => {
 
     await examSet.save()
 
-    exams.each(exam => {
+    await exams.each(async exam => {
       const test = {
         examset: examSet._id,
         testSetId: exam.TestSetID,
