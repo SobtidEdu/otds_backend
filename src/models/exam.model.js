@@ -21,6 +21,7 @@ module.exports = {
       text: { type: String },
       suggestedTime: { type: Number },
       explanation: { type: String },
+      answers: Schema.Types.Mixed
     }],
     createdAt: {
       type: Number,
