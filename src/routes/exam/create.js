@@ -17,14 +17,36 @@ module.exports = async (fastify) => {
     
     const { user, body } = request
     
+    const examSet = new fastify.mongoose.ExamSet
+
     body.owner = user._id
     body.bankType = body.bankType ? fastify.utils.capitalize(body.bankType) : 'Public'
     
     const params = mapExamParams(user, body)
 
-    return await fastify.otimsApi.createExamset(params)
+    const exams = await fastify.otimsApi.createExamset(params)
 
-    return params
+    await examSet.save()
+
+    exams.each(exam => {
+      const test = {
+        examset: examSet._id,
+        testSetId: exam.TestSetID,
+        questions: exam.ResponseItemGroup_ResponseTestsetGroup.ResponseItemGroup.map(question => ({
+          seq: question.ItemSeq,
+          id: question.ItemID,
+          type: question.QuestionType,
+          text: question.ItemQuestion,
+          suggestedTime: parseFloat(question.SuggestedTime),
+          explanation: question.Explanation,
+          answers: transformAnswerByQuestionType(question).map
+        }))
+      }
+
+      await fastify.mongoose.Exam.create(test)
+    })
+
+    return examSet
   })
 }
 
@@ -83,5 +105,31 @@ const mapCriterion = (params) => {
         Strand: params.strands.map(strand => `${strand.code},${strand.quantity}`).join(';')
       }
     default: return {}
+  }
+}
+
+const transformAnswerByQuestionType = (question) => {
+  switch (question.QuestionType) {
+    case 'MC': return question.ItemChoice_ResponseItemGroup.ItemChoice.map(answerChoice => ({
+      seq: answerChoice.ItemChoiceSeq,
+      text: answerChoice.ItemChoice,
+      key: answerChoice.ItemChoiceKey === 'True',
+    }))
+    case 'SA': return question.ItemShortAnswer_ResponseItemGroup.ItemShortAnswer.map(answer => ({
+      seq: answer.ItemAnswerSeq,
+      key: answer.ItemAnswer,
+      operation: answer.ItemAnswerOperation
+    }))
+    case 'MA': return {
+      leftAnswer: question.ItemMatchingQuestion_ResponseItemGroup.ItemMatchingQuestion.map(answer => ({
+        seq: answer.ItemLeftSideSeq,
+        text: answer.ItemLeftSide,
+        match: answer.ItemRightSideKey
+      })),
+      rightAnswer: question.ItemMatchingChoice_ResponseItemGroup.ItemMatchingChoice.map(answer => ({
+        seq: answer.ItemRightSideSeq,
+        text: answer.ItemRightSide,
+      }))
+    }
   }
 }

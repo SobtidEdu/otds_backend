@@ -81,11 +81,7 @@ module.exports = fp(async (fastify, options) => {
 
       // return params
       return instance.get(`/ws/RequestFixedRandomTestset`, { params })
-      .then(response => response.data.map(lesson => ({
-        code: lesson.id,
-        name: lesson.name,
-        noitems: lesson.noitems
-      })))
+      .then(response => response.data.ResponseFixedRandomTestset.ResponseTestsetGroup_ResponseFixedRandomTestset.ResponseTestsetGroup)
     }
   })
 })

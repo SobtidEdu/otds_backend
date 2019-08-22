@@ -7,4 +7,6 @@ module.exports = [
   require('./group.model'),
   require('./subject.model'),
   require('./contact.model'),
+  require('./exam.model'),
+  require('./examset.model'),
 ]

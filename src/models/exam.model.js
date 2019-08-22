@@ -7,7 +7,7 @@ module.exports = {
   name: 'exams',
   alias: 'Exam',
   schema: {
-    exam: {
+    examset: {
       type: "ObjectId",
       ref: "ExamSet"
     },
@@ -19,9 +19,7 @@ module.exports = {
         type: { type: String },
         text: { type: String },
         suggestedTime: { type: Number },
-        explanation: { type: String },
-        answerType: { type: String },
-        answers: []
+        explanation: { type: String }
       }
     ],
     createdAt: {
