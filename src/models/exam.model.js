@@ -21,9 +21,6 @@ module.exports = {
       text: { type: String },
       suggestedTime: { type: Number },
       explanation: { type: String },
-      answers: [ new Schema({
-
-      },{ strict: false})]
     }],
     createdAt: {
       type: Number,

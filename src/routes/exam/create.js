@@ -39,7 +39,7 @@ module.exports = async (fastify) => {
           text: question.ItemQuestion,
           suggestedTime: parseFloat(question.SuggestedTime),
           explanation: question.Explanation,
-          answers: transformAnswerByQuestionType(question).map
+          answers: transformAnswerByQuestionType(question)
         }))
       }
 
@@ -120,16 +120,16 @@ const transformAnswerByQuestionType = (question) => {
       key: answer.ItemAnswer,
       operation: answer.ItemAnswerOperation
     }))
-    case 'MA': return [
-      question.ItemMatchingQuestion_ResponseItemGroup.ItemMatchingQuestion.map(answer => ({
+    case 'MA': return {
+      left: question.ItemMatchingQuestion_ResponseItemGroup.ItemMatchingQuestion.map(answer => ({
         seq: answer.ItemLeftSideSeq,
         text: answer.ItemLeftSide,
         match: answer.ItemRightSideKey
       })),
-      question.ItemMatchingChoice_ResponseItemGroup.ItemMatchingChoice.map(answer => ({
+      right: question.ItemMatchingChoice_ResponseItemGroup.ItemMatchingChoice.map(answer => ({
         seq: answer.ItemRightSideSeq,
         text: answer.ItemRightSide,
       }))
-    ]
+    }
   }
 }
