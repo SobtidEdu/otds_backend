@@ -43,7 +43,7 @@ module.exports = async (fastify, options) => {
   }, async (request, reply) => {
     const { user, body } = request
 
-    const code = fastify.utils.randonCharacters(2).toUpperCase() + generator.generate(5)
+    const code = fastify.utils.randonCharacters(2).toUpperCase() + generator.generate(3)
 
     let group = new fastify.mongoose.Group({ owner: user._id, name: body.name, code })
 
