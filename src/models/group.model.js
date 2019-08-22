@@ -63,8 +63,7 @@ module.exports = {
     //   }
     // ],
     code: {
-      type: String,
-      default: () => generator.generate(4)
+      type: String
     },
     logo: {
       type: String

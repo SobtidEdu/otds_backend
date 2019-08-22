@@ -1,6 +1,7 @@
 'use strict'
 
 const { ROLE } = require('@root/config')
+const generator = require('rand-token').generator({ chars: '0-9' })
 
 module.exports = async (fastify, options) => {
 
@@ -42,7 +43,9 @@ module.exports = async (fastify, options) => {
   }, async (request, reply) => {
     const { user, body } = request
 
-    let group = new fastify.mongoose.Group({ owner: user._id, name: body.name })
+    const code = fastify.utils.randonCharacters(2).toUpperCase() + generator.generate(5)
+
+    let group = new fastify.mongoose.Group({ owner: user._id, name: body.name, code })
 
     if (body.logo) {
       const filename = `group-${group._id}`

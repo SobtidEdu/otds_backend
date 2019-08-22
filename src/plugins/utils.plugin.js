@@ -13,6 +13,16 @@ module.exports = fp( async (fastify, options) => {
     getExtensionImage: (base64Data) => {
       const index = base64Data.indexOf(';')
       return base64Data.substring(0, index).replace('data:image/', '')
+    }, 
+    
+    randonCharacters: (length = 1) => {
+      var chars = "ABCDEFGHIJKLMNOPQRSTUVWXTZabcdefghiklmnopqrstuvwxyz";
+      var randomstring = '';
+      for (var i=0; i<length; i++) {
+        var rnum = Math.floor(Math.random() * chars.length);
+        randomstring += chars.substring(rnum,rnum+1);
+      }
+      return randomstring;
     }
   })
 })
