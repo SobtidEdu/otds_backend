@@ -87,6 +87,7 @@ module.exports = fp(async (fastify, options) => {
       })
       .catch(e => {
         const errorResponse = e.response.data
+        console.error(params)
         console.error(errorResponse.ResponseFixedRandomTestset)
         throw new Error(errorResponse.ResponseFixedRandomTestset.ErrorMessage)
       })
