@@ -65,7 +65,7 @@ const generalExamType = (user, params) => {
     ComplexityLevel: getCompleixityLevel(params.level),
     BankType: params.bankType,
     //FollowIndicator: false, // Initial
-    //FollowStrand: false, // Initial
+    FollowStrand: false, // Initial
     //FollowLesson: false, // Initial
     NoStudents: params.examSetTotal
   }
