@@ -14,14 +14,17 @@ module.exports = {
       ref: "ExamSet"
     },
     testSetId: { type: String },
-    questions: [ new Schema({
+    questions: [{
       seq: { type: Number },
       id: { type: String },
       type: { type: String },
       text: { type: String },
       suggestedTime: { type: Number },
       explanation: { type: String },
-    }, { strict: false})],
+      answers: [ new Schema({
+
+      },{ strict: false})]
+    }],
     createdAt: {
       type: Number,
       default: moment().unix()
