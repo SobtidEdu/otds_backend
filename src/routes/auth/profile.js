@@ -22,7 +22,8 @@ module.exports = async (fastify, opts) => {
   fastify.patch('/profile', {
     preValidation: [
       fastify.authenticate()
-    ]
+    ],
+    bodyLimit: 5452595 // limit 5.2 mb
   },
   async (request) => {
     const { user, body } = request
@@ -43,9 +44,10 @@ module.exports = async (fastify, opts) => {
       }
     })
 
-    if (body.profileImage && body.profileImage.includes('data:image/')) {
+    if (body.profileImage && body.profileImage.startsWith('data:image/')) {
       const filename = `profile-${user._id}`
-      const imageInfo = fastify.storage.diskProfileImage(body.profileImage, filename)
+      const extension = fastify.utils.getExtensionImage(body.profileImage)
+      const imageInfo = fastify.storage.diskProfileImage(body.profileImage, filename, extension)
       
       body.profileImage = imageInfo.fileName
     }
@@ -61,7 +63,7 @@ module.exports = async (fastify, opts) => {
         hashed,
         algo: 'bcrypt'
       }
-    } else
+    }
     
     await fastify.mongoose.User.updateOne({ _id: user._id }, body)
     

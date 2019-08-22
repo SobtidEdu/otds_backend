@@ -45,7 +45,7 @@ module.exports = async (fastify, opts) => {
   fastify.post('/register',
   {
     preValidation: async (request) => fastify.validate(schema, request),
-    bodyLimit: 2248576 // limit 2.2 mb
+    bodyLimit: 5452595 // limit 5.2 mb
   }, async (request) => {
     const { body } = request
 
@@ -61,9 +61,10 @@ module.exports = async (fastify, opts) => {
       }
     })
 
-    if (body.profileImage) {
+    if (body.profileImage && body.profileImage.startsWith('data:image/')) {
       const filename = `profile-${user._id}`
-      const imageInfo = fastify.storage.diskProfileImage(body.profileImage, filename)
+      const extension = fastify.utils.getExtensionImage(body.profileImage)
+      const imageInfo = fastify.storage.diskProfileImage(body.profileImage, filename, extension)
       
       body.profileImage = imageInfo.fileName
     }
