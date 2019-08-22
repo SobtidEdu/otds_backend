@@ -2,6 +2,8 @@
 
 const moment = require('moment');
 const generator = require('rand-token').generator({ chars: '0-9' })
+var mongoose = require('mongoose');
+var Schema = mongoose.Schema;
 
 module.exports = {
   name: 'exams',
@@ -12,17 +14,15 @@ module.exports = {
       ref: "ExamSet"
     },
     testSetId: { type: String },
-    questions: [
-      {
-        seq: { type: Number },
-        id: { type: String },
-        type: { type: String },
-        text: { type: String },
-        suggestedTime: { type: Number },
-        explanation: { type: String },
-        answers: []
-      }
-    ],
+    questions: [ new Schema({
+      seq: { type: Number },
+      id: { type: String },
+      type: { type: String },
+      text: { type: String },
+      suggestedTime: { type: Number },
+      explanation: { type: String },
+      answers: []
+    }, { strict: false})],
     createdAt: {
       type: Number,
       default: moment().unix()
