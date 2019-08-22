@@ -81,7 +81,15 @@ module.exports = fp(async (fastify, options) => {
 
       // return params
       return instance.get(`/ws/RequestFixedRandomTestSet`, { params })
-      .then(response => response.data.ResponseFixedRandomTestset.ResponseTestsetGroup_ResponseFixedRandomTestset.ResponseTestsetGroup)
+      .then(response => {
+        const testSetGroup = response.data.ResponseFixedRandomTestset.ResponseTestsetGroup_ResponseFixedRandomTestset.ResponseTestsetGroup
+        return params.NoStudents == 1 ? [testSetGroup] : testSetGroup
+      })
+      .catch(e => {
+        const errorResponse = e.response.data
+        console.error(errorResponse.ResponseFixedRandomTestset)
+        throw new Error(errorResponse.ResponseFixedRandomTestset.ErrorMessage)
+      })
     }
   })
 })
