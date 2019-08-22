@@ -120,16 +120,16 @@ const transformAnswerByQuestionType = (question) => {
       key: answer.ItemAnswer,
       operation: answer.ItemAnswerOperation
     }))
-    case 'MA': return {
-      leftAnswer: question.ItemMatchingQuestion_ResponseItemGroup.ItemMatchingQuestion.map(answer => ({
+    case 'MA': return [
+      question.ItemMatchingQuestion_ResponseItemGroup.ItemMatchingQuestion.map(answer => ({
         seq: answer.ItemLeftSideSeq,
         text: answer.ItemLeftSide,
         match: answer.ItemRightSideKey
       })),
-      rightAnswer: question.ItemMatchingChoice_ResponseItemGroup.ItemMatchingChoice.map(answer => ({
+      question.ItemMatchingChoice_ResponseItemGroup.ItemMatchingChoice.map(answer => ({
         seq: answer.ItemRightSideSeq,
         text: answer.ItemRightSide,
       }))
-    }
+    ]
   }
 }

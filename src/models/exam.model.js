@@ -19,7 +19,8 @@ module.exports = {
         type: { type: String },
         text: { type: String },
         suggestedTime: { type: Number },
-        explanation: { type: String }
+        explanation: { type: String },
+        answers: []
       }
     ],
     createdAt: {
