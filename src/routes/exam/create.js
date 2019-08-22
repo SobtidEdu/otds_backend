@@ -64,9 +64,9 @@ const generalExamType = (user, params) => {
     NoItems: params.quantity,
     ComplexityLevel: getCompleixityLevel(params.level),
     BankType: params.bankType,
-    //FollowIndicator: false, // Initial
+    FollowIndicator: false, // Initial
     FollowStrand: false, // Initial
-    //FollowLesson: false, // Initial
+    FollowLesson: false, // Initial
     NoStudents: params.examSetTotal
   }
 
@@ -97,13 +97,11 @@ const mapCriterion = (params) => {
     case CRITERION.INDICATOR:
       return {
         FollowIndicator: true,
-        FollowStrand: false,
         Indicator: params.indicators.map(indicator => `${indicator.code},${indicator.quantity}`).join(';')
       }
     case CRITERION.STRAND:
       return {
         FollowStrand: true,
-        FollowIndicator: false,
         Strand: params.strands.map(strand => `${strand.code},${strand.quantity}`).join(';')
       }
     default: return {}
