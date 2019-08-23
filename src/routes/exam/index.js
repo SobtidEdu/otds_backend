@@ -2,6 +2,7 @@
 
 const examList = require('./list')
 const examCreate = require('./create')
+const examDelete = require('./delete')
 const examLesson = require('./lesson')
 const examIndicator = require('./indicator')
 const examCompetition = require('./competition')
@@ -12,4 +13,5 @@ module.exports = async (fastify) => {
   fastify.register(examLesson)
   fastify.register(examIndicator)
   fastify.register(examCompetition)
+  fastify.register(examDelete)
 }
