@@ -44,7 +44,7 @@ module.exports = async (fastify) => {
         answers: transformAnswerByQuestionType(question)
       }))
 
-      if (index = 0) {
+      if (i = 0) {
         firstExam = await fastify.mongoose.ExamSet.create(data)
       } else {
         await fastify.mongoose.ExamSet.create(data)
