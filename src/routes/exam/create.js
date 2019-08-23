@@ -29,11 +29,12 @@ module.exports = async (fastify) => {
     let firstExam
 
     await exams.forEach(async (exam, index) => {
-
-      const examCreate = new fastify.mongoose.ExamSet(body)
-      examCreate.code = exam.TestSetID
-
-      examCreate.questions = exam.ResponseItemGroup_ResponseTestsetGroup.ResponseItemGroup.map(question => ({
+      let data = body
+      if (data.examSetTotal > 1) {
+        data.name = data.name + ` (ชุดที่ ${index+1})`
+      }
+      data.code = exam.TestSetID,
+      data.questions = exam.ResponseItemGroup_ResponseTestsetGroup.ResponseItemGroup.map(question => ({
         seq: question.ItemSeq,
         id: question.ItemID,
         type: question.QuestionType,
@@ -43,10 +44,10 @@ module.exports = async (fastify) => {
         answers: transformAnswerByQuestionType(question)
       }))
 
-      if (index === 0) {
-        firstExam = await examCreate.save()
+      if (index = 0) {
+        firstExam = await fastify.mongoose.ExamSet(data)
       } else {
-        await examCreate.save()
+        await fastify.mongoose.ExamSet(data)
       }
     })
 
