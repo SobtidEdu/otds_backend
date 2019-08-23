@@ -17,7 +17,7 @@ module.exports = async (fastify) => {
     
     const { user, params } = request
 
-    await fastify.mongoose.ExamSet.removeOne({ _id: params.examId, owner: user._id })
+    await fastify.mongoose.ExamSet.remove({ _id: params.examId, owner: user._id })
     
     return { message: 'Exam has been deleted' }
   })
