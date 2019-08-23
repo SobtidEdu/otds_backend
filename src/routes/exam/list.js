@@ -11,7 +11,7 @@ module.exports = async (fastify, opts) => {
       {
         $project: { 
           _id: 1,
-          imageProfile: 1,
+          name: 1,
           subject: 1,
           code: 1,
           type: 1,
