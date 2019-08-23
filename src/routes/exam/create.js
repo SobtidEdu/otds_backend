@@ -16,8 +16,6 @@ module.exports = async (fastify) => {
   }, async (request) => {
     
     const { user, body } = request
-    
-    const examSet = new fastify.mongoose.ExamSet(body)
 
     body.owner = user._id
     body.bankType = body.bankType ? fastify.utils.capitalize(body.bankType) : 'Public'
@@ -26,7 +24,7 @@ module.exports = async (fastify) => {
 
     const exams = await fastify.otimsApi.createExamset(params)
 
-    let firstExam
+    let firstExam = new fastify.mongoose.ExamSet(body)
 
     for (let i in exams) {  //.forEach(async (exam, index) => {
       let data = body
