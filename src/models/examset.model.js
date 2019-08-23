@@ -2,6 +2,8 @@
 
 const moment = require('moment');
 const generator = require('rand-token').generator({ chars: '0-9' })
+var mongoose = require('mongoose');
+var Schema = mongoose.Schema;
 
 module.exports = {
   name: 'examsets',
@@ -11,6 +13,7 @@ module.exports = {
       type: "ObjectId",
       ref: "User"
     },
+    code: { type: String },
     subject: { type: String },
     grade: { type: String },
     level: [{ type: String }],
@@ -45,10 +48,19 @@ module.exports = {
     oneTimeDone: { type: Boolean },
     isSuggestion: { type: Boolean },
     withoutRegistered: { type: Boolean },
-    isActive: { type: Boolean },
+    status: { type: Boolean },
     createdAt: {
       type: Number,
       default: moment().unix()
-    }
+    },
+    questions: [{
+      seq: { type: Number },
+      id: { type: String },
+      type: { type: String },
+      text: { type: String },
+      suggestedTime: { type: Number },
+      explanation: { type: String },
+      answers: Schema.Types.Mixed
+    }],
   },
 }

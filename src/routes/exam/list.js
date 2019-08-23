@@ -6,12 +6,30 @@ module.exports = async (fastify, opts) => {
       fastify.authenticate()
     ]
   }, async (request) => {
+    const { user, query } = request
+    const baseAggregate = [
+      {
+        $project: { 
+          _id: 1,
+          imageProfile: 1,
+          subject: 1,
+          code: 1,
+          type: 1,
+          isActive: 1,
+          createdAt: 1,
+        }
+      }
+    ]
+
+    return await fastify.paginate(fastify.mongoose.ExamSet, query, baseAggregate)
+
     return {
       page: 1,
       lastPage: 1,
       totalCount: 0,
       items: [
         {
+          _id: 'aaaa',
           name: "คณิตศาสตร์ ป.4",
           subject: "คณิตศาสตร์",
           code: "MF00000001",

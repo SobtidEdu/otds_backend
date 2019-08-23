@@ -26,27 +26,31 @@ module.exports = async (fastify) => {
 
     const exams = await fastify.otimsApi.createExamset(params)
 
-    await examSet.save()
+    let firstExam
 
-    await exams.forEach(async exam => {
-      const test = {
-        examset: examSet._id,
-        testSetId: exam.TestSetID,
-        questions: exam.ResponseItemGroup_ResponseTestsetGroup.ResponseItemGroup.map(question => ({
-          seq: question.ItemSeq,
-          id: question.ItemID,
-          type: question.QuestionType,
-          text: question.ItemQuestion,
-          suggestedTime: parseFloat(question.SuggestedTime),
-          explanation: question.Explanation,
-          answers: transformAnswerByQuestionType(question)
-        }))
+    await exams.forEach(async (exam, index) => {
+
+      const examCreate = new fastify.mongoose.ExamSet(body)
+      examCreate.code = exam.TestSetID
+
+      examCreate.question = exam.ResponseItemGroup_ResponseTestsetGroup.ResponseItemGroup.map(question => ({
+        seq: question.ItemSeq,
+        id: question.ItemID,
+        type: question.QuestionType,
+        text: question.ItemQuestion,
+        suggestedTime: parseFloat(question.SuggestedTime),
+        explanation: question.Explanation,
+        answers: transformAnswerByQuestionType(question)
+      }))
+
+      if (index === 0) {
+        firstExam = await examCreate.save()
+      } else {
+        await examCreate.save()
       }
-
-      await fastify.mongoose.Exam.create(test)
     })
 
-    return examSet
+    return firstExam
   })
 }
 
