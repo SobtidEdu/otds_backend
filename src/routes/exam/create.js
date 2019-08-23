@@ -45,9 +45,9 @@ module.exports = async (fastify) => {
       }))
 
       if (index = 0) {
-        firstExam = await fastify.mongoose.ExamSet(data)
+        firstExam = await fastify.mongoose.ExamSet.create(data)
       } else {
-        await fastify.mongoose.ExamSet(data)
+        await fastify.mongoose.ExamSet.create(data)
       }
     })
 
