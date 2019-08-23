@@ -15,7 +15,7 @@ module.exports = async (fastify, opts) => {
           subject: 1,
           code: 1,
           type: 1,
-          isActive: 1,
+          status: 1,
           createdAt: 1,
         }
       }

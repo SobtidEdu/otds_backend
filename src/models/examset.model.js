@@ -48,7 +48,7 @@ module.exports = {
     oneTimeDone: { type: Boolean },
     isSuggestion: { type: Boolean },
     withoutRegistered: { type: Boolean },
-    status: { type: Boolean },
+    status: { type: Boolean, default: true },
     createdAt: {
       type: Number,
       default: moment().unix()
