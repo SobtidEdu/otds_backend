@@ -28,13 +28,13 @@ module.exports = async (fastify) => {
 
     let firstExam
 
-    await exams.forEach(async (exam, index) => {
+    for (let i in exams) {  //.forEach(async (exam, index) => {
       let data = body
       if (data.examSetTotal > 1) {
         data.name = data.name + ` (ชุดที่ ${index+1})`
       }
-      data.code = exam.TestSetID,
-      data.questions = exam.ResponseItemGroup_ResponseTestsetGroup.ResponseItemGroup.map(question => ({
+      data.code = exams[i].TestSetID,
+      data.questions = exams[i].ResponseItemGroup_ResponseTestsetGroup.ResponseItemGroup.map(question => ({
         seq: question.ItemSeq,
         id: question.ItemID,
         type: question.QuestionType,
@@ -49,7 +49,7 @@ module.exports = async (fastify) => {
       } else {
         await fastify.mongoose.ExamSet.create(data)
       }
-    })
+    }
 
     return firstExam
   })
