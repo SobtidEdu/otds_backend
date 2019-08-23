@@ -33,7 +33,7 @@ module.exports = async (fastify) => {
       const examCreate = new fastify.mongoose.ExamSet(body)
       examCreate.code = exam.TestSetID
 
-      examCreate.question = exam.ResponseItemGroup_ResponseTestsetGroup.ResponseItemGroup.map(question => ({
+      examCreate.questions = exam.ResponseItemGroup_ResponseTestsetGroup.ResponseItemGroup.map(question => ({
         seq: question.ItemSeq,
         id: question.ItemID,
         type: question.QuestionType,
