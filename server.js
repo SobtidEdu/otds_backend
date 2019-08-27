@@ -61,6 +61,10 @@ fastify.register(require('fastify-static'), {
   root: path.join(__dirname, 'storage'),
   prefix: '/storage/'
 })
+fastify.register(require('fastify-rate-limit'), {
+  max: 60,
+  timeWindow: '1 minute'
+})
 
 /*****
  * Internal Plugin
