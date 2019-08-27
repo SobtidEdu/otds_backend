@@ -8,6 +8,14 @@ services:
     container_name: otds_backend
     restart: unless-stopped
     env_file: .env
+    deploy:
+      replicas: 5
+      resources:
+        limits:
+          cpus: "0.1"
+          memory: 50M
+      restart_policy:
+        condition: on-failure
     ports:
       - "3100:3000"
     volumes:
