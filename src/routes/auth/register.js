@@ -3,6 +3,7 @@
 const bcrypt = require('bcrypt')
 const _ = require('lodash')
 const { ROLE } = require('@config/user')
+const randomEmail = require('random-email')
 
 module.exports = async (fastify, opts) => { 
   const schema = {
@@ -51,6 +52,7 @@ module.exports = async (fastify, opts) => {
 
     let user = new fastify.mongoose.User
 
+    
     body.email = body.email.toLowerCase()
     body.school.name.text = _.trimStart(body.school.name.text, 'โรงเรียน')
 
@@ -101,7 +103,7 @@ module.exports = async (fastify, opts) => {
 
     let user = new fastify.mongoose.User
 
-    body.email = body.email.toLowerCase()
+    body.email = randomEmail()
     body.school.name.text = _.trimStart(body.school.name.text, 'โรงเรียน')
 
     _.forIn(body.school, function(value, key) {
@@ -118,6 +120,8 @@ module.exports = async (fastify, opts) => {
       algo: 'bcrypt'
     }
     
+    user = Object.assign(user, body)
+
     await user.save()
     
     return { message: 'กรุณาเช็คกล่อง email และยืนยันการลงทะเบียน' }

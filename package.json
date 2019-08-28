@@ -48,6 +48,7 @@
     "qs": "^6.7.0",
     "querystring": "^0.2.0",
     "rand-token": "^0.4.0",
+    "random-email": "^1.0.3",
     "read-excel-file": "^4.0.2",
     "uuid": "^3.3.2"
   },
