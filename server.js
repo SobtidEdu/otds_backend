@@ -61,10 +61,6 @@ fastify.register(require('fastify-static'), {
   root: path.join(__dirname, 'storage'),
   prefix: '/storage/'
 })
-fastify.register(require('fastify-static'), {
-  root: path.join(__dirname, 'storage'),
-  prefix: '/storage/'
-})
 
 fastify.get('/loaderio-fbfe50484f479b17127bc6d15d9dfe5d', function (req, reply) {
   reply.send('loaderio-fbfe50484f479b17127bc6d15d9dfe5d')
