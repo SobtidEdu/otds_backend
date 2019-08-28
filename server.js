@@ -62,8 +62,8 @@ fastify.register(require('fastify-static'), {
   prefix: '/storage/'
 })
 
-fastify.get('/loaderio-fbfe50484f479b17127bc6d15d9dfe5d', function (req, reply) {
-  reply.send('loaderio-fbfe50484f479b17127bc6d15d9dfe5d')
+fastify.get('/loaderio-a4d2aba1ccaf1c6e64d6a377f20a4509', function (req, reply) {
+  reply.send('loaderio-a4d2aba1ccaf1c6e64d6a377f20a4509')
 })
 // fastify.register(require('fastify-rate-limit'), {
 //   max: 60,
