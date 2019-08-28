@@ -65,6 +65,11 @@ fastify.register(require('fastify-static'), {
 fastify.get('/loaderio-a4d2aba1ccaf1c6e64d6a377f20a4509', function (req, reply) {
   reply.send('loaderio-a4d2aba1ccaf1c6e64d6a377f20a4509')
 })
+
+fastify.get('/loaderio-7dbfa39aceea28e99e68e32cf7d37603', function (req, reply) {
+  reply.send('loaderio-7dbfa39aceea28e99e68e32cf7d37603')
+})
+
 // fastify.register(require('fastify-rate-limit'), {
 //   max: 60,
 //   timeWindow: '1 minute'
