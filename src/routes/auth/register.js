@@ -76,22 +76,53 @@ module.exports = async (fastify, opts) => {
       algo: 'bcrypt'
     }
 
-    const html = await fastify.htmlTemplate.getConfirmationRegisterTemplate(body)
+    // const html = await fastify.htmlTemplate.getConfirmationRegisterTemplate(body)
 
-    user = Object.assign(user, body)
+    // user = Object.assign(user, body)
     
     await Promise.all([
       user.save(),
-      fastify.nodemailer.sendMail({
-        from: fastify.env.EMAIL_FROM,
-        to: body.email,
-        subject: 'ยืนยันการลงทะเบียน OTDS',
-        html
-      })
+      // fastify.nodemailer.sendMail({
+      //   from: fastify.env.EMAIL_FROM,
+      //   to: body.email,
+      //   subject: 'ยืนยันการลงทะเบียน OTDS',
+      //   html
+      // })
     ])
     
     return { message: 'กรุณาเช็คกล่อง email และยืนยันการลงทะเบียน' }
   })
+
+
+  fastify.post('/register-test', {
+
+  }, async (request) => {
+    const { body } = request
+
+    let user = new fastify.mongoose.User
+
+    body.email = body.email.toLowerCase()
+    body.school.name.text = _.trimStart(body.school.name.text, 'โรงเรียน')
+
+    _.forIn(body.school, function(value, key) {
+      if (value.isModified == true) {
+        user.isSeenModified = false
+        return 
+      }
+    })
+
+    const salt = 10;
+    const hashed = bcrypt.hashSync(body.password, salt)
+    body.password = {
+      hashed,
+      algo: 'bcrypt'
+    }
+    
+    await user.save()
+    
+    return { message: 'กรุณาเช็คกล่อง email และยืนยันการลงทะเบียน' }
+  })
+
 
   fastify.post('/confirm-email', async (request, reply) => {
     const { token } = request.body

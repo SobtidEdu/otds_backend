@@ -7,7 +7,7 @@ module.exports = async (fastify, opts) => {
   fastify.post('/login', async (request) => {
     const { email, password } = request.body
     
-    let user = await fastify.mongoose.User.findOne({ email }).populate({ path: 'province', model: fastify.mongoose.Province, select: 'name' })
+    let user = await fastify.mongoose.User.findOne({ email })
     if (!user) throw fastify.httpErrors.badRequest('อีเมลหรือรหัสผ่านผิดพลาด')
 
     const isValidCredential = await bcrypt.compareSync(password, user.password.hashed)
@@ -19,10 +19,7 @@ module.exports = async (fastify, opts) => {
 
     const { _id, role, prefixName, firstName, lastName, gender, profileImage, department, school, province } = user.toObject()
 
-    const [token] = await Promise.all([
-      fastify.jwt.sign({ _id }),
-      fastify.mongoose.User.updateOne({ _id }, { isLoggedOut: false, lastLoggedInAt: moment().unix() })
-    ])
+    const [token] = await fastify.jwt.sign({ _id })
 
     return { role, prefixName, firstName, lastName, email, gender, department, school, province, profileImage: fastify.storage.getUrlProfileImage(profileImage), token }
   })

@@ -82,6 +82,6 @@ module.exports = async (fastify, options) => {
   fastify.register(require('./exam'), { prefix: 'exams' })
   if (fastify.env.APP_ENV !== 'production') {
     fastify.get('/documentation', (request, reply) => reply.redirect('https://documenter.getpostman.com/view/6968221/S1Zz6pHb'))
-    fastify.mongoose.instance.set('debug', true)
+    fastify.mongoose.instance.set('debug', false)
   }
 }
