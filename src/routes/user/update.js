@@ -7,7 +7,7 @@ const _ = require('lodash')
 module.exports = async (fastify, opts) => { 
   const schema = {}
 
-  fastify.post('/:id', {
+  fastify.patch('/:id', {
     preValidation: [
       (request) => fastify.validate(schema, request),
       fastify.authenticate(),
