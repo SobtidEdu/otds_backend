@@ -20,6 +20,7 @@ module.exports = async (fastify, opts) => {
   }, async (request) => {
     const { usersImportFile } = request.raw.files
     const pathFileName = `${TEMP_UPLOAD_PATH}/${usersImportFile.name}`
+    
     await usersImportFile.mv(pathFileName, (err) => {
       return new Promise((resolve, reject) => {
         if (err) {
@@ -37,13 +38,16 @@ module.exports = async (fastify, opts) => {
     
     const length = users.length
 
+    if (length > 500) { // Over limit upload
+      return fastify.httpErrors.badRequest(`upload over limit 500 records`)
+    }
+
     for (let i = 1; i < length; i++) {
       const user = users[i]
       
       if (user[3] && user[4]) {
         if (await fastify.mongoose.User.findOne({ $or: [ {username: user[3]}, {email: user[4]} ] })) return fastify.httpErrors.badRequest(`${user[3]} or ${user[4]} been duplicated on rows [${i+1}]`)
-      }
-      else if (user[4]) {
+      } else if (user[4]) {
         if (await fastify.mongoose.User.findOne({ email: user[4] })) return fastify.httpErrors.badRequest(`${user[4]} been duplicated on rows [${i+1}]`)
       } else {
         if (await fastify.mongoose.User.findOne({ username: user[3] })) return fastify.httpErrors.badRequest(`${user[3]} been duplicated on rows [${i+1}]`)

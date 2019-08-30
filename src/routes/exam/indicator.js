@@ -14,12 +14,24 @@ module.exports = async (fastify) => {
   }, async (request) => {
     const { user, query } = request
     const params = {}
+
+    params.ItemType = query.type ? query.type : 'G'
     if (query.subject) {
       params.LearningArea = query.subject
     }
     if (query.grade) {
       params.KeyStage = query.grade
     }
+    if (query.level) {
+      params.ComplexityLevel = query.level.join(',')
+    }
+    if (query.competitionName) {
+      params.Project = query.competitionName
+    }
+    if (query.competitionYears) {
+      params.ProjectYear = query.competitionYears
+    }
+
     return await fastify.otimsApi.getIndicators(params)
   })
 }

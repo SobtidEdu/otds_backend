@@ -42,7 +42,6 @@ module.exports = fp(async (fastify, options) => {
       params.RequestType = 1
       params.TestSetType = 'FI'
       params.FollowStrand = true
-      params.ComplexityLevel = '1,2,3'
       params.FollowIndicator = true
       params.BankType = 'Public'
 

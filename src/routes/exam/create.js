@@ -26,7 +26,7 @@ module.exports = async (fastify) => {
 
     let firstExam = new fastify.mongoose.ExamSet(body)
 
-    for (let i in exams) {  //.forEach(async (exam, index) => {
+    for (let i in exams) {  
       let data = body
       if (data.examSetTotal > 1) {
         data.name = data.name + ` (ชุดที่ ${index+1})`
@@ -54,7 +54,7 @@ module.exports = async (fastify) => {
 }
 
 const mapExamParams = (user, params) => {
-  if (params.type == EXAM_TYPE.GENERAL) return generalExamType(user, params)
+  if (params.type == EXAM_TYPE.GENERAL || params.type == EXAM_TYPE.COMPETITION) return generalExamType(user, params)
 }
 
 const generalExamType = (user, params) => {
@@ -67,10 +67,15 @@ const generalExamType = (user, params) => {
     NoItems: params.quantity,
     ComplexityLevel: getCompleixityLevel(params.level),
     BankType: params.bankType,
-    FollowIndicator: false, // Initial
-    FollowStrand: false, // Initial
-    FollowLesson: false, // Initial
+    FollowIndicator: false,
+    FollowStrand: false,
+    FollowLesson: false,
     NoStudents: params.examSetTotal
+  }
+
+  if (params.type === EXAM_TYPE.COMPETITION) {
+    exam.Project = params.competition.project,
+    exam.ProjectYear = params.competition.years.join(',')
   }
 
   Object.assign(exam, mapCriterion(params))
