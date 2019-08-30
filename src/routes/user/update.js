@@ -7,7 +7,7 @@ const _ = require('lodash')
 module.exports = async (fastify, opts) => { 
   const schema = {}
 
-  fastify.patch('/:id', {
+  fastify.patch('/:userId', {
     preValidation: [
       (request) => fastify.validate(schema, request),
       fastify.authenticate(),
@@ -19,7 +19,7 @@ module.exports = async (fastify, opts) => {
     if (body.school) {
       body.school.name.text = _.trimStart(body.school.name.text, 'โรงเรียน')
 
-      _.forIn(body.school, function(value, key) {
+      _.forIn(body.school, (value, key) => {
         if (value.isModified == true) {
           body.isSeenModified = false
           return 
@@ -47,7 +47,7 @@ module.exports = async (fastify, opts) => {
       }
     }
     
-    await fastify.mongoose.User.updateOne({ _id: params.id }, body)
+    await fastify.mongoose.User.updateOne({ _id: params.userId }, body)
     
     return { message: 'อัพเดตข้อมูลผู้ใช้งานเรียบร้อย'}
   })
