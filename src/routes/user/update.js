@@ -16,14 +16,16 @@ module.exports = async (fastify, opts) => {
   }, async (request) => {
     const { params, body } = request
 
-    body.school.name.text = _.trimStart(body.school.name.text, 'โรงเรียน')
+    if (body.school) {
+      body.school.name.text = _.trimStart(body.school.name.text, 'โรงเรียน')
 
-    _.forIn(body.school, function(value, key) {
-      if (value.isModified == true) {
-        body.isSeenModified = false
-        return 
-      }
-    })
+      _.forIn(body.school, function(value, key) {
+        if (value.isModified == true) {
+          body.isSeenModified = false
+          return 
+        }
+      })
+    }
 
     if (body.profileImage && body.profileImage.includes('data:image/')) {
       const filename = `profile-${user._id}`
