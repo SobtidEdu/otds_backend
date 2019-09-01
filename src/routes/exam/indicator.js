@@ -22,9 +22,6 @@ module.exports = async (fastify) => {
     if (query.grade) {
       params.KeyStage = query.grade
     }
-    if (query.level) {
-      params.ComplexityLevel = query.level.join(',')
-    }
     if (query.competitionName) {
       params.Project = query.competitionName
     }

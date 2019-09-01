@@ -44,6 +44,7 @@ module.exports = fp(async (fastify, options) => {
       params.FollowStrand = true
       params.FollowIndicator = true
       params.BankType = 'Public'
+      params.ComplexityLevel = '1,2,3'
 
       for (let strandIndex in indicators) {
         for (let indicatorIndex in indicators[strandIndex].indicators) {
@@ -58,7 +59,7 @@ module.exports = fp(async (fastify, options) => {
             if (!arrayNoQuestionType[0]) return 0
             const indicators = arrayNoQuestionType[0].Indicator.split(';')
             return indicators.reduce((noitems, rawIndicator) => {
-              console.log(rawIndicator)
+              // console.log(rawIndicator)
               const item = rawIndicator.split(',') // indicatorName, questionType, noQuestions
               return parseInt(item[2]) + noitems
             }, 0)
