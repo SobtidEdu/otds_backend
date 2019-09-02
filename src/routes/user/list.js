@@ -17,7 +17,7 @@ module.exports = async (fastify, opts) => {
       {
         $project: { 
           _id: 1,
-          imageProfile: 1,
+          profileImage: 1,
           name: { $concat: [ "$prefixName", " ", "$firstName", " ", "$lastName" ] },
           "school.name": 1,
           createdAt: 1,
@@ -33,7 +33,7 @@ module.exports = async (fastify, opts) => {
 
     const results = await fastify.paginate(fastify.mongoose.User, query, baseOptions)
 
-    results.items = results.items.map(item => Object.assign(item, {
+    results.items.map(item => Object.assign(item, {
       profileImage: fastify.storage.getUrlProfileImage(item.profileImage)
     }))
     
