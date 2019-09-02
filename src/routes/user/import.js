@@ -46,17 +46,17 @@ module.exports = async (fastify, opts) => {
       const user = users[i]
       
       if (user[3] && user[4]) {
-        if (await fastify.mongoose.User.findOne({ $or: [ {username: user[3]}, {email: user[4]} ] })) return fastify.httpErrors.badRequest(`${user[3]} or ${user[4]} been duplicated on rows [${i+1}]`)
+        if (await fastify.mongoose.User.findOne({ $or: [ {username: user[3]}, {email: user[4]} ] })) return fastify.httpErrors.badRequest(`มีข้อมูลซ้ำในระบบ [${user[3]} หรือ ${user[4]}] แถวที่ ${i+1}`)
       } else if (user[4]) {
-        if (await fastify.mongoose.User.findOne({ email: user[4] })) return fastify.httpErrors.badRequest(`${user[4]} been duplicated on rows [${i+1}]`)
+        if (await fastify.mongoose.User.findOne({ email: user[4] })) return fastify.httpErrors.badRequest(`มีข้อมูลซ้ำในระบบ [${user[4]}] แถวที่ ${i+1}`)
       } else {
-        if (await fastify.mongoose.User.findOne({ username: user[3] })) return fastify.httpErrors.badRequest(`${user[3]} been duplicated on rows [${i+1}]`)
+        if (await fastify.mongoose.User.findOne({ username: user[3] })) return fastify.httpErrors.badRequest(`มีข้อมูลซ้ำในระบบ [${user[3]}] แถวที่ ${i+1}`)
       }
 
       user[6] = _.trimStart(user[6], 'โรงเรียน')
 
       const school = await fastify.mongoose.School.findOne({ name: user[6] })
-      if (!school) return fastify.httpErrors.badRequest(`Not found school '${user[6]}' on rows [${i+1}]`)
+      if (!school) return fastify.httpErrors.badRequest(`ไม่พบโรงเรียน '${user[6]}' แถวที่ [${i+1}]`)
       
       let schoolCreate = {
         name: {
