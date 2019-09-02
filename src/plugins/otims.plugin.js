@@ -75,7 +75,7 @@ module.exports = fp(async (fastify, options) => {
       .then(response => response.data)
     },
 
-    createExamset: async (params = {}) => {
+    requestFixedRandomTestSet: async (params = {}) => {
       params.RequestedName = OTIMS_USER
       params.RequestedNo = `${OTIMS_USER}RequestFixedRandomTestSet${params.RequestType}${moment().format('YYYYMMDDHHmmSSS')}`
 

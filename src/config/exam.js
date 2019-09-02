@@ -7,7 +7,8 @@ exports.CRITERION = {
 
 exports.EXAM_TYPE = {
   GENERAL: 'G',
-  COMPETITION: 'C'
+  COMPETITION: 'C',
+  CAT: 'CAT'
 }
 
 exports.LEVEL = {

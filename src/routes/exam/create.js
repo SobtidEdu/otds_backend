@@ -16,17 +16,20 @@ module.exports = async (fastify) => {
   }, async (request) => {
     
     const { user, body } = request
+    let exams = null
+    let firstExam = new fastify.mongoose.Exam(body)
 
     body.owner = user._id
     body.bankType = body.bankType ? fastify.utils.capitalize(body.bankType) : 'Public'
     
     const params = mapExamParams(user, body)
 
-    const exams = await fastify.otimsApi.createExamset(params)
-
-    let firstExam = new fastify.mongoose.ExamSet(body)
-
-    for (let i in exams) {  
+    if (body.type == EXAM_TYPE.GENERAL || body.type == EXAM_TYPE.COMPETITION) {
+      exams = await fastify.otimsApi.requestFixedRandomTestSet(params)
+    } else if (body.type == EXAM_TYPE.CAT) {
+      return fastify.mongoose.Exam.create(body)
+    }
+    for (let i in exams) {
       let data = body
       if (data.examSetTotal > 1) {
         data.name = data.name + ` (ชุดที่ ${index+1})`
@@ -39,13 +42,24 @@ module.exports = async (fastify) => {
         text: question.ItemQuestion,
         suggestedTime: parseFloat(question.SuggestedTime),
         explanation: question.Explanation,
-        answers: transformAnswerByQuestionType(question)
+        answers: question.QuestionType !== 'TF' ? transformAnswerByQuestionType(question) : [],
+        subQuestions: question.QuestionType === 'TF' ? question.ItemTFSubquestion_ResponseItemGroup.ItemTFSubquestion.map(subQuestion => ({
+          no: subQuestion.ItemNo,
+          text: subQuestion.ItemSubQuestion,
+          answers: subQuestion.ItemTFChoice_ItemTFSubquestion.ItemTFChoice.map(subAnswer => ({
+            seq: subAnswer.ItemChoiceSeq,
+            text: subAnswer.ItemChoice,
+            key: subAnswer.ItemChoiceKey
+          }))
+        })) : []
       }))
 
+      console.log(i)
       if (i = 0) {
-        firstExam = await fastify.mongoose.ExamSet.create(data)
+        firstExam = await fastify.mongoose.Exam.create(data)
+        console.log(firstExam)
       } else {
-        await fastify.mongoose.ExamSet.create(data)
+        await fastify.mongoose.Exam.create(data)
       }
     }
 
@@ -54,10 +68,6 @@ module.exports = async (fastify) => {
 }
 
 const mapExamParams = (user, params) => {
-  if (params.type == EXAM_TYPE.GENERAL || params.type == EXAM_TYPE.COMPETITION) return generalExamType(user, params)
-}
-
-const generalExamType = (user, params) => {
   const exam = {
     RequestType: getRequestType(user),
     TestSetType: getTestSetType(params.examSetTotal),
@@ -100,17 +110,17 @@ const mapCriterion = (params) => {
     case CRITERION.LESSON:
       return {
         FollowLesson: true,
-        Lesson: params.lessons.map(lesson => `${lesson.code},${lesson.quantity}`).join(';')
+        Lesson: params.lessons.map(lesson => `${lesson.code},ALL,${lesson.quantity}`).join(';')
       }
     case CRITERION.INDICATOR:
       return {
         FollowIndicator: true,
-        Indicator: params.indicators.map(indicator => `${indicator.code},${indicator.quantity}`).join(';')
+        Indicator: params.indicators.map(indicator => `${indicator.code},ALL,${indicator.quantity}`).join(';')
       }
     case CRITERION.STRAND:
       return {
         FollowStrand: true,
-        Strand: params.strands.map(strand => `${strand.code},${strand.quantity}`).join(';')
+        Strand: params.strands.map(strand => `${strand.code},ALL,${strand.quantity}`).join(';')
       }
     default: return {}
   }

@@ -15,7 +15,6 @@ module.exports = async (fastify, opts) => {
     
     user.profileImage = fastify.storage.getUrlProfileImage(user.profileImage)
 
-    // return user
     return _.pick(user, ['_id', 'prefixName', 'firstName', 'lastName', 'gender', 'department', 'province', 'profileImage', 'email', 'role', 'school'])
   })
 
@@ -33,7 +32,7 @@ module.exports = async (fastify, opts) => {
     }
     if (body.profileImage == null) {
       delete body.profileImage
-    } 
+    }
 
     body.school.name.text = _.trimStart(body.school.name.text, 'โรงเรียน')
 
