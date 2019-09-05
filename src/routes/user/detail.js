@@ -18,7 +18,7 @@ module.exports = async (fastify, opts) => {
       {
         $project: { 
           _id: 1,
-          imageProfile: 1,
+          profileImage: 1,
           name: { $concat: [ "$prefixName", " ", "$firstName", " ", "$lastName" ] },
           "school.name": 1,
           createdAt: 1,
@@ -32,6 +32,10 @@ module.exports = async (fastify, opts) => {
       }
     ]
     
-    return fastify.mongoose.User.findOne({ _id: params.id }).select(["-password", "-groups"])
+    const user = await fastify.mongoose.User.findOne({ _id: params.id }).select(["-password", "-groups"])
+
+    return Object.assign(user, {
+      profileImage: fastify.storage.getUrlProfileImage(user.profileImage)
+    })
   })
 }
