@@ -32,7 +32,7 @@ module.exports = async (fastify, opts) => {
     } else {
       baseAggregate = [
         {
-          $project: { 
+          $project: {
             _id: 1,
             name: 1,
             subject: 1,

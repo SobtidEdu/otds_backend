@@ -28,7 +28,7 @@ module.exports = async (fastify, opts) => {
     }
 
     if (body.profileImage && body.profileImage.includes('data:image/')) {
-      const filename = `profile-${user._id}`
+      const filename = `profile-${body._id}`
       const imageInfo = fastify.storage.diskProfileImage(body.profileImage, filename)
       
       body.profileImage = imageInfo.fileName
