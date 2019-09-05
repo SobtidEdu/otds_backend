@@ -49,6 +49,6 @@ module.exports = async (fastify, opts) => {
       ]
     }
 
-    return await fastify.paginate(fastify.mongoose.ExamSet, query, baseAggregate)
+    return await fastify.paginate(fastify.mongoose.Exam, query, baseAggregate)
   })
 }
