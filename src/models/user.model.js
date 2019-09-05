@@ -111,6 +111,9 @@ module.exports = {
       type: Boolean,
       default: true
     },
+    privacyPolicy: {
+      type: Boolean
+    },
     groups: [
       {
         info: {

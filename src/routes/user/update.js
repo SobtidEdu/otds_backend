@@ -32,6 +32,8 @@ module.exports = async (fastify, opts) => {
       const imageInfo = fastify.storage.diskProfileImage(body.profileImage, filename)
       
       body.profileImage = imageInfo.fileName
+    } else {
+      delete body.profileImage
     }
 
     if (body.password) {
