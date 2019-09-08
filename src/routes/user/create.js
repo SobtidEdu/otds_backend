@@ -5,11 +5,48 @@ const { ROLE } = require('@config/user')
 const _ = require('lodash')
 
 module.exports = async (fastify, opts) => { 
-  const schema = {}
+  const schema = {
+    body: {
+      validation: {
+        $async: true,
+        type: 'object',
+        properties: {
+          username: { 
+            type: 'string',
+            isExist: { prop: 'username', collection: 'users' } 
+          },
+          prefixName: { type: 'string' },
+          firstName: { type: 'string' },
+          lastName: { type: 'string' },
+          role: { type: 'string', enum: [ ROLE.STUDENT, ROLE.TEACHER ] },
+          email: { 
+            type: 'string',
+            format: 'email',
+            isExist: { prop: 'email', collection: 'users' } 
+          }
+        },
+      },
+      message: {
+        email: {
+          format: 'อีเมลไม่ถูกต้อง',
+          isExist: 'อีเมลนี้มีอยู่ในระบบแล้ว'
+        },
+        username: {
+          isExist: 'username นี้มีอยู่ในระบบแล้ว'
+        },
+        role: {
+          enum: 'กรุณาระบุ Role ให้ถูกต้อง'
+        },
+        gender: {
+          enum: 'กรุณาระบุเพศให้ถูกต้อง'
+        }
+      }
+    } 
+  }
 
   fastify.post('/', {
     preValidation: [
-      (request) => fastify.validate(schema, request),
+      async (request) => fastify.validate(schema, request),
       fastify.authenticate(),
       fastify.authorize([ ROLE.ADMIN ])
     ]
