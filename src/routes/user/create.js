@@ -18,7 +18,9 @@ module.exports = async (fastify, opts) => {
 
     let user = new fastify.mongoose.User
 
-    body.email = body.email.toLowerCase()
+    if (body.email) {
+      body.email = body.email.toLowerCase()
+    }
 
     if (body.username && body.email) {
       if (await fastify.mongoose.User.findOne({ $or: [ {username: body.username}, {email: body.email} ] })) return fastify.httpErrors.badRequest('Username or email has been duplicated')
