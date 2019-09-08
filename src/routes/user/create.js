@@ -18,7 +18,7 @@ module.exports = async (fastify, opts) => {
           prefixName: { type: 'string' },
           firstName: { type: 'string' },
           lastName: { type: 'string' },
-          role: { type: 'string', enum: [ ROLE.STUDENT, ROLE.TEACHER ] },
+          role: { type: 'string', enum: [ ROLE.STUDENT, ROLE.TEACHER, ROLE.SUPER_TEACHER, ROLE.ADMIN ] },
           email: { 
             type: 'string',
             format: 'email',
