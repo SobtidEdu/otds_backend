@@ -59,15 +59,6 @@ module.exports = async (fastify, opts) => {
       body.email = body.email.toLowerCase()
     }
 
-    if (body.username && body.email) {
-      if (await fastify.mongoose.User.findOne({ $or: [ {username: body.username}, {email: body.email} ] })) return fastify.httpErrors.badRequest('Username or email has been duplicated')
-    }
-    else if (body.email) {
-      if (await fastify.mongoose.User.findOne({ email: body.email })) return fastify.httpErrors.badRequest('Username or email has been duplicated')
-    } else {
-      if (await fastify.mongoose.User.findOne({ username: body.username })) return fastify.httpErrors.badRequest('Username or email has been duplicated')
-    }
-
     body.school.name.text = _.trimStart(body.school.name.text, 'โรงเรียน')
     const school = await fastify.mongoose.School.findOne({ name: body.school.name.text })
 
@@ -82,7 +73,7 @@ module.exports = async (fastify, opts) => {
       }
     }
 
-    if (body.role === ROLE.STUDENT) {
+    if (body.role === ROLE.TEACHER) {
       Object.assign(body.school, {
         addressNo: {
           text: school.addressNo,
