@@ -12,7 +12,7 @@ module.exports = async (fastify, options) => {
       fastify.authorize([ROLE.TEACHER])
     ],
     bodyLimit: 2200000 // limit 2.2 mb
-  }, async (request, reply) => {
+  }, async (request) => {
     
     const { body, params } = request
 

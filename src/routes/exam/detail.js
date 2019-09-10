@@ -17,7 +17,7 @@ module.exports = async (fastify) => {
     
     const { user, params } = request
 
-    return await fastify.mongoose.ExamSet.findOne({ _id: params.examId }).select('-questions')
+    return await fastify.mongoose.Exam.findOne({ _id: params.examId }).select('-questions')
 
   })
 }

@@ -8,4 +8,5 @@ module.exports = [
   require('./subject.model'),
   require('./contact.model'),
   require('./exam.model'),
+  require('./testing.model'),
 ]
