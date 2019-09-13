@@ -9,10 +9,16 @@ module.exports = async (fastify, opts) => {
     ]
   }, async (request) => {
     const { user, query } = request
+    console.log(user)
     let baseAggregate = []
     
     if (user.role == ROLE.STUDENT) {
       baseAggregate = [
+        {
+          $match: {
+            owner: user._id
+          }
+        },
         {
           $project: { 
             _id: 1,
@@ -23,14 +29,15 @@ module.exports = async (fastify, opts) => {
             status: 1,
             createdAt: 1,
           }
-        }, {
-          $match: {
-            owner: mongoose.Schema.ObjectId(user._id)
-          }
         }
       ]
     } else {
       baseAggregate = [
+        {
+          $match: {
+            owner: user._id
+          }
+        },
         {
           $project: {
             _id: 1,
@@ -40,10 +47,6 @@ module.exports = async (fastify, opts) => {
             type: 1,
             status: 1,
             createdAt: 1,
-          }
-        }, {
-          $match: {
-            owner: mongoose.Schema.ObjectId(user._id)
           }
         }
       ]
