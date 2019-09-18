@@ -53,11 +53,9 @@ module.exports = async (fastify) => {
           }))
         })) : []
       }))
-
-      console.log(i)
+      
       if (i = 0) {
         firstExam = await fastify.mongoose.Exam.create(data)
-        console.log(firstExam)
       } else {
         await fastify.mongoose.Exam.create(data)
       }

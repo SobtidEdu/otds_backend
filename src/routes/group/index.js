@@ -16,6 +16,7 @@ const rejectStudentToJoinGroup = require('./student/reject')
 const studentLeaveGroup = require('./student/leave')
 const removeStudentFormGroup = require('./student/remove')
 
+const listOfExam = require('./exam/list')
 
 module.exports = async (fastify, options) => {
 
@@ -35,4 +36,8 @@ module.exports = async (fastify, options) => {
   fastify.register(rejectStudentToJoinGroup)
   fastify.register(studentLeaveGroup)
   fastify.register(removeStudentFormGroup)
+
+  // EXAM ZONE //
+  fastify.register(listOfExam)
+  fastify.register(require('./exam/add'))
 }

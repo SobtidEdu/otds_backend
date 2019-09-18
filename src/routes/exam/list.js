@@ -9,7 +9,7 @@ module.exports = async (fastify, opts) => {
     ]
   }, async (request) => {
     const { user, query } = request
-    console.log(user)
+    
     let baseAggregate = []
     
     if (user.role == ROLE.STUDENT) {
@@ -50,6 +50,9 @@ module.exports = async (fastify, opts) => {
           }
         }
       ]
+    }
+    if (!query.limit) {
+      query.limit = 100
     }
 
     return await fastify.paginate(fastify.mongoose.Exam, query, baseAggregate)

@@ -49,6 +49,10 @@ module.exports = {
     isSuggestion: { type: Boolean },
     withoutRegistered: { type: Boolean },
     status: { type: Boolean, default: true },
+    competition: {
+      project: { type: String },
+      years: { type: Array }
+    },
     createdAt: {
       type: Number,
       default: moment().unix()

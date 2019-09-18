@@ -56,12 +56,18 @@ module.exports = {
         }
       ]
     },
-    // exams: [
-    //   {
-    //     type: "ObjectId",
-    //     ref: "Exam"
-    //   }
-    // ],
+    exams: [
+      {
+        status: {
+          type: Boolean,
+          default: true
+        },
+        addedAt: {
+          type: Number,
+          default: moment().unix()
+        }
+      }
+    ],
     code: {
       type: String
     },
