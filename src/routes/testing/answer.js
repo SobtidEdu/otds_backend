@@ -13,6 +13,9 @@ module.exports = async (fastify, opts) => {
     const { questionId, order, type, answer, note } = body
 
     const testing = await fastify.mongoose.Testing.findOne({ _id: params.testingId, userId: user._id })
+
+    if (!testing) fastify.httpErrors.notFound(`Not found testing id: ${params.testingId}`)
+
     const { progressTestings } = testing
 
     const progress = { questionId, order, type, answer, note }
