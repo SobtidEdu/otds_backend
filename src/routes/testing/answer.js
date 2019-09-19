@@ -10,12 +10,12 @@ module.exports = async (fastify, opts) => {
     ],
   }, async (request) => {
     const { user, body, params } = request
-    const { questionId, order, answer, note } = body
+    const { questionId, order, type, answer, note } = body
 
     const testing = await fastify.mongoose.Testing.findOne({ _id: params.testingId, userId: user._id })
     const { progressTestings } = testing
 
-    const progress = { questionId, order, answer, note }
+    const progress = { questionId, order, type, answer, note }
 
     const progressTestingIndex = progressTestings.findIndex(progressTesting => progressTesting.questionId === questionId)
     if (progressTestingIndex > -1) {

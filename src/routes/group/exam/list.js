@@ -33,23 +33,19 @@ module.exports = async function(fastify, opts, next) {
         fastify.authorize([ROLE.TEACHER, ROLE.SUPER_TEACHER, ROLE.ADMIN])
       ]
     }, async (request) => {
-      const { params, user } = request;
+      const { params, user } = request
 
       const [group, exams] = await Promise.all([
-        fastify.mongoose.Group.findOne({ _id: params.groupId }),
-        fastify.mongoose.Exam.find({ ownerId: user._id }),
+        fastify.mongoose.Group.findOne({ _id: params.groupId }).lean(),
+        fastify.mongoose.Exam.find({ owner: user._id }).lean(),
       ])
 
-      const examsNotInGroup = exams.filter(exam => {
-        
-        return group.exams.findIndex(groupExam => groupExam._id == exam._id) === -1
-      })
+      const examsNotInGroup = exams
+        .filter(exam => group.exams.findIndex(groupExam => groupExam._id.toString() == exam._id) === -1)
+        .map(exam => {
+          return Object.assign(exam, { questionCount: exam.questions.length })
+        })
 
       return examsNotInGroup
-      // const exams = await fastify.mongoose.Exam.find({ _id: { $in: examIdsArray } }).select('_id code name type status').lean()
-      // return exams.map(exam => {
-      //   const examInGroup = group.exams.find(examInGroup => examInGroup.status === exam.status)
-      //   return {...exam, statusInGroup: examInGroup.status, addedAt: examInGroup.addedAt}
-      // })
     })
 }
