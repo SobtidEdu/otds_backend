@@ -41,4 +41,5 @@ module.exports = async (fastify, options) => {
   fastify.register(listOfExam)
   fastify.register(require('./exam/add'))
   fastify.register(require('./exam/remove'))
+  fastify.register(require('./exam/update'))
 }
