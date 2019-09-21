@@ -38,7 +38,8 @@ module.exports = {
       default: moment().unix()
     },
     finishedAt: {
-      type: Number
+      type: Number,
+      default: null
     },
   },
 }

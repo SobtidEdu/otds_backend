@@ -22,6 +22,7 @@ module.exports = async (fastify, opts) => {
 
     const testingData = {
       userId: user._id, 
+      finishedAt: null,
       examId
     }
     if (groupId) {

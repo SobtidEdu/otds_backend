@@ -64,8 +64,7 @@ const checkCorrect = (questionType, originalAnswers, userAnswer) => {
       return true
     case 'TF': 
       for (let index in originalAnswers) {
-        let optionIndex = originalAnswers[index].answers.findIndex(answer => answer.seq == index+1)
-        console.log(optionIndex)
+        let optionIndex = originalAnswers[index].answers.findIndex(answer => answer.seq == userAnswer[index].key)
         if (optionIndex === -1 || originalAnswers[index].answers[optionIndex].key === false) {
           return false
         }
