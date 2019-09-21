@@ -49,7 +49,7 @@ module.exports = async (fastify) => {
           answers: subQuestion.ItemTFChoice_ItemTFSubquestion.ItemTFChoice.map(subAnswer => ({
             seq: subAnswer.ItemChoiceSeq,
             text: subAnswer.ItemChoice,
-            key: subAnswer.ItemChoiceKey
+            key: subAnswer.ItemChoiceKey === 'True'
           }))
         })) : []
       }))

@@ -12,6 +12,10 @@ module.exports = {
       type: "ObjectId",
       ref: "Exam"
     },
+    groupId: {
+      type: "ObjectId",
+      ref: "Group"
+    },
     userId: {
       type: "ObjectId",
       ref: "User"
@@ -19,14 +23,22 @@ module.exports = {
     progressTestings: [
       {
         questionId: { type: String },
-        answer: Schema.Types.Mixed,
         order: { type: Number },
+        answer: Schema.Types.Mixed,
+        isCorrect: { type: Boolean },
+        isMark: { type: Boolean },
         note: {
           text: { type: String },
           file: { type: String },
         }
       }
     ],
-    timeLeft: { type: Number }
+    startedAt: {
+      type: Number,
+      default: moment().unix()
+    },
+    finishedAt: {
+      type: Number
+    },
   },
 }
