@@ -35,24 +35,27 @@ module.exports = async (fastify) => {
         data.name = data.name + ` (ชุดที่ ${index+1})`
       }
       data.code = exams[i].TestSetID,
-      data.questions = exams[i].ResponseItemGroup_ResponseTestsetGroup.ResponseItemGroup.map(question => ({
-        seq: question.ItemSeq,
-        id: question.ItemID,
-        type: question.QuestionType,
-        text: question.ItemQuestion,
-        suggestedTime: parseFloat(question.SuggestedTime),
-        explanation: question.Explanation,
-        answers: question.QuestionType !== 'TF' ? transformAnswerByQuestionType(question) : [],
-        subQuestions: question.QuestionType === 'TF' ? question.ItemTFSubquestion_ResponseItemGroup.ItemTFSubquestion.map(subQuestion => ({
-          no: subQuestion.ItemNo,
-          text: subQuestion.ItemSubQuestion,
-          answers: subQuestion.ItemTFChoice_ItemTFSubquestion.ItemTFChoice.map(subAnswer => ({
-            seq: subAnswer.ItemChoiceSeq,
-            text: subAnswer.ItemChoice,
-            key: subAnswer.ItemChoiceKey
-          }))
-        })) : []
-      }))
+      data.questions = exams[i].ResponseItemGroup_ResponseTestsetGroup.ResponseItemGroup.map(question => {
+        console.log(question)
+        return {
+          seq: question.ItemSeq,
+          id: question.ItemID,
+          type: question.QuestionType,
+          text: question.ItemQuestion,
+          suggestedTime: parseFloat(question.SuggestedTime),
+          explanation: question.Explanation,
+          answers: question.QuestionType !== 'TF' ? transformAnswerByQuestionType(question) : [],
+          subQuestions: question.QuestionType === 'TF' ? question.ItemTFSubquestion_ResponseItemGroup.ItemTFSubquestion.map(subQuestion => ({
+            no: subQuestion.ItemNo,
+            text: subQuestion.ItemSubQuestion,
+            answers: subQuestion.ItemTFChoice_ItemTFSubquestion.ItemTFChoice.map(subAnswer => ({
+              seq: subAnswer.ItemChoiceSeq,
+              text: subAnswer.ItemChoice,
+              key: subAnswer.ItemChoiceKey
+            }))
+          })) : []
+        }
+      })
       
       if (i = 0) {
         firstExam = await fastify.mongoose.Exam.create(data)
