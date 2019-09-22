@@ -37,10 +37,6 @@ module.exports = async (fastify, opts) => {
 
     const testing = await fastify.mongoose.Testing.create(testingData)
 
-    return {
-      testingId: testing._id,
-      progressTestings: [],
-      questions
-    }
+    return testing
   })
 }
