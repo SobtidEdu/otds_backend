@@ -19,7 +19,7 @@ module.exports = async (fastify) => {
 
     try {
       const exam = await fastify.mongoose.Exam.findOne({ _id: params.examId }).select('-questions').lean()
-      exam.owner = await fastify.mongoose.User.findOne({ _id: exam.owner }).select('_id firstName lastName prefixName')
+      exam.owner = await fastify.mongoose.User.findOne({ _id: exam.owner }).select('_id firstName lastName prefixName, role')
       return exam
     } catch (e) {
       console.log(e)
