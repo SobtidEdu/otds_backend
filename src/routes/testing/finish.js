@@ -51,8 +51,8 @@ module.exports = async (fastify, opts) => {
 const checkCorrect = (questionType, originalAnswers, userAnswer) => {
   switch (questionType) {
     case 'MC':
-      const MCAnswer = originalAnswers.find(originalAnswer => originalAnswer.seq === userAnswer)
-      return MCAnswer ? answer.key : false
+      const MCAnswer = originalAnswers.find(originalAnswer => originalAnswer.seq == userAnswer)
+      return MCAnswer ? MCAnswer.key : false
     case 'SA':
       const SAAnswer = originalAnswers.find(originalAnswer => originalAnswer.key === userAnswer)
       return SAAnswer ? true : false
