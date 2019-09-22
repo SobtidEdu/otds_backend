@@ -3,24 +3,34 @@
 const moment = require('moment')
 
 module.exports = async (fastify, opts) => { 
-  fastify.get('/result', {
+  fastify.get('/:testingId/result', {
     preValidation:fastify.authenticate(),
   }, async (request) => {
-    let  { query } = request
-    const testingId = query.testingId
+    let  { params } = request
 
-    const testing = await fastify.mongoose.Testing.findOne({ _id: testingId })
+    const testing = await fastify.mongoose.Testing.findOne({ _id: params.testingId })
     if (!testing) throw fastify.httpErrors.notFound(`Not found testing id: ${testingId}`)
 
     let testingTime =  testing.finishedAt - testing.startedAt
     let score = testing.progressTestings.reduce((total, progressTesting) => total + (progressTesting.isCorrect ? 1 : 0), 0)
 
-    const examId = testing.examId
-    const userId = testing.userId
-    let listTestings = await fastify.mongoose.Testing.find({ examId: examId , userId: userId })
-    listTestings = listTestings.filter(listTesting => listTesting.finishedAt != null)
-    console.log(listTestings)
-    console.log(listTestings.length)
-    return {masseage: "test"}
+    const { userId, examId, startedAt, finishedAt } = testing
+    let listTestings = await fastify.mongoose.Testing.find({ examId, userId, finishedAt: { $ne: null } }).sort({ finishedAt: 'desc' }).lean()
+    let newScores = listTestings.map(testing => testing.progressTestings.reduce((total, progressTesting) => total + (progressTesting.isCorrect ? 1 : 0), 0))
+    let oldScores = newScores
+    if (listTestings.length > 1) {
+      listTestings.pop()
+      oldScores = listTestings.map(testing => testing.progressTestings.reduce((total, progressTesting) => total + (progressTesting.isCorrect ? 1 : 0), 0))
+    }
+
+    return {
+      score,
+      testingTime,
+      newAvg: newScores.reduce((total, score) => total + score, 0) / newScores.length,
+      oldAvg: oldScores.reduce((total, score) => total + score, 0) / oldScores.length,
+      time: listTestings.length,
+      startedAt,
+      finishedAt
+    }
   })
 }
