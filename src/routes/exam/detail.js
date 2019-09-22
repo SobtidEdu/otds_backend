@@ -15,14 +15,16 @@ module.exports = async (fastify) => {
     ]
   }, async (request) => {
     
-    const { user, params } = request
+    const { params } = request
 
     try {
-      const exam = await fastify.mongoose.Exam.findOne({ _id: params.examId }).select('-questions')
+      const exam = await fastify.mongoose.Exam.findOne({ _id: params.examId }).select('-questions').lean()
+      exam.owner = await fastify.mongoose.User.findOne({ _id: exam.owner }).select('_id firstName lastName prefixName')
       return exam
     } catch (e) {
+      console.log(e)
       if (e.kind === 'ObjectId') throw fastify.httpErrors.notFound(`Not found exam id ${params.examId}`)
+      throw fastify.httpErrors.internalServerError(`Something went wrong`)
     }
-
   })
 }
