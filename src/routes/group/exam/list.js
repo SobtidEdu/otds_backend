@@ -40,11 +40,13 @@ module.exports = async function(fastify, opts, next) {
         fastify.mongoose.Exam.find({ owner: user._id }).lean(),
       ])
 
-      const examsNotInGroup = group.exams ? exams
-        .filter(exam => group.exams.findIndex(groupExam => groupExam._id.toString() == exam._id) === -1)
-        .map(exam => {
-          return Object.assign(exam, { questionCount: exam.questions.length })
-        }) : []
+      let examsNotInGroup = exams.map(exam => {
+        return Object.assign(exam, { questionCount: exam.questions.length })
+      })
+
+      if (group.exams && group.exams.length > 1) {
+        examsNotInGroup = examsNotInGroup.filter(exam => group.exams.findIndex(groupExam => groupExam._id.toString() == exam._id) === -1)
+      }
 
       return examsNotInGroup
     })
