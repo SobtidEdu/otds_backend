@@ -40,7 +40,6 @@ module.exports = async function(fastify, opts, next) {
         fastify.mongoose.Exam.find({ owner: user._id }).lean(),
       ])
 
-      console.log(group)
       const examsNotInGroup = group.exams ? exams
         .filter(exam => group.exams.findIndex(groupExam => groupExam._id.toString() == exam._id) === -1)
         .map(exam => {
