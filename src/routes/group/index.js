@@ -31,6 +31,7 @@ module.exports = async (fastify, options) => {
   fastify.register(listOfRequestor)
   fastify.register(listOfStudent)
   fastify.register(require('./student/list-left-student'))
+  fastify.register(require('./student/remove-student-from-left'))
   fastify.register(studentRequestToJoinGroup)
   fastify.register(studentCancelToJoinGroup)
   fastify.register(approveStudentToJoinGroup)
