@@ -1,8 +1,6 @@
 'use strict'
 
-const mongoose = require('mongoose');
 const moment = require('moment');
-const generator = require('rand-token').generator({ chars: '0-9' })
 
 
 module.exports = {
@@ -18,44 +16,30 @@ module.exports = {
       type: "ObjectId",
       ref: "User"
     },
-    students: {
-      requestToJoin: [
-        {
-          userInfo: {
-            type: "ObjectId",
-            ref: "User"
-          },
-          requestedDate: {
-            type: Number,
-            default: moment().unix()
-          }
+    students: [
+      {
+        userInfo: {
+          type: "ObjectId",
+          ref: "User"
+        },
+        status: {
+          type: String,
+          
+        },
+        requestedDate: {
+          type: Number,
+          default: moment().unix()
+        },
+        jointDate: {
+          type: Number,
+          default: moment().unix()
+        },
+        leftDate: {
+          type: Number,
+          default: moment().unix()
         }
-      ],
-      inGroup: [
-        {
-          userInfo: {
-            type: "ObjectId",
-            ref: "User"
-          },
-          jointDate: {
-            type: Number,
-            default: moment().unix()
-          }
-        }
-      ],
-      hasLeft: [
-        {
-          userInfo: {
-            type: "ObjectId",
-            ref: "User"
-          },
-          leftDate: {
-            type: Number,
-            default: moment().unix()
-          }
-        }
-      ]
-    },
+      }
+    ],
     exams: [
       {
         status: {

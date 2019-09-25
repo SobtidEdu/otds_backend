@@ -1,5 +1,6 @@
 require('module-alias/register')
 require('dotenv').config()
+const Sentry = require('@sentry/node');
 const qs = require('qs')
 const fileUpload = require('fastify-file-upload')
 const moment = require('moment')
@@ -62,8 +63,12 @@ fastify.register(require('fastify-static'), {
   prefix: '/storage/'
 })
 fastify.register(require('fastify-rate-limit'), {
-  max: 60,
+  max: 300,
   timeWindow: '1 minute'
+})
+Sentry.init({ 
+  dsn: process.env.SENTRY_URL,
+  environment: process.env.APP_ENV
 })
 
 /*****
@@ -107,7 +112,7 @@ fastify.register(
 fastify.register(require('./src/routes'), { prefix: '/api' })
 
 fastify.setErrorHandler(async (error, request, reply) => {
-  console.log(error)
+  // console.log(error)
   const errorResponse = { message: error.message, errors: {}, timestamp: moment().unix() }
   
   if (error.errors) {
@@ -122,6 +127,10 @@ fastify.setErrorHandler(async (error, request, reply) => {
 
   if (reply.res.statusCode === 403) {
     errorResponse.message = 'ไม่อนุญาตให้เข้าใช้บริการนี้'
+  }
+
+  if (reply.res.statusCode === 500) {
+    Sentry.captureException(error)
   }
 
   return errorResponse

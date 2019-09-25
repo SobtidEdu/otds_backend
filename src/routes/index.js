@@ -48,30 +48,6 @@ module.exports = async (fastify, options) => {
       }
 
     }
-    //     console.log(validate.errors)
-    //   } catch (e) {
-    //     console.log(e)
-    //     messageTemp = schema[context].message
-        
-    //     e.errors = e.errors.map(error => {
-    //       let item = { keyword: error.keyword }
-
-    //       if (error.keyword === 'required') {
-    //         item.property = error.params.missingProperty
-    //       } else {
-    //         item.property = error.dataPath.substring(1)
-    //       }
-    //       console.log(item)
-    //       item.message = messageTemp[item.property][item.keyword] || error.message
-
-    //       return item
-    //     })
-
-    //     throw e
-    //   }
-    // }
-    
-    // return;
   })
 
   fastify.register(require('./auth'), { prefix: 'auth' })

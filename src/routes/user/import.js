@@ -53,14 +53,14 @@ module.exports = async (fastify, opts) => {
         if (await fastify.mongoose.User.findOne({ username: user[3] })) return fastify.httpErrors.badRequest(`มีข้อมูลซ้ำในระบบ [${user[3]}] แถวที่ ${i+1}`)
       }
 
-      user[6] = _.trimStart(user[6], 'โรงเรียน')
+      user[5] = _.trimStart(user[5], 'โรงเรียน')
 
-      const school = await fastify.mongoose.School.findOne({ name: user[6] })
-      if (!school) return fastify.httpErrors.badRequest(`ไม่พบโรงเรียน '${user[6]}' แถวที่ [${i+1}]`)
+      const school = await fastify.mongoose.School.findOne({ name: user[5] })
+      if (!school) return fastify.httpErrors.badRequest(`ไม่พบโรงเรียน '${user[5]}' แถวที่ [${i+1}]`)
       
       let schoolCreate = {
         name: {
-          text: user[6],
+          text: user[5],
           isModified: false
         },
         province: {
@@ -107,8 +107,8 @@ module.exports = async (fastify, opts) => {
       }
 
       const salt = 10;
-      const hashed = bcrypt.hashSync(user[8], salt)
-      user[8] = {
+      const hashed = bcrypt.hashSync(user[6], salt)
+      user[6] = {
         hashed,
         algo: 'bcrypt'
       }
@@ -119,9 +119,8 @@ module.exports = async (fastify, opts) => {
         lastName: user[2],
         username: user[3],
         email: user[4],
-        gender: user[5],
-        password: user[8],
-        role: user[9],
+        password: user[6],
+        role: user[7],
         school: schoolCreate,
         isActive: true,
         isConfirmationEmail: true,

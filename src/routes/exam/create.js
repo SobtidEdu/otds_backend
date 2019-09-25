@@ -2,7 +2,6 @@
 
 const { ROLE } = require('@config/user')
 const { CRITERION, EXAM_TYPE, LEVEL } = require('@config/exam')
-const moment = require('moment')
 
 module.exports = async (fastify) => { 
 
@@ -29,6 +28,7 @@ module.exports = async (fastify) => {
     } else if (body.type == EXAM_TYPE.CAT) {
       return fastify.mongoose.Exam.create(body)
     }
+    
     for (let i in exams) {
       let data = body
       if (data.examSetTotal > 1) {

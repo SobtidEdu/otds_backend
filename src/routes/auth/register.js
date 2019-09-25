@@ -17,15 +17,20 @@ module.exports = async (fastify, opts) => {
           role: { type: 'string', enum: [ ROLE.STUDENT, ROLE.TEACHER ] },
           email: { 
             type: 'string',
-            format: 'email',
             isExist: { prop: 'email', collection: 'users' } 
+          },
+          username: { 
+            type: 'string',
+            isExist: { prop: 'username', collection: 'users' } 
           }
         },
-        required: ['email', 'password'],
+        required: ['password'],
       },
       message: {
+        username: {
+          isExist: 'มีชื่อผู้ใช่งานอยู่ในระบบแล้ว'
+        },
         email: {
-          required: 'กรุณากรอกอีเมล',
           format: 'อีเมลไม่ถูกต้อง',
           isExist: 'อีเมลนี้มีอยู่ในระบบแล้ว'
         },
@@ -79,18 +84,18 @@ module.exports = async (fastify, opts) => {
     const html = await fastify.htmlTemplate.getConfirmationRegisterTemplate(body)
 
     user = Object.assign(user, body)
+    await user.save()
     
-    await Promise.all([
-      user.save(),
-      fastify.nodemailer.sendMail({
+    if (body.email) {
+      await fastify.nodemailer.sendMail({
         from: fastify.env.EMAIL_FROM,
         to: body.email,
         subject: 'ยืนยันการลงทะเบียน OTDS',
         html
       })
-    ])
+    }
     
-    return { message: 'กรุณาเช็คกล่อง email และยืนยันการลงทะเบียน' }
+    return { message: 'Register success' }
   })
 
   fastify.post('/confirm-email', async (request, reply) => {

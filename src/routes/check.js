@@ -12,4 +12,17 @@ module.exports = async (fastify, options) => {
     
     return { result }
   })
+
+  fastify.get('/is-username-exist/:username', async (request, reply) => {
+    const { username } = request.params
+
+    const count = await fastify.mongoose.User.count({ username: username.toLowerCase() })
+    let result = false
+    
+    if (count > 0) {
+      result = true
+    }
+    
+    return { result }
+  })
 }

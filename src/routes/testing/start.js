@@ -1,4 +1,5 @@
 'use strict' 
+const moment = require('moment')
 
 module.exports = async (fastify, opts) => { 
   const schema = {}
@@ -35,7 +36,7 @@ module.exports = async (fastify, opts) => {
       return { ...testingExist, questions }
     }
 
-    const testing = await fastify.mongoose.Testing.create(testingData)
+    const testing = await fastify.mongoose.Testing.create(Object.assign(testingData, { startedAt: moment().unix() }))
 
     return testing
   })

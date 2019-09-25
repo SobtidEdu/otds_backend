@@ -13,6 +13,6 @@ exports.EXAM_TYPE = {
 
 exports.LEVEL = {
   EASY: 'ง่าย',
-  NORMAL: 'กลาง',
+  NORMAL: 'ปานกลาง',
   HARD: 'ยาก'
 }
