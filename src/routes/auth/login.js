@@ -23,7 +23,7 @@ module.exports = async (fastify, opts) => {
 
     if (user.isBanned) throw fastify.httpErrors.badRequest('ผู้ใช้บัญชีนี้ถูกระงับการใช้งาน กรุกณาติดต่อผู้ดูแลระบบ')
 
-    const { _id, role, prefixName, firstName, lastName, profileImage, email } = user.toObject()
+    const { _id, role, prefixName, firstName, lastName, profileImage } = user.toObject()
 
     const [token] = await Promise.all([
       fastify.jwt.sign({ _id }),
