@@ -28,16 +28,25 @@ module.exports = async function(fastify, opts, next) {
           }
         },
         {
+          $lookup: {
+            from: 'users', 
+            localField: 'students.hasLeft.userInfo', 
+            foreignField: '_id', 
+            as: 'student' } 
+        },
+        {
           $project: {
             'student.profileImage': 1,
             'student._id': 1,
             'student.firstName': 1,
             'student.lastName': 1,
             'student.school': 1,
-            'students.inGroup.jointDate': 1
+            'students.inGroup.jointDate': 1,
+            'students.hasLeft.leftDate': 1
           }
         }
       ]
+
       const results = await fastify.paginate(fastify.mongoose.Group, query, baseAggregateOptions)
 
       results.items = results.items.map(item => ({
@@ -45,7 +54,8 @@ module.exports = async function(fastify, opts, next) {
           studentId: item.student[0]._id,
           studentName: `${item.student[0].firstName} ${item.student[0].lastName}`,
           schoolName: item.student[0].school.name.text,
-          jointDate: item.students.inGroup.jointDate
+          jointDate: item.students.inGroup.jointDate,
+          leftDate: item.students.hasLeft.leftDate
       }))
 
       return results
