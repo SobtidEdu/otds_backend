@@ -1,4 +1,5 @@
 const fp = require('fastify-plugin')
+const { ROLE } = require('@config/user')
 
 module.exports = fp( async (fastify, options) => {
   fastify.decorate('authenticate', (options = { allowGuest: false }) => {
@@ -18,7 +19,7 @@ module.exports = fp( async (fastify, options) => {
     
       const { isConfirmationEmail, isLoggedOut, isBanned } = user
 
-      if ( !isConfirmationEmail || isLoggedOut || isBanned ) throw fastify.httpErrors.unauthorized()
+      if ( (!isConfirmationEmail && user.role === ROLE.TEACHER) || isLoggedOut || isBanned ) throw fastify.httpErrors.unauthorized()
 
       return request.user = user
     }

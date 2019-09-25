@@ -9,8 +9,7 @@ module.exports = async function(fastify, opts, next) {
     fastify.get('/:groupId/exams', {
       preValidation: [
         (request) => fastify.validate(schema, request),
-        fastify.authenticate(),
-        fastify.authorize([ROLE.TEACHER, ROLE.SUPER_TEACHER, ROLE.ADMIN])
+        fastify.authenticate()
       ]
     }, async (request) => {
   
@@ -29,8 +28,7 @@ module.exports = async function(fastify, opts, next) {
     fastify.get('/:groupId/!exams', {
       preValidation: [
         (request) => fastify.validate(schema, request),
-        fastify.authenticate(),
-        fastify.authorize([ROLE.TEACHER, ROLE.SUPER_TEACHER, ROLE.ADMIN])
+        fastify.authenticate()
       ]
     }, async (request) => {
       const { params, user } = request

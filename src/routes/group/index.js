@@ -7,8 +7,6 @@ const groupCreate = require('./create')
 const groupUpdate = require('./update')
 const groupDelete = require('./delete')
 
-const listOfRequestor = require('./student/list-requestor')
-const listOfStudent = require('./student/list-student')
 const studentRequestToJoinGroup = require('./student/request-join')
 const studentCancelToJoinGroup = require('./student/cancel')
 const approveStudentToJoinGroup = require('./student/approve')
@@ -28,8 +26,7 @@ module.exports = async (fastify, options) => {
   fastify.register(groupDelete)
 
   // STUDENT ZONE //
-  fastify.register(listOfRequestor)
-  fastify.register(listOfStudent)
+  fastify.register(require('./student/list'))
   fastify.register(require('./student/list-left-student'))
   fastify.register(require('./student/remove-student-from-left'))
   fastify.register(studentRequestToJoinGroup)
