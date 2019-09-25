@@ -26,6 +26,7 @@ module.exports = async (fastify, options) => {
   fastify.register(groupDelete)
 
   // STUDENT ZONE //
+  fastify.register(require('./student/list-requestor'))
   fastify.register(require('./student/list'))
   fastify.register(require('./student/list-left-student'))
   fastify.register(require('./student/remove-student-from-left'))
