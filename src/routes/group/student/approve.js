@@ -1,6 +1,7 @@
 'use strict' 
 const  moment = require('moment')
-const { ROLE, GROUP_STAUS } = require('@config/user')
+const { ROLE, GROUP_STATUS } = require('@config/user')
+const { STUDENT_STATUS } = require('@config/group')
 
 module.exports = async function(fastify, opts, next) { 
     const schema = {}
@@ -19,30 +20,23 @@ module.exports = async function(fastify, opts, next) {
       const group = await fastify.mongoose.Group.findOne({ _id: params.groupId }).select('students')
       if (!group) throw  fastify.httpErrors.notFound(fastify.message('group.notFound'))
 
-      const { requestToJoin, inGroup } = group.students
-
-      if (inGroup.filter(student => studentIds.includes(student.userInfo.toString())).length > 0) {
-        throw fastify.httpErrors.badRequest('มีจำนวนนักเรียนอย่างน้อย 1 คนอยู่ในระบบแล้ว')
-      }
-
-      studentIds.forEach(studentId => {
-        if (requestToJoin.findIndex(student => student.userInfo == studentId) == -1) {
-          throw fastify.httpErrors.badRequest('มีจำนวนนักเรียนอย่างน้อย 1 คนยังไม่ได้ทำการขอเข้าร่วม')
-        }
-      })
-      
-      const requestors = studentIds.map(student => ({ userInfo: student }))
-
       await Promise.all([
-        fastify.mongoose.Group.updateOne({_id: group._id}, { $pull: { 'students.requestToJoin': { userInfo: {$in: studentIds } } }}),
-        fastify.mongoose.Group.updateOne({_id: group._id}, { $push: { 'students.inGroup': requestors } }),
+        fastify.mongoose.Group.updateOne({
+          _id: group._id,
+          students: { $elemMatch: { userInfo: { $in: studentIds } } }
+        }, { 
+          $set: { 
+            'students.$[elem].status': STUDENT_STATUS.JOIN, 
+            'students.$[elem].jointDate': moment().unix() 
+          } 
+        }),
         fastify.mongoose.User.updateMany({
           _id: { $in: studentIds },
-          groups: { $elemMatch: { info: group._id, status: GROUP_STAUS.REQUEST } }
+          groups: { $elemMatch: { info: group._id, status: GROUP_STATUS.REQUEST } }
         }, { 
           $set: { 
             'groups.$.joinAt': moment().unix(), 
-            'groups.$.status': GROUP_STAUS.JOIN 
+            'groups.$.status': GROUP_STATUS.JOIN 
           } 
         })
       ])

@@ -1,7 +1,7 @@
 'use strict' 
 
 const { Types } = require('mongoose')
-const { ROLE, GROUP_STAUS } = require('@config/user')
+const { ROLE, GROUP_STATUS } = require('@config/user')
 
 module.exports = async function(fastify, opts, next) { 
     const schema = {}

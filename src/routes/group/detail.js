@@ -1,6 +1,6 @@
 'use strict'
 
-const { GROUP_STATUS } = require('@config/group')
+const { STUDENT_STATUS } = require('@config/group')
 
 module.exports = async (fastify, options) => {
 
@@ -18,11 +18,11 @@ module.exports = async (fastify, options) => {
 
     const myGroup = user.groups.toObject().find(myGroup => myGroup.info.toString() === group._id.toString())
 
-    const groupDetail = { 
+    const groupDetail = {
       logo: fastify.storage.getUrlGroupLogo(group.logo),
       name: group.name,
       code: group.code,
-      studentCount: group.students.filter(student => student.status === GROUP_STATUS.ACTIVE).length,
+      studentCount: group.students.filter(student => student.status === STUDENT_STATUS.REQUEST).length,
       createdAt: group.createdAt,
       status: myGroup ? myGroup.status : 'none'
     }

@@ -11,14 +11,14 @@ module.exports = async function(fastify, opts) {
       fastify.authorize([ROLE.TEACHER, ROLE.SUPER_TEACHER, ROLE.ADMIN])
     ]
   }, async (request, reply) => {
-    const { user, params } = request
+    const { user, params, body } = request
 
+    const { studentIds } = body
+    
     const group = await fastify.mongoose.Group.findOne({ _id: params.groupId }).select('students')
     if (!group) throw  fastify.httpErrors.notFound(fastify.message('group.notFound'))
 
-    await Promise.all([
-      fastify.mongoose.Group.updateOne({_id: group._id}, { $pull: { 'students.hasLeft': student } })
-    ])
+    await fastify.mongoose.Group.updateOne({_id: group._id}, { $pull: { 'students' : { userInfo: { $in: studentIds } } } })
 
     return { message: 'remove student from group' }
   })

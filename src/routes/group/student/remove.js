@@ -20,7 +20,7 @@ module.exports = async (fastify, opts, next) => {
     if (!group) throw  fastify.httpErrors.notFound(fastify.message('group.notFound'))
 
     await Promise.all([
-      fastify.mongoose.Group.updateOne({_id: group._id}, { $pull: { 'students.inGroup' : { userInfo: { $in: studentIds } } } }),
+      fastify.mongoose.Group.updateOne({_id: group._id}, { $pull: { 'students' : { userInfo: { $in: studentIds } } } }),
       fastify.mongoose.User.updateMany({ _id: { $in: studentIds } }, { $pull: { groups : { info: group._id } } })
     ])
 

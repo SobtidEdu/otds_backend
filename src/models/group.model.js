@@ -28,15 +28,15 @@ module.exports = {
         },
         requestedDate: {
           type: Number,
-          default: moment().unix()
+          default: null
         },
         jointDate: {
           type: Number,
-          default: moment().unix()
+          default: null
         },
         leftDate: {
           type: Number,
-          default: moment().unix()
+          default: null
         }
       }
     ],

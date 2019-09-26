@@ -10,7 +10,7 @@ exports.ROLE = {
   ADMIN: 'admin'
 }
 
-exports.GROUP_STAUS = {
+exports.GROUP_STATUS = {
   OWNER: 'owner',
   REQUEST: 'request',
   JOIN: 'join'

@@ -1,7 +1,7 @@
 'use strict'
 
 const moment = require('moment');
-const { GENDER, ROLE, USERGROUP_STAUS } = require('@root/config')
+const { GENDER, ROLE, GROUP_STATUS } = require('@config/user')
 
 module.exports = {
   name: 'users',
@@ -123,7 +123,7 @@ module.exports = {
         },
         status: {
           type: String, 
-          enum: Object.values(USERGROUP_STAUS)
+          enum: Object.values(GROUP_STATUS)
         }
       }
     ],

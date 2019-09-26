@@ -1,6 +1,8 @@
 'use strict' 
 
 const { ROLE } = require('@config/user')
+const { STUDENT_STATUS } = require('@config/group')
+const moment = require('moment')
 
 module.exports = async function(fastify, opts, next) { 
   const schema = {}
@@ -25,8 +27,15 @@ module.exports = async function(fastify, opts, next) {
     const student = { userInfo: user._id }
 
     await Promise.all([
-      fastify.mongoose.Group.updateOne({_id: group._id}, { $pull: { 'students.inGroup': student } }),
-      fastify.mongoose.Group.updateOne({_id: group._id}, { $push: { 'students.hasLeft': student } }),
+      fastify.mongoose.Group.updateOne({
+        _id: group._id,
+        students: { $elemMatch: { userInfo: { $in: studentIds } } }
+      }, { 
+        $set: { 
+          'students.$[elem].status': STUDENT_STATUS.LEFT, 
+          'students.$[elem].leftDate': moment().unix() 
+        } 
+      }),
       fastify.mongoose.User.updateOne({_id: user._id}, { $pull: { groups: { info: group._id } } })
     ])
 

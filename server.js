@@ -66,10 +66,13 @@ fastify.register(require('fastify-rate-limit'), {
   max: 300,
   timeWindow: '1 minute'
 })
-Sentry.init({ 
-  dsn: process.env.SENTRY_URL,
-  environment: process.env.APP_ENV
-})
+
+if (process.env.APP_ENV !== 'local') {
+  Sentry.init({ 
+    dsn: process.env.SENTRY_URL,
+    environment: process.env.APP_ENV
+  })
+}
 
 /*****
  * Internal Plugin
@@ -112,7 +115,7 @@ fastify.register(
 fastify.register(require('./src/routes'), { prefix: '/api' })
 
 fastify.setErrorHandler(async (error, request, reply) => {
-  // console.log(error)
+  console.log(error)
   const errorResponse = { message: error.message, errors: {}, timestamp: moment().unix() }
   
   if (error.errors) {

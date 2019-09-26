@@ -1,6 +1,7 @@
 'use strict'
 
-const { ROLE, GROUP_STAUS } = require('@config/user')
+const { ROLE, GROUP_STATUS } = require('@config/user')
+const { STUDENT_STATUS } = require('@config/group')
 
 module.exports = async (fastify, options) => {
 
@@ -58,8 +59,16 @@ module.exports = async (fastify, options) => {
         { 
           $match: {
             $or: [
-              { 'students.requestToJoin': {$elemMatch: { userInfo: user._id } } },
-              { 'students.inGroup': {$elemMatch: { userInfo: user._id } } }
+              { 
+                'students': {
+                  $elemMatch: { 
+                    userInfo: user._id,
+                    status: { 
+                      $in: [ STUDENT_STATUS.REQUEST, STUDENT_STATUS.JOIN ] 
+                    }
+                  } 
+                } 
+              }
             ]
           }
         },
@@ -79,7 +88,8 @@ module.exports = async (fastify, options) => {
             code: 1,
             logo: 1,
             ownerName: { $concat: [ "$owner.firstName", " ", "$owner.lastName"] },
-            status: 1,
+            'students.status': 1,
+            'students.jointDate': 1,
             createdAt: 1
           }
         },
@@ -88,14 +98,16 @@ module.exports = async (fastify, options) => {
       const myGroups = user.groups.toObject()
 
       const groups = await fastify.paginate(fastify.mongoose.Group, query, baseOptions)
-
-      groups.items =  groups.items.map((group) => {
-        const myGroup = myGroups.find(myGroup => myGroup.info.toString() === group._id.toString())
-        group.status = myGroup.status
-        if (group.status === GROUP_STAUS.JOIN ) group.joinAt = myGroup.joinAt
-        group.logo = fastify.storage.getUrlGroupLogo(group.logo)
-        return group
-      })
+      // return groups
+      groups.items =  groups.items.map((group) => ({
+        _id: group._id,
+        createdAt: group.createdAt,
+        name: group.name,
+        code: group.code,
+        status: group.students[0].status,
+        jointDate: group.students[0].jointDate,
+        ownerName: group.ownerName
+      }))
 
       return groups 
     } else {
