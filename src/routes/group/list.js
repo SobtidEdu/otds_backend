@@ -101,7 +101,7 @@ module.exports = async (fastify, options) => {
       // return groups
       groups.items =  groups.items.map((group) => ({
         _id: group._id,
-        logo: fastify.storage.getUrlProfileImage(group.logo),
+        logo: fastify.storage.getUrlGroupLogo(group.logo),
         createdAt: group.createdAt,
         name: group.name,
         code: group.code,
