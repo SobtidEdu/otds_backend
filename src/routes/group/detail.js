@@ -11,7 +11,7 @@ module.exports = async (fastify, options) => {
       (request) => fastify.validate(schema.create, request),
       fastify.authenticate()
     ]
-  }, async (request, reply) => {
+  }, async (request) => {
     const { user, params } = request
 
     const group = await fastify.mongoose.Group.findOne({ _id: params.id })
@@ -22,7 +22,7 @@ module.exports = async (fastify, options) => {
       logo: fastify.storage.getUrlGroupLogo(group.logo),
       name: group.name,
       code: group.code,
-      studentCount: group.students.filter(student => student.status === STUDENT_STATUS.REQUEST).length,
+      studentCount: group.students.filter(student => student.status === STUDENT_STATUS.JOIN).length,
       createdAt: group.createdAt,
       status: myGroup ? myGroup.status : 'none'
     }

@@ -95,8 +95,6 @@ module.exports = async (fastify, options) => {
         },
       ]
 
-      const myGroups = user.groups.toObject()
-
       const groups = await fastify.paginate(fastify.mongoose.Group, query, baseOptions)
       // return groups
       groups.items =  groups.items.map((group) => ({
