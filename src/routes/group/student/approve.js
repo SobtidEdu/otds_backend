@@ -26,8 +26,8 @@ module.exports = async function(fastify, opts, next) {
           students: { $elemMatch: { userInfo: { $in: studentIds } } }
         }, { 
           $set: { 
-            'students.$[elem].status': STUDENT_STATUS.JOIN, 
-            'students.$[elem].jointDate': moment().unix() 
+            'students.$.status': STUDENT_STATUS.JOIN, 
+            'students.$.jointDate': moment().unix() 
           } 
         }),
         fastify.mongoose.User.updateMany({
