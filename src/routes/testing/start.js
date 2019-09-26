@@ -38,6 +38,6 @@ module.exports = async (fastify, opts) => {
 
     const testing = await fastify.mongoose.Testing.create(Object.assign(testingData, { startedAt: moment().unix() }))
 
-    return Object.assign(testing, { questions })
+    return { ...testing.toObject(), questions }
   })
 }
