@@ -118,7 +118,7 @@ module.exports = async (fastify, options) => {
             name: 1,
             code: 1,
             owner: 1,
-            studentCount: { $size: "$students.inGroup" },
+            'students.status': 1,
             logo: 1,
             createdAt: 1
           }
@@ -129,6 +129,8 @@ module.exports = async (fastify, options) => {
       
       groups.items =  groups.items.map((group) => {
         group.logo = fastify.storage.getUrlGroupLogo(group.logo)
+        group.studentCount = group.students.reduce((total, student) => total + (student.status === 'join' ? 1 : 0), 0)
+        delete group.students
         return group
       })
 

@@ -16,7 +16,7 @@ module.exports = async (fastify, opts, next) => {
 
     const { studentIds } = body
 
-    const group = await fastify.mongoose.Group.findOne({ _id: params.groupId }).select('students')
+    const group = await fastify.mongoose.Group.findOne({ _id: params.groupId })
     if (!group) throw  fastify.httpErrors.notFound(fastify.message('group.notFound'))
 
     await Promise.all([
