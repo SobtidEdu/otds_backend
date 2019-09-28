@@ -15,11 +15,21 @@ module.exports = async (fastify) => {
     ]
   }, async (request) => {
     
-    const { params } = request
+    const { params, query } = request
 
     try {
-      const exam = await fastify.mongoose.Exam.findOne({ _id: params.examId }).select('-questions').lean()
-      exam.owner = await fastify.mongoose.User.findOne({ _id: exam.owner }).select('_id firstName lastName prefixName, role')
+      let exam = {}
+      
+      if (query.searchType && query.searchType === 'code') {
+        exam = await fastify.mongoose.Exam.findOne({ code: params.examId }).select('-questions').lean()
+        if (!exam) {
+          throw fastify.httpErrors.notFound(`Not found exam id ${params.examId}`)
+        }
+      } else {
+        exam = await fastify.mongoose.Exam.findOne({ _id: params.examId }).select('-questions').lean()
+        exam.owner = await fastify.mongoose.User.findOne({ _id: exam.owner }).select('_id firstName lastName prefixName, role')
+      }
+
       return exam
     } catch (e) {
       console.log(e)
