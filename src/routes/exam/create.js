@@ -32,7 +32,7 @@ module.exports = async (fastify) => {
     for (let i in exams) {
       let data = body
       if (data.examSetTotal > 1) {
-        data.name = data.name + ` (ชุดที่ ${index+1})`
+        data.name = data.name + ` (ชุดที่ ${i+1})`
       }
       data.code = exams[i].TestSetID,
       data.questions = exams[i].ResponseItemGroup_ResponseTestsetGroup.ResponseItemGroup.map(question => ({
