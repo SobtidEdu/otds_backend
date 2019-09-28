@@ -26,11 +26,14 @@ module.exports = async (fastify, opts) => {
       finishedAt: null,
       examId
     }
+
+    const finder = testingData
+
     if (groupId) {
       finder.groupId = groupId
     }
 
-    const testingExist = await fastify.mongoose.Testing.findOne(testingData).lean()
+    const testingExist = await fastify.mongoose.Testing.findOne(finder).lean()
 
     if (testingExist) {
       return { ...testingExist, questions }

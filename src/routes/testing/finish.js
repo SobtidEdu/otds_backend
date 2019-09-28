@@ -54,7 +54,11 @@ const checkCorrect = (questionType, originalAnswers, userAnswer) => {
       const MCAnswer = originalAnswers.find(originalAnswer => originalAnswer.seq == userAnswer)
       return MCAnswer ? MCAnswer.key : false
     case 'SA':
-      const SAAnswer = originalAnswers.find(originalAnswer => originalAnswer.key === userAnswer)
+      const SAAnswer = originalAnswers.find(originalAnswer => {
+        originalAnswer = originalAnswer.replace('<p>', '')
+        originalAnswer = originalAnswer.replace('</p>', '')
+        return originalAnswer.key === userAnswer
+      })
       return SAAnswer ? true : false
     case 'MA':
       for (let originalAnswer of originalAnswers.left) {
