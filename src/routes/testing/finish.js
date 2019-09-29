@@ -49,14 +49,16 @@ module.exports = async (fastify, opts) => {
 }
 
 const checkCorrect = (questionType, originalAnswers, userAnswer) => {
+  if (!userAnswer) return false
   switch (questionType) {
     case 'MC':
       const MCAnswer = originalAnswers.find(originalAnswer => originalAnswer.seq == userAnswer)
       return MCAnswer ? MCAnswer.key : false
     case 'SA':
       const SAAnswer = originalAnswers.find(originalAnswer => {
-        originalAnswer = originalAnswer.replace('<p>', '')
-        originalAnswer = originalAnswer.replace('</p>', '')
+        console.log(originalAnswer)
+        originalAnswer.key = originalAnswer.key.replace('<p>', '')
+        originalAnswer.key = originalAnswer.key.replace('</p>', '')
         return originalAnswer.key === userAnswer
       })
       return SAAnswer ? true : false

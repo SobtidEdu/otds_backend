@@ -5,17 +5,17 @@ const { TESTING_UPLOAD_PATH } = require('@config/storage')
 module.exports = async (fastify, opts) => { 
   const schema = {}
 
-  fastify.post('/:testingId/upload', {
+  fastify.post('/:testingId/question/:questionId/upload', {
     preValidation: [
       (request) => fastify.validate(schema, request),
       fastify.authenticate()
     ],
   }, async (request) => {
     const { user, body, params } = request
-    const { questionId } = body
     const { noteFile } = request.raw.files
 
-    const fileName = `${params.testingId}_${questionId}`
+    const extension = noteFile.mimetype.split('/')[1]
+    const fileName = `${params.testingId}_${params.questionId}.${extension}`
     
     const pathFileName = `${TESTING_UPLOAD_PATH}/${fileName}`
     

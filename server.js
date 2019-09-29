@@ -56,7 +56,7 @@ fastify.register(require('fastify-nodemailer'), {
 fastify.register(require('fastify-cors'), { 
   origin: true,
   methods: ['GET', 'POST', 'PATCH', 'PUT', 'DELETE', 'OPTIONS'],
-  allowedHeaders: ['Content-Type', 'Authorization']
+  allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With']
 })
 fastify.register(require('fastify-static'), {
   root: path.join(__dirname, 'storage'),

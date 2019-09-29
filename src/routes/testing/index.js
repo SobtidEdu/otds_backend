@@ -7,4 +7,5 @@ module.exports = async (fastity, opts) => {
   fastity.register(require('./mark'))
   fastity.register(require('./finish'))
   fastity.register(require('./result'))
+  fastity.register(require('./upload'))
 }

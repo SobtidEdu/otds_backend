@@ -27,7 +27,11 @@ module.exports = async (fastify) => {
         }
       } else {
         exam = await fastify.mongoose.Exam.findOne({ _id: params.examId }).select('-questions').lean()
+        if (!exam) {
+          throw fastify.httpErrors.notFound(`ไม่พบชุดข้อสอบ`)
+        }
         exam.owner = await fastify.mongoose.User.findOne({ _id: exam.owner }).select('_id firstName lastName prefixName, role')
+        exam.isContinueTesting = await fastify.mongoose.Testing.count({ examId: exam._id, finishedAt: null })
       }
 
       return exam
