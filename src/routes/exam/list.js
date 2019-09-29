@@ -47,18 +47,8 @@ module.exports = async (fastify, opts) => {
             as: 'latestTesting'
           }
         },
-        // {
-        //   $replaceRoot: { 
-        //     newRoot: { 
-        //       $mergeObjects: [ 
-        //         { $arrayElemAt: [ "$latestTesting", 0 ] },
-        //         "$$ROOT"
-        //       ]
-        //     }
-        //   }
-        // },
         { $unwind: "$owner" },
-        { $unwind: "$latestTesting" },
+        { $unwind: { path: "$latestTesting", "preserveNullAndEmptyArrays": true } },
         {
           $project: { 
             _id: 1,
