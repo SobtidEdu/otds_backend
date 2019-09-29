@@ -19,12 +19,59 @@ module.exports = async (fastify, opts) => {
             owner: user._id
           }
         },
+        { 
+          $lookup: {
+            from: 'users',
+            localField: 'owner',
+            foreignField: '_id',
+            as: 'owner'
+          }
+        },
+        { 
+          $lookup: {
+            from: 'testings',
+            let: { id: '$_id' },
+            pipeline: [
+              { 
+                $match: {
+                  $expr: {
+                    $and: [
+                      { $eq: ['$examId', '$$id'] },
+                      { $eq: ['$finishedAt', null ]}
+                    ]
+                  }
+                }
+              },
+              { $project: { _id : 1 } }
+            ],
+            as: 'latestTesting'
+          }
+        },
+        // {
+        //   $replaceRoot: { 
+        //     newRoot: { 
+        //       $mergeObjects: [ 
+        //         { $arrayElemAt: [ "$latestTesting", 0 ] },
+        //         "$$ROOT"
+        //       ]
+        //     }
+        //   }
+        // },
+        { $unwind: "$owner" },
+        { $unwind: "$latestTesting" },
         {
           $project: { 
             _id: 1,
             name: 1,
             subject: 1,
             code: 1,
+            owner: {
+              prefixName: 1,
+              firstName: 1,
+              lastName: 1,
+              role: 1
+            },
+            latestTesting: 1,
             type: 1,
             status: 1,
             createdAt: 1,
