@@ -33,6 +33,9 @@ module.exports = {
         }
       }
     ],
+    score: {
+      type: Number
+    },
     startedAt: {
       type: Number,
       default: moment().unix()
