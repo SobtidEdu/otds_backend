@@ -20,6 +20,9 @@ module.exports = {
       type: "ObjectId",
       ref: "User"
     },
+    isStudentTest: {
+      type: Boolean
+    },
     progressTestings: [
       {
         questionId: { type: String },

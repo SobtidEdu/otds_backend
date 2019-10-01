@@ -23,6 +23,7 @@ module.exports = async (fastify, opts) => {
 
     const testingData = {
       userId: user._id, 
+      isStudentTesting: user.role === 'student' ? true : false,
       finishedAt: null,
       examId
     }
