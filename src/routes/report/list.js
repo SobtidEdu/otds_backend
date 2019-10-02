@@ -56,7 +56,16 @@ module.exports = async (fastify, options) => {
         }
       ]
 
-      return await fastify.mongoose.Testing.aggregate(aggregate)
+      const response = await fastify.mongoose.Testing.aggregate(aggregate) // FIXME : Refactor ควรจะจัดการใน aggregate
+      return response.map(res => ({
+        _id: res.exam._id,
+        code: res.exam.code,
+        name: res.exam.name,
+        subject: res.exam.subject,
+        type: res.exam.type,
+        latestScore: res.latestScore,
+        startedAt: res.startedAt
+      }))
     } else {
 
       // FIXME : ให้สร้าง logic จาก aggregate
