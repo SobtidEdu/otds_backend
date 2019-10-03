@@ -15,7 +15,6 @@ module.exports = async (fastify, options) => {
   }, async (request) => {
     const { user, params } = request
     
-    
     const aggregate = [
       {
         $match: {
@@ -99,13 +98,69 @@ module.exports = async (fastify, options) => {
 
   fastify.get('/:examId/group/:groupId', {
     preValidation: [
-      fastify.authenticate()
+      fastify.authenticate(),
+      fastify.authorize([ROLE.TEACHER, ROLE.SUPER_TEACHER, ROLE.ADMIN])
     ]
   }, async (request) => {
     const { params } = request
 
-    const aggregate = [{
-
-    }]
+    const aggregate = [
+      {
+        $match: { 
+          examId: mongoose.Types.ObjectId(params.examId),
+          groupId: mongoose.Types.ObjectId(params.groupId),
+          finishedAt: { $ne: null }
+        }
+      },
+      {
+        $group: {
+          _id: "$userId",
+          testingId: { $last: "$_id"},
+          count: { $sum: 1 },
+          latestStartedAt: { $last: "$startedAt" },
+          latestScore: { $last: "$score" }
+        }
+      },
+      {
+        $lookup: {
+          from: 'users', 
+          localField: '_id', 
+          foreignField: '_id', 
+          as: 'user'
+        }
+      },
+      {
+        $unwind: '$user'
+      },
+      {
+        $project: {
+          user: {
+            profileImage: 1,
+            prefixName: 1,
+            firstName: 1,
+            lastName: 1,
+            school: 1,
+          },
+          testingId: 1,
+          latestStartedAt: 1,
+          count: 1,
+          latestScore: 1,
+        }
+      }
+    ]
+    
+    const response = await fastify.mongoose.Testing.aggregate(aggregate)
+    // return response
+    return response.map(data => ({
+      userId: data._id,
+      profileImage: data.user.profileImage,
+      name: `${data.user.prefixName} ${data.user.firstName} ${data.user.lastName}`,
+      schoolName: data.user.school.name.text,
+      testingId: data.testingId,
+      latestStartedAt: data.latestStartedAt,
+      count: data.count,
+      latestScore: data.latestScore,
+      testingId: data.testingId,
+    }))
   })
 }
