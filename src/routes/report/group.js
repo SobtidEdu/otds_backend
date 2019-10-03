@@ -15,7 +15,7 @@ module.exports = async (fastify, options) => {
   }, async (request) => {
     const { user, params } = request
     
-    // FIXME: ยังไม่เสร็จเลย
+    
     const aggregate = [
       {
         $match: {
@@ -30,10 +30,8 @@ module.exports = async (fastify, options) => {
         $project: {
           logo: 1,
           name: 1,
-          totalStudent: { 
-            { $cond : [{ $eq: ['$students.status', STUDENT_STATUS.JOIN] }, { $sum: 1 }, 0] } 
-          },
-          exams: 1
+          totalStudent: { $size: "$students" }, // FIXME: เอาจำนวนที่ นร ที่อยู่ในกลุ่มอย่างเดียว
+          exams: 1,
         }
       },
       {
@@ -52,37 +50,39 @@ module.exports = async (fastify, options) => {
           as: 'testings'
         }
       },
-      // {
-      //   $unwind: '$testings'
-      // },
-      // {
-      //   $group: { 
-      //     _id: {
-      //       groupId: "$_id", 
-      //       userId: "$testings.user", 
-      //     },
-      //     startedAt: { $last: "$testings.startedAt" },
-      //     latestScore: { $last: "$testings.score" },
-      //     logo: { $first: "$logo" },
-      //     name: { $first: "$name" },
-      //     totalStudent: { $first: "$totalStudent" },
-      //   }
-      // }
+      {
+        $unwind: '$testings'
+      },
+      {
+        $group: { 
+          _id: {
+            groupId: "$_id", 
+            userId: "$testings.user", 
+          },
+          latestStartedAt: { $last: "$testings.startedAt" },
+          latestScore: { $last: "$testings.score" },
+          logo: { $first: "$logo" },
+          name: { $first: "$name" },
+          totalStudent: { $first: "$totalStudent" },
+          minScore: { $min: "$testings.score" },
+          maxScore: { $max: "$testings.score" },
+          avgScore: { $avg: "$testings.score" }
+        }
+      }
     ]
 
     const response = await fastify.mongoose.Group.aggregate(aggregate)
-    return response
-    // return [{
-    //   _id: 1,
-    //   logo: null,
-    //   name: 'ป.1/1',
-    //   totalStudent: 30,
-    //   totalStudentTest: 4,
-    //   latestStartedAt: 1569572003,
-    //   minScore: 10,
-    //   maxScore: 20,
-    //   avgScore: 15,
-    // }]
+    return response.map(data => ({
+      _id: data._id.groupId,
+      latestStartedAt: data.latestStartedAt,
+      latestScore: data.latestScore,
+      name: data.name,
+      logo: data.logo,
+      totalStudent: data.totalStudent,
+      minScore: data.minScore,
+      maxScore: data.maxScore,
+      avgScore: data.avgScore
+    }))
   })
 
   fastify.get('/:examId/group/:groupId', {
