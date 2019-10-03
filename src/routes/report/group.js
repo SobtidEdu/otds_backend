@@ -61,7 +61,7 @@ module.exports = async (fastify, options) => {
         }
       },
       {
-        $project: { testings: { progressTestings: 0 }
+        $project: { testings: { progressTestings: 0 } }
       },
       {
         $group: { 
