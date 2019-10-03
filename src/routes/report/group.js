@@ -42,23 +42,33 @@ module.exports = async (fastify, options) => {
           'exams._id': mongoose.Types.ObjectId(params.examId)
         }
       },
-      {
-        $lookup: {
-          from: 'testings',
-          localField: 'exams._id',
-          foreignField: 'examId',
+      { 
+        $lookup: { 
+          from: 'testings', 
+          localField: 'exams._id', 
+          foreignField: 'examId', 
           as: 'testings'
+        }
+      }, 
+      { $unwind: "$testings" },
+      {
+        $redact: {
+          $cond: [
+            { $ne: [ "$finishedAt", null] }, 
+            "$$KEEP", 
+            "$$PRUNE"
+          ]
         }
       },
       {
-        $unwind: '$testings'
+        $project: { testings: { progressTestings: 0 }
       },
       {
         $group: { 
           _id: {
             groupId: "$_id", 
-            userId: "$testings.user", 
           },
+          studentTestings: { $addToSet : "$testings.userId" },
           latestStartedAt: { $last: "$testings.startedAt" },
           latestScore: { $last: "$testings.score" },
           logo: { $first: "$logo" },
@@ -72,8 +82,10 @@ module.exports = async (fastify, options) => {
     ]
 
     const response = await fastify.mongoose.Group.aggregate(aggregate)
-    return response.map(data => ({
+    return response
+    .map(data => ({
       _id: data._id.groupId,
+      totalStudentTestings: data.studentTestings.length,
       latestStartedAt: data.latestStartedAt,
       latestScore: data.latestScore,
       name: data.name,
@@ -90,30 +102,10 @@ module.exports = async (fastify, options) => {
       fastify.authenticate()
     ]
   }, async (request) => {
+    const { params } = request
 
-    return [{
-      logo: null,
-      name: 'ด.ช. ราตรี สูงนาน',
-      schoolName: 'มัธยมด่านสำโรง',
-      latestStartedAt: 1569572003,
-      totalTest: 3,
-      latestScore: 20
-    },
-    {
-      logo: null,
-      name: 'ด.ช. สมศักดิ์ ชูจิต',
-      schoolName: 'มัธยมวัดสิงห์',
-      latestStartedAt: 1569572003,
-      totalTest: 3,
-      latestScore: 18
-    },
-    {
-      logo: null,
-      name: 'ด.ช. mother fucker',
-      schoolName: 'มัธยมวัดสิงห์',
-      latestStartedAt: 1569572003,
-      totalTest: 4,
-      latestScore: 17
+    const aggregate = [{
+
     }]
   })
 }
