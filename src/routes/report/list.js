@@ -128,10 +128,18 @@ module.exports = async (fastify, options) => {
             }
           }
         })
-        const latestTestAt = testingsLatest[testingsLatest.length-1].startedAt
-        const maxScore = testingsLatest.reduce((acc, item) => item.score > acc  ? item.score : acc, 0)
-        const minScore = testingsLatest.reduce((acc, item) => item.score < acc  ? item.score : acc, maxScore)
-        const avgScore = testingsLatest.reduce((acc, item) => item.score + acc, 0) / testingsLatest.length
+        
+        let latestTestAt = null
+        let maxScore = 0
+        let minScore = 0
+        let avgScore = 0
+
+        if (testingsLatest.length > 0) {
+           latestTestAt = testingsLatest[testingsLatest.length-1].startedAt
+           maxScore = testingsLatest.reduce((acc, item) => item.score > acc  ? item.score : acc, 0)
+           minScore = testingsLatest.reduce((acc, item) => item.score < acc  ? item.score : acc, maxScore)
+           avgScore = testingsLatest.reduce((acc, item) => item.score + acc, 0) / testingsLatest.length
+        }
 
         return {
           _id: exam._id,
