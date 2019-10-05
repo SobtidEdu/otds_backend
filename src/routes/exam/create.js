@@ -34,8 +34,12 @@ module.exports = async (fastify) => {
       if (data.examSetTotal > 1) {
         data.name = data.name + ` (ชุดที่ ${parseInt(i)+1})`
       }
-      data.code = exams[i].TestSetID,
-      data.questions = exams[i].ResponseItemGroup_ResponseTestsetGroup.ResponseItemGroup.map(question => ({
+      let { ResponseItemGroup } = exams[i].ResponseItemGroup_ResponseTestsetGroup
+      data.code = exams[i].TestSetID
+      if (!Array.isArray(exams[i].ResponseItemGroup_ResponseTestsetGroup.ResponseItemGroup)) {
+        ResponseItemGroup = [ResponseItemGroup]
+      }
+      data.questions = ResponseItemGroup.map(question => ({
         seq: question.ItemSeq,
         id: question.ItemID,
         type: question.QuestionType,
