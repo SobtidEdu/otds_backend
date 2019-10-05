@@ -46,6 +46,17 @@ module.exports = async (fastify, options) => {
         $unwind: '$user'
       },
       {
+        $lookup: {
+          from: 'groups', 
+          localField: '_id.groupId', 
+          foreignField: '_id', 
+          as: 'group'
+        }
+      },
+      {
+        $unwind: '$group'
+      },
+      {
         $project: {
           user: {
             profileImage: 1,
@@ -53,6 +64,9 @@ module.exports = async (fastify, options) => {
             firstName: 1,
             lastName: 1,
             school: 1,
+          },
+          group: {
+            name: 1
           },
           testingId: 1,
           latestStartedAt: 1,
@@ -75,7 +89,8 @@ module.exports = async (fastify, options) => {
       count: data.count,
       latestScore: data.latestScore,
       testingId: data.testingId,
-      isInGroup: (data._id.groupId !== undefined)
+      isInGroup: (data._id.groupId !== undefined),
+      group: data.group ? data.group.name : null
     }))
   })
 }
