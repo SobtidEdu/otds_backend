@@ -44,19 +44,16 @@ module.exports = async (fastify, options) => {
       { 
         $lookup: { 
           from: 'testings', 
-          localField: 'exams._id', 
-          foreignField: 'examId', 
+          localField: '_id', 
+          foreignField: 'groupId', 
           as: 'testings'
         }
       }, 
       { $unwind: "$testings" },
       {
-        $redact: {
-          $cond: [
-            { $ne: [ "$finishedAt", null] }, 
-            "$$KEEP", 
-            "$$PRUNE"
-          ]
+        $match: {
+          'testings.examId': mongoose.Types.ObjectId(params.examId),
+          finishedAt: { $ne: null }
         }
       },
       {
