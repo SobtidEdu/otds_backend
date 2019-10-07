@@ -2,6 +2,8 @@
 
 const { ROLE, GROUP_STATUS } = require('@config/user')
 const { STUDENT_STATUS } = require('@config/group')
+const util = require('util');
+const Memcached = require('memcached');
 
 module.exports = async (fastify, options) => {
 
@@ -51,10 +53,24 @@ module.exports = async (fastify, options) => {
       fastify.authenticate()
     ]
   }, async (request, reply) => {
-
+    let memcached
+    try {
+      memcached = new Memcached('192.168.0.167:11211', {retries:10,retry:10000})  
+    } catch (e) {
+      console.log(e)
+    }
+    
     const { user, query } = request;
 
     if (user.role === ROLE.STUDENT) {
+      
+      try {
+        const response = await util.promisify(memcached.get)(query.groupId)
+        console.log(response)
+      } catch (e) {
+        console.log(e)
+      }
+
       const baseOptions = [
         { 
           $match: {
@@ -107,6 +123,13 @@ module.exports = async (fastify, options) => {
         jointDate: group.students[0].jointDate,
         ownerName: group.ownerName
       }))
+
+      try {
+        const response = await util.promisify(memcached.set)(query.groupId, JSON.stringify(groups), 1800)
+        console.log(response)
+      } catch (e) {
+        console.log(e)
+      }
 
       return groups 
     } else {

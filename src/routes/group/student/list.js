@@ -13,7 +13,6 @@ module.exports = async function(fastify, opts, next) {
         fastify.authorize([ROLE.TEACHER, ROLE.SUPER_TEACHER, ROLE.ADMIN])
       ]
     }, async (request) => {
-  
       const { query, params } = request;
 
       const baseAggregateOptions = [

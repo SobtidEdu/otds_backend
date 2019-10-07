@@ -18,9 +18,6 @@ module.exports = async (fastify) => {
     if (query.subject) {
       params.learning_area = query.subject
     }
-    if (query.years) {
-      params.course = query.years[0]
-    }
     if (query.grade) {
       params.key_stage = query.grade
     }

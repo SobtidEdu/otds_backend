@@ -41,6 +41,7 @@
     "fastify-static": "^2.4.0",
     "inquirer": "^6.2.2",
     "jquery": "^3.4.1",
+    "memcached": "^2.2.2",
     "module-alias": "^2.2.0",
     "moment": "^2.24.0",
     "mongodb": "^3.2.3",
