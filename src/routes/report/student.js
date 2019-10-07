@@ -54,9 +54,6 @@ module.exports = async (fastify, options) => {
         }
       },
       {
-        $unwind: '$group'
-      },
-      {
         $project: {
           user: {
             profileImage: 1,
@@ -77,8 +74,8 @@ module.exports = async (fastify, options) => {
     ]
     
     const response = await fastify.mongoose.Testing.aggregate(aggregate)
-    // return response
-    return response.map(data => ({
+    return response
+    .map(data => ({
       userId: data._id.userId,
       groupId: data._id.groupId,
       profileImage: data.user.profileImage,
@@ -90,7 +87,7 @@ module.exports = async (fastify, options) => {
       latestScore: data.latestScore,
       testingId: data.testingId,
       isInGroup: (data._id.groupId !== undefined),
-      group: data.group ? data.group.name : null
+      group: data._id.groupId !== undefined ? data.group[0].name : null
     }))
   })
 }
