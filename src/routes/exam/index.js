@@ -18,4 +18,5 @@ module.exports = async (fastify) => {
   fastify.register(examCompetition)
   fastify.register(examDelete)
   fastify.register(examUpdate)
+  fastify.register(require('./check-question'))
 }

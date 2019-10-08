@@ -7,13 +7,15 @@ module.exports = async (fastify) => {
 
   const schema = {}
 
-  fastify.get('/checking', {
+  fastify.post('/check/q/:questionCode', {
     preValidation: [
       (request) => fastify.validate(schema, request),
       fastify.authenticate()
     ]
   }, async (request) => {
-    const { user, query } = request
-    return { message: 'Not implement yet'}
+    const { user, params } = request
+    const response = await fastify.otimsApi.checkQuestion(params.questionCode)
+    console.log(response)
+    return response
   })
 }

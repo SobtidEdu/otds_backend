@@ -93,6 +93,16 @@ module.exports = fp(async (fastify, options) => {
         }
         throw new Error(errorResponse.ResponseFixedRandomTestset.ErrorMessage)
       })
+    }, 
+
+    checkQuestion: async (questionCode) => {
+      return instance.get(`/ws/check-question-item/${questionCode}`)
+      .then(response => response.data)
+      .catch(e => {
+        const errorResponse = e.response.data
+        console.error(errorResponse)
+        throw new Error(errorResponse.error)
+      })
     }
   })
 })
