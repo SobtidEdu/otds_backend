@@ -103,6 +103,51 @@ module.exports = fp(async (fastify, options) => {
         console.error(errorResponse)
         throw new Error(errorResponse.error)
       })
+    },
+
+    requestCustomTestSet: async (params = {}) => {
+      params.RequestedName = OTIMS_USER
+      
+      return instance.post(`/ws/request-custom-test-set`, {
+        request_name: params.RequestedName,
+        request_type: params.RequestType,
+        //request_type: params.RequestType,
+        test_set_type: 'FI',
+        learning_area: "",
+        key_stage: "",
+        test_items: params.TestItems
+      })
+      .then(response => {
+        const testSetGroup = response.data.ResponseFixedRandomTestset.ResponseTestsetGroup_ResponseFixedRandomTestset.ResponseTestsetGroup
+        return params.NoStudents == 1 ? [testSetGroup] : testSetGroup
+      })
+      .catch((e) => {
+        const errorResponse = e.response.data
+        console.error(errorResponse.ResponseFixedRandomTestset)
+        if (errorResponse.ResponseFixedRandomTestset.ErrorMessage === '010,ไม่พบข้อสอบตามเงื่อนไขที่ต้องการจัดชุด') {
+          errorResponse.ResponseFixedRandomTestset.ErrorMessage = 'ข้อสอบไม่เพียงพอสำหรับการจัดชุดข้อสอบนี้'
+        }
+        throw new Error(errorResponse.ResponseFixedRandomTestset.ErrorMessage)
+      })
+    },
+
+    requestFirstItemCAT: async (params) => {
+      params.RequestedName = OTIMS_USER
+      params.RequestedNo = `${OTIMS_USER}RequestFirstItemCAT${params.RequestType}${moment().format('YYYYMMDDHHmmSSS')}`
+      params.TestSetType = `CT`
+
+      console.log(params)
+      // return params
+      return instance.get(`/ws/RequestFirstItemCAT`, { params })
+      .then(response => {
+        const testSetGroup = response.data.ResponseFixedRandomTestset.ResponseTestsetGroup_ResponseFixedRandomTestset.ResponseTestsetGroup
+        return params.NoStudents == 1 ? [testSetGroup] : testSetGroup
+      })
+      .catch(e => {
+        const errorResponse = e.response.data
+        console.error(errorResponse)
+        throw new Error(errorResponse.ResponseFirstItemCAT.ErrorMessage)
+      })
     }
   })
 })

@@ -8,7 +8,8 @@ exports.CRITERION = {
 exports.EXAM_TYPE = {
   GENERAL: 'G',
   COMPETITION: 'C',
-  CAT: 'CAT'
+  CAT: 'CAT',
+  CUSTOM: 'CUSTOM'
 }
 
 exports.LEVEL = {

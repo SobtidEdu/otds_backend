@@ -26,9 +26,15 @@ module.exports = async (fastify) => {
     if (body.type == EXAM_TYPE.GENERAL || body.type == EXAM_TYPE.COMPETITION) {
       exams = await fastify.otimsApi.requestFixedRandomTestSet(params)
     } else if (body.type == EXAM_TYPE.CAT) {
-      return fastify.mongoose.Exam.create(body)
+      exams = await fastify.otimsApi.requestFirstItemCAT(params)
+    } else if (body.type == EXAM_TYPE.CUSTOM) {
+      exams = await fastify.otimsApi.requestCustomTestSet(params)
     }
-    
+
+    if (!Array.isArray(exams)) {
+      exams = [exams]
+    }
+
     for (let i in exams) {
       let data = body
       if (data.examSetTotal > 1) {
@@ -77,7 +83,7 @@ const mapExamParams = (user, params) => {
     KeyStage: params.grade,
     LearningArea: params.subject,
     NoItems: params.quantity,
-    ComplexityLevel: getCompleixityLevel(params.level),
+    ComplexityLevel: params.level ? getCompleixityLevel(params.level) : '',
     BankType: params.bankType,
     FollowIndicator: false,
     FollowStrand: false,
@@ -90,6 +96,10 @@ const mapExamParams = (user, params) => {
     exam.ProjectYear = params.competition.years.join(',')
   }
 
+  if (params.type === EXAM_TYPE.CUSTOM) {
+    exam.TestItems = params.testItems
+  }
+
   Object.assign(exam, mapCriterion(params))
 
   return exam
@@ -97,7 +107,7 @@ const mapExamParams = (user, params) => {
 
 const getRequestType = (user) => user.role == ROLE.STUDENT ? 2 : 1
 
-const getTestSetType = (quantity) => quantity > 1 ? 'RI' : 'FI'
+const getTestSetType = (examSetTotal) => examSetTotal > 1 ? 'RI' : 'FI'
 
 const getCompleixityLevel = (level) => level.map(l => {
   switch (l) {

@@ -18,6 +18,11 @@ module.exports = {
     grade: { type: String },
     level: [{ type: String }],
     type: { type: String },
+    bankType: { 
+      type: String,
+      enum: ['Public', 'Private'],
+      default: 'Public'
+    },
     quantity: { type: Number },
     examSetTotal: { type: Number },
     criterion: { type: String },
@@ -39,6 +44,7 @@ module.exports = {
         quantity: { type: Number }
       }
     ],
+    testItems: { type: Array },
     duration: { type: Number },
     name: { type: String },
     description: { type: String },
