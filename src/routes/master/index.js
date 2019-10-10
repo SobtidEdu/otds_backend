@@ -8,4 +8,5 @@ module.exports = async (fastify, options) => {
   fastify.register(require('./term'), { prefix: 'term'})
   fastify.register(require('./subject'), { prefix: 'subjects' })
   fastify.register(require('./contact'), { prefix: 'contact' })
+  fastify.register(require('./faq'), { prefix: 'faq' })
 }

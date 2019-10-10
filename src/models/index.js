@@ -9,4 +9,5 @@ module.exports = [
   require('./contact.model'),
   require('./exam.model'),
   require('./testing.model'),
+  require('./faq.model'),
 ]
