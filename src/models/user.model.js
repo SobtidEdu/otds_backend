@@ -27,12 +27,10 @@ module.exports = {
       enum: Object.values(GENDER)
     },
     username: {
-      type: String,
-      unique: true
+      type: String
     },
     email: {
-      type: String,
-      unique: true
+      type: String
     },
     password: {
       hashed: {

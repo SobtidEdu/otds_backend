@@ -54,16 +54,7 @@ module.exports = async (fastify, options) => {
     ]
   }, async (request) => {
     const { query } = request
-    let aggregate = []
-
-    if (!request.user || request.user.role !== ROLE.ADMIN) {
-      query.sort = Object.assign(query.sort || {}, {seq: 1})
-      aggregate = [
-        { $project: { name: 1, visible: 1 } },
-        { $match: { $or: [{'visible.student': true}, {'visible.teacher': true}] } }
-      ]
-    }
-    
-    return fastify.paginate(fastify.mongoose.Prefix, query, aggregate)
+    const response = (await fastify.mongoose.Prefix.findOne({})).data
+    return { items: response }
   })
 }
