@@ -20,8 +20,8 @@ module.exports = async (fastify, options) => {
       const prefixUpdate = {
         name: body.name || data[indexPrefix].name,
         visible: {
-          teacher: body.visible.teacher || data[indexPrefix].visible.teacher,
-          student: body.visible.student || data[indexPrefix].visible.student
+          teacher: body.visible && body.visible.teacher !== undefined ? body.visible.teacher : data[indexPrefix].visible.teacher,
+          student: body.visible && body.visible.student !== undefined ? body.visible.student : data[indexPrefix].visible.student
         }
       }
       data[indexPrefix] = prefixUpdate
