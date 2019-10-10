@@ -13,6 +13,6 @@ module.exports = async (fastify, options) => {
   fastify.register(prefixList)
   fastify.register(require('./create'))
   fastify.register(require('./update'))
-
+  fastify.register(require('./remove'))
   
 }
