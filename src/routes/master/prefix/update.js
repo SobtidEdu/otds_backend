@@ -43,14 +43,21 @@ module.exports = async (fastify, options) => {
     const prefix = await fastify.mongoose.Prefix.findOne({}).lean()
     const { data } = prefix
 
-    const indexPrefix = data.findIndex(p => p._id.toString() === params.prefixId)
+    let indexPrefix = data.findIndex(p => p._id.toString() === params.prefixId)
 
     if (indexPrefix == -1) throw fastify.httpErrors.badRequest('Invalid prefix id')
 
     const movePrefix = data[indexPrefix]
 
-    
+    data.splice(body.seq, 0, movePrefix)
 
-    return await fastify.mongoose.Prefix.findOneAndUpdate(prefixUpdate)
+    if (indexPrefix > body.seq) {
+      indexPrefix++
+    } 
+
+    data.splice(indexPrefix, 1)
+
+    await fastify.mongoose.Prefix.updateOne({ _id: prefix._id }, { data })
+    return { message: 'แก้ไขลำดับข้อมูลคำนำหน้าสำเร็จ' }
   })
 }
