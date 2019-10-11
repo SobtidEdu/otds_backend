@@ -23,6 +23,13 @@ module.exports = fp( async (fastify, options) => {
         link
       }
       return mustache.render(content, params)
+    },
+    getForgetPasswordTemplate: async (params) => {
+      const filePath = path.resolve(__dirname, '../../', 'storage/html/forget-password.html')
+      const content = fs.readFileSync(filePath, { encoding: 'utf-8' })
+      
+      const link = `${fastify.env.APP_FRONTEND_URL}/reset-password/${params.token}`
+      return mustache.render(content, { ...params, link })
     }
   })
 })

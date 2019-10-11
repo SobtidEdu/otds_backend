@@ -113,6 +113,9 @@ module.exports = {
       type: Boolean,
       default: null
     },
+    resetPasswordToken: {
+      type: String
+    },
     groups: [
       {
         info: {

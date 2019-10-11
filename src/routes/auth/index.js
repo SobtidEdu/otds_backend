@@ -8,4 +8,5 @@ module.exports = async (fastify, options) => {
   fastify.register(authRegister)
   fastify.register(authLogin)
   fastify.register(profile)
+  fastify.register(require('./forget-password'))
 }
