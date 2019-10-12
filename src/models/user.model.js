@@ -116,6 +116,10 @@ module.exports = {
     resetPasswordToken: {
       type: String
     },
+    isSeenTermAndCondition: {
+      type: Boolean,
+      default: true
+    },
     groups: [
       {
         info: {

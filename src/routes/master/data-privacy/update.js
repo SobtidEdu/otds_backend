@@ -16,11 +16,17 @@ module.exports = async (fastify, options) => {
     ]
   }, async (request) => {
     const { body } = request
-    await fastify.mongoose.Notification.updateOne({ type: 'TERM_AND_CONDITION'}, { data: body })
 
-    if (body.isNotice) {
-      await fastify.mongoose.User.updateMany({}, { isSeenTermAndCondition: false })
-    }
+    await fastify.mongoose.Notification.update(
+      { type: 'DATA_PRIVACY', 'data.role': body.role }, 
+      { 
+        $set: {
+          'data.$.title': body.title,
+          'data.$.content': body.content,
+          'data.$.isNotice': body.isNotice
+        }
+      }
+    )
     
     return { message: 'อัพเดตข้อมูลเรียบร้อย' }
   })
