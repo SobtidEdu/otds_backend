@@ -10,4 +10,5 @@ module.exports = [
   require('./exam.model'),
   require('./testing.model'),
   require('./faq.model'),
+  require('./notification.model'),
 ]
