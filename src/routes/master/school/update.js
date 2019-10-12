@@ -16,7 +16,7 @@ module.exports = async (fastify, options) => {
   async (request) => {
     const { params, body } = request
 
-    fastify.mongoose.School.updateOne({ _id: params.schoolId }, { ...body })
+    await fastify.mongoose.School.updateOne({ _id: params.schoolId }, body)
 
     return { message: 'School has benn updated' }
   })

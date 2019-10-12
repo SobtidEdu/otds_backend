@@ -16,7 +16,7 @@ module.exports = async (fastify, options) => {
   async (request) => {
     const { params } = request
 
-    fastify.mongoose.School.deleteOne({ _id: params.schoolId })
+    await fastify.mongoose.School.deleteOne({ _id: params.schoolId })
 
     return { message: 'School has benn removed' }
   })
