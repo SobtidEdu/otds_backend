@@ -12,10 +12,6 @@ module.exports = async (fastify, options) => {
             type: 'integer',
             minimum: 1
           },
-          limit: { 
-            type: 'integer',
-            enum: [10, 25, 50, 100]
-          },
           sort: {
             type: 'object',
             properties: {
