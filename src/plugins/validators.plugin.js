@@ -7,7 +7,7 @@ module.exports = fp( async (fastify, options) => {
       type: 'string',
       validate: async (schema, data) => {
         if (schema.prop === 'email') {
-          if (data === null) return true
+          if (!data) return true
           data = data.toLowerCase()
         }
         
