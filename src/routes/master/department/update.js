@@ -18,6 +18,6 @@ module.exports = async (fastify, options) => {
 
     await fastify.mongoose.Department.updateOne({ _id: params.departmentId }, body)
 
-    return department
+    return { message: 'Department has benn updated' }
   })
 }
