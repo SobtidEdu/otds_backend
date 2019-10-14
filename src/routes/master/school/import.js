@@ -40,7 +40,7 @@ module.exports = async (fastify, options) => {
     for (let i = 1; i < length; i++) {
       const school = schools[i]
       const province = await fastify.mongoose.Province.findOne({ name: school[7] })
-      const department = await fastify.mongoose.Department.findOne({ code: school[9] })
+      // const department = await fastify.mongoose.Department.findOne({ code: school[9] })
       if (province) {
         await fastify.mongoose.School.findOneAndUpdate({
           name: school[0]
@@ -54,7 +54,7 @@ module.exports = async (fastify, options) => {
           subDistrict: school[6],
           postalCode: school[8],
           isActive: ['1', null].includes(school[10]) ? true : false,
-          department: department ? department.name : '',
+          department: school[9],
           remark: school[11],
           createdAt: moment().unix(),
           updatedAt: moment().unix(),
