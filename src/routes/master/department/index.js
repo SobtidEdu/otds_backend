@@ -15,4 +15,5 @@ module.exports = async (fastify, options) => {
   fastify.register(departmentList)
   fastify.register(require('./create'))
   fastify.register(require('./update'))
+  fastify.register(require('./remove'))
 }
