@@ -14,7 +14,7 @@ module.exports = async (fastify, options) => {
     ]
   },
   async (request) => {
-    const { body } = request
+    const { params, body } = request
 
     await fastify.mongoose.Department.updateOne({ _id: params.departmentId }, body)
 
