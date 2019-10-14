@@ -3,7 +3,7 @@ const { ROLE } = require('@config/user')
 module.exports = async (fastify, options) => {
   const schema = {}
 
-  fastify.post('/', 
+  fastify.patch('/:provinceId', 
   { 
     preValidation: [
       (request) => fastify.validate(schema, request),
@@ -12,7 +12,8 @@ module.exports = async (fastify, options) => {
     ]
   },
   async (request) => {
-    await fastify.mongoose.Province.create(request.body)
-    return { message: 'Province has been created' }
+    const { params, body } = request
+    await fastify.mongoose.Province.updateOne({ _id: params.provinceId }, body)
+    return { message: 'Province has been updated' }
   })
 }

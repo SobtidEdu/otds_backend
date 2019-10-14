@@ -3,7 +3,7 @@ const { ROLE } = require('@config/user')
 module.exports = async (fastify, options) => {
   const schema = {}
 
-  fastify.post('/', 
+  fastify.delete('/:provinceId', 
   { 
     preValidation: [
       (request) => fastify.validate(schema, request),
@@ -12,7 +12,8 @@ module.exports = async (fastify, options) => {
     ]
   },
   async (request) => {
-    await fastify.mongoose.Province.create(request.body)
-    return { message: 'Province has been created' }
+    const { params } = request
+    await fastify.mongoose.Province.deleteOne({ _id: params.provinceId })
+    return { message: 'Province has been removed' }
   })
 }
