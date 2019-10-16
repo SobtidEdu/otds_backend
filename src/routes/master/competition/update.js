@@ -30,7 +30,7 @@ module.exports = async (fastify, opts) => {
   })
 
   fastify.patch('/:competitionId/seq', 
-  { 
+  {
     preValidation: [
       fastify.authenticate(),
       fastify.authorize([ROLE.ADMIN])

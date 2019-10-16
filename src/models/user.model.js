@@ -120,6 +120,13 @@ module.exports = {
       type: Boolean,
       default: true
     },
+    notices: [
+      {
+        id: { type: Number },
+        text: { type: String },
+        times: { type: Number }
+      }
+    ],
     groups: [
       {
         info: {
