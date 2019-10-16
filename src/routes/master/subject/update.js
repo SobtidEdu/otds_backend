@@ -6,7 +6,7 @@ module.exports = async (fastify, opts) => {
   const schema = {}
 
   fastify.patch('/:subjectId', {
-    preValidatin: [
+    preValidation: [
       (request) => fastify.validate(schema, request),
       fastify.authenticate(),
       fastify.authorize([ ROLE.ADMIN ])
