@@ -13,7 +13,8 @@ module.exports = async (fastify, opts) => {
   }, async (request) => {
     const { query } = request
 
-    return await fastify.paginate(fastify.mongoose.Subject, query)
+    const subjects = await fastify.mongoose.ExamConfiguration.findOne({ type: 'SUBJECT' })
+    return subjects.data
   })
     
 }

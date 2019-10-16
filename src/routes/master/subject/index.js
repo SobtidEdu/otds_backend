@@ -5,13 +5,12 @@ const subjectCreate = require('./create')
 
 module.exports = async (fastify, opts) => { 
 
-  if (await fastify.mongoose.Subject.countDocuments() == 0) {
-    const initialSubjects = require('./initial.json');
-    for (let i = 0; i < initialSubjects.length; i++) {
-      await fastify.mongoose.Subject.create(initialSubjects[i])  
-    }
+  if (await fastify.mongoose.ExamConfiguration.countDocuments({ type: 'SUBJECT' }) == 0) {
+    const initialExamConfiguration = require('./initial.json');
+    await fastify.mongoose.ExamConfiguration.create({ type: 'SUBJECT', data: initialExamConfiguration })
   }
 
-  fastify.register(subjectList)
-  fastify.register(subjectCreate)
+  fastify.register(require('./list'))
+  fastify.register(require('./create'))
+  fastify.register(require('./update'))
 }

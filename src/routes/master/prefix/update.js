@@ -49,13 +49,10 @@ module.exports = async (fastify, options) => {
 
     const movePrefix = data[indexPrefix]
 
-    data.splice(body.seq, 0, movePrefix)
-
-    if (indexPrefix > body.seq) {
-      indexPrefix++
-    } 
-
     data.splice(indexPrefix, 1)
+    
+    data.splice(body.seq, 0, movePrefix)
+    
 
     await fastify.mongoose.Prefix.updateOne({ _id: prefix._id }, { data })
     return { message: 'แก้ไขลำดับข้อมูลคำนำหน้าสำเร็จ' }
