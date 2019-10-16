@@ -36,7 +36,7 @@ module.exports = async (fastify, options) => {
       ])
       
     } else {
-      fastify.mongoose.User.updateMany({}, {
+      await fastify.mongoose.User.updateMany({}, {
         $pull: { notices: { id: params.noticeId } } 
       })
     }
