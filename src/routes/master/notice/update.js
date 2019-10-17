@@ -18,7 +18,7 @@ module.exports = async (fastify, options) => {
     const { body, params } = request
 
 
-    await fastify.mongoose.Notification.updateOne({ type: 'NOTICE', id: params.noticeId }, { 
+    await fastify.mongoose.Notification.updateOne({ type: 'NOTICE', 'data.id': parseInt(params.noticeId) }, { 
       $set: {
         'data.$.text': body.text,
         'data.$.times': body.times,
