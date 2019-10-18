@@ -9,4 +9,5 @@ module.exports = async (fastify, options) => {
   fastify.register(authLogin)
   fastify.register(profile)
   fastify.register(require('./forget-password'))
+  fastify.register(require('./seen-notice'))
 }

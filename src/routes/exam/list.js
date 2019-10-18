@@ -1,5 +1,5 @@
 'use strict' 
-const mongoose = require('mongoose')
+
 const { ROLE } = require('@config/user')
 
 module.exports = async (fastify, opts) => {
@@ -68,7 +68,47 @@ module.exports = async (fastify, opts) => {
           }
         }
       ]
-    } else {
+    } else if (user.role == ROLE.ADMIN) {
+      baseAggregate = [
+        {
+          $lookup: {
+            from: 'users',
+            localField: 'owner',
+            foreignField: '_id',
+            as: 'owner'
+          }
+        },
+        {
+          $unwind: '$owner'
+        },
+        {
+          $lookup: {
+            from: 'testings',
+            localField: '_id',
+            foreignField: 'examId',
+            as: 'testings'
+          }
+        },
+        {
+          $project: {
+            _id: 1,
+            name: 1,
+            subject: 1,
+            code: 1,
+            type: 1,
+            status: 1,
+            createdAt: 1,
+            owner: {
+              role: 1,
+              name: { $concat: ['$owner.firstName', ' ', '$owner.lastName'] }
+            },
+            countTestings: { $size: '$testings' },
+            latestTesting: { $max: '$testings.finishedAt'}
+          }
+        }
+      ]
+    }
+    else {
       baseAggregate = [
         {
           $match: {
@@ -91,6 +131,56 @@ module.exports = async (fastify, opts) => {
     if (!query.limit) {
       query.limit = 100
     }
+
+    return await fastify.paginate(fastify.mongoose.Exam, query, baseAggregate)
+  })
+
+  fastify.get('/all', {
+    preValidation: [
+      fastify.authenticate(),
+      fastify.authorize([ ROLE.ADMIN ])
+    ]
+  }, async (request) => {
+    const { query } = request
+    
+    const baseAggregate = [
+      {
+        $lookup: {
+          from: 'users',
+          localField: 'owner',
+          foreignField: '_id',
+          as: 'owner'
+        }
+      },
+      {
+        $unwind: '$owner'
+      },
+      {
+        $lookup: {
+          from: 'testings',
+          localField: '_id',
+          foreignField: 'examId',
+          as: 'testings'
+        }
+      },
+      {
+        $project: {
+          _id: 1,
+          name: 1,
+          subject: 1,
+          code: 1,
+          type: 1,
+          status: 1,
+          createdAt: 1,
+          owner: {
+            role: 1,
+            name: { $concat: ['$owner.firstName', ' ', '$owner.lastName'] }
+          },
+          countTestings: { $size: '$testings' },
+          latestTesting: { $max: '$testings.finishedAt'}
+        }
+      }
+    ]
 
     return await fastify.paginate(fastify.mongoose.Exam, query, baseAggregate)
   })
