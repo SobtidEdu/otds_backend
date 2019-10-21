@@ -132,7 +132,20 @@ module.exports = async (fastify, opts) => {
       query.limit = 100
     }
 
-    return await fastify.paginate(fastify.mongoose.Exam, query, baseAggregate)
+    const response = await fastify.paginate(fastify.mongoose.Exam, query, baseAggregate)
+
+    if (user.role == ROLE.ADMIN) {
+      const { list: examSuggestionList } = await fastify.mongoose.ExamSuggestion.findOne({})
+      
+      response.items = response.items.map(item => {
+        return {
+          isSuggestion: examSuggestionList.findIndex(es => es.exam.toString() == item._id.toString()) !== -1,
+          ...item
+        }
+      })
+    }
+
+    return response
   })
 
   fastify.get('/all', {
