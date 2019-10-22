@@ -37,7 +37,7 @@ module.exports = async (fastify, options) => {
     preValidation: [
       (request) => fastify.validate(schema.create, request),
       fastify.authenticate(),
-      fastify.authorize([ROLE.TEACHER])
+      fastify.authorize([ROLE.TEACHER, ROLE.SUPER_TEACHER, ROLE.ADMIN])
     ],
     bodyLimit: 2200000 // limit 2.2 mb
   }, async (request, reply) => {

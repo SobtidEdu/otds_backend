@@ -9,7 +9,7 @@ module.exports = async (fastify, options) => {
     preValidation: [
       (request) => fastify.validate(schema, request),
       fastify.authenticate(),
-      fastify.authorize([ROLE.TEACHER])
+      fastify.authorize([ROLE.TEACHER, ROLE.SUPER_TEACHER, ROLE.ADMIN])
     ],
   }, async (request, reply) => {
     const { user, params } = request
