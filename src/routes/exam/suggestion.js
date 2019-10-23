@@ -3,6 +3,15 @@ const mongoose = require('mongoose')
 const { ROLE } = require('@config/user')
 
 module.exports = async (fastify, opts) => {
+  fastify.get('/suggestions', {
+    preValidation: [
+      fastify.authenticate({ allowGuest: true })
+    ]
+  }, async (request) => {
+    const { params } = request
+
+  })
+
   fastify.post('/:examId/suggestion', {
     preValidation: [
       fastify.authenticate(),

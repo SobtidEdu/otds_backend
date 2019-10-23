@@ -17,7 +17,25 @@ module.exports = async (fastify) => {
     
     const { user, params } = request
 
-    await fastify.mongoose.Exam.remove({ _id: params.examId, owner: user._id })
+    let deleteExam = null;
+    if (user.role === ROLE.ADMIN) {
+      deleteExam = fastify.mongoose.Exam.deleteOne({ _id: params.examId })
+    } else {
+      deleteExam = fastify.mongoose.Exam.deleteOne({ _id: params.examId, owner: user._id })
+    }
+    
+
+    await Promise.all([
+      deleteExam,
+      fastify.mongoose.Testing.deleteMany({ examId: params.examId }),
+      fastify.mongoose.Group.updateMany({ 
+        exams: { 
+          $elemMatch: { 
+            _id: params.examId
+          } 
+        }
+      }, { $pull: { exams: { _id: params.examId } } }),
+    ])
     
     return { message: 'Exam has been deleted' }
   })
