@@ -12,7 +12,7 @@ module.exports = fp( async (fastify, options) => {
         if (options.allowGuest) return;
         throw e
       }
-      console.log(payload)
+      
       const user = await fastify.mongoose.User.findOne({ _id: payload._id })
       
       if (!user) throw fastify.httpErrors.unauthorized()

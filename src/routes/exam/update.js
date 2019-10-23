@@ -20,8 +20,11 @@ module.exports = async (fastify) => {
     const data = {
       status: body.status
     }
-
-    await fastify.mongoose.ExamSet.updateOne({ _id: params.examId, owner: user._id }, data)
+    let conditioner = { _id: params.examId }
+    if (user.role != ROLE.ADMIN) {
+      conditioner.owner = user._id
+    }
+    await fastify.mongoose.ExamSet.updateOne(conditioner, data)
     
     return { message: 'Exam has been updated' }
   })
