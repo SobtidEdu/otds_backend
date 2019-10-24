@@ -124,12 +124,12 @@ module.exports = async (fastify, options) => {
         ownerName: group.ownerName
       }))
 
-      try {
-        const response = await util.promisify(memcached.set)(query.groupId, JSON.stringify(groups), 1800)
-        console.log(response)
-      } catch (e) {
-        console.log(e)
-      }
+      // try {
+      //   const response = await util.promisify(memcached.set)(query.groupId, JSON.stringify(groups), 1800)
+      //   console.log(response)
+      // } catch (e) {
+      //   console.log(e)
+      // }
 
       return groups 
     } else {

@@ -12,6 +12,7 @@ const examCompetition = require('./competition')
 module.exports = async (fastify) => { 
   fastify.register(examList)
   fastify.register(require('./suggestion'))
+  fastify.register(require('./group'))
   fastify.register(examCreate)
   fastify.register(examLesson)
   fastify.register(examIndicator)

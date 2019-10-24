@@ -1,0 +1,43 @@
+'use strict' 
+
+const { ROLE } = require('@config/user')
+const mongoose = require('mongoose')
+
+module.exports = async (fastify, opts) => {
+  fastify.get('/:examId/!group', {
+    preValidation: [
+      fastify.authenticate(),
+      fastify.authorize([ ROLE.ADMIN, ROLE.TEACHER, ROLE.SUPER_TEACHER])
+    ]
+  }, async (request) => {
+    const { user, params, query } = request
+    
+    const baseAggregate = [
+      {
+        $match: {
+          $and: [
+            { owner: mongoose.Types.ObjectId(user._id) },
+            { 
+              exams: {
+                $elemMatch: {
+                  $ne: {
+                    _id: mongoose.Types.ObjectId(params.examId)
+                  }
+                }
+              }
+            }
+          ]
+        }
+      }
+    ]
+    
+    if (!query.limit) {
+      query.limit = 100
+    }
+
+    const response = await fastify.paginate(fastify.mongoose.Group, query, baseAggregate)
+    return response
+  })
+
+  
+}
