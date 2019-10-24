@@ -15,7 +15,7 @@ module.exports = async (fastify, opts) => {
       user = await fastify.mongoose.User.findOne({ username: email })
     }
     if (!user) throw fastify.httpErrors.badRequest('อีเมลหรือรหัสผ่านผิดพลาด')
-
+    console.log(user)
     const isValidCredential = await bcrypt.compareSync(password, user.password.hashed)
     if (!isValidCredential) throw fastify.httpErrors.badRequest('อีเมลหรือรหัสผ่านผิดพลาด')
 

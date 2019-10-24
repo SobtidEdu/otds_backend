@@ -64,12 +64,12 @@ module.exports = async (fastify, options) => {
 
     if (user.role === ROLE.STUDENT) {
       
-      try {
-        const response = await util.promisify(memcached.get)(query.groupId)
-        console.log(response)
-      } catch (e) {
-        console.log(e)
-      }
+      // try {
+      //   const response = await util.promisify(memcached.get)(query.groupId)
+      //   console.log(response)
+      // } catch (e) {
+      //   console.log(e)
+      // }
 
       const baseOptions = [
         { 
