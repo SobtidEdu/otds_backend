@@ -53,7 +53,7 @@ module.exports = async (fastify, options) => {
       {
         $match: {
           'testings.examId': mongoose.Types.ObjectId(params.examId),
-          finishedAt: { $ne: null }
+          'testings.finishedAt': { $ne: null }
         }
       },
       {
@@ -79,18 +79,18 @@ module.exports = async (fastify, options) => {
 
     const response = await fastify.mongoose.Group.aggregate(aggregate)
     return response
-    .map(data => ({
-      _id: data._id.groupId,
-      totalStudentTestings: data.studentTestings.length,
-      latestStartedAt: data.latestStartedAt,
-      latestScore: data.latestScore,
-      name: data.name,
-      logo: data.logo,
-      totalStudent: data.totalStudent,
-      minScore: data.minScore,
-      maxScore: data.maxScore,
-      avgScore: data.avgScore
-    }))
+    // .map(data => ({
+    //   _id: data._id.groupId,
+    //   totalStudentTestings: data.studentTestings.length,
+    //   latestStartedAt: data.latestStartedAt,
+    //   latestScore: data.latestScore,
+    //   name: data.name,
+    //   logo: data.logo,
+    //   totalStudent: data.totalStudent,
+    //   minScore: data.minScore,
+    //   maxScore: data.maxScore,
+    //   avgScore: data.avgScore
+    // }))
   })
 
   fastify.get('/:examId/group/:groupId', {
