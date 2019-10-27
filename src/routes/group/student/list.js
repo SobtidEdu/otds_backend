@@ -17,34 +17,35 @@ module.exports = async function(fastify, opts, next) {
 
       const baseAggregateOptions = [
         { $match: { _id: Types.ObjectId(params.groupId) } },
+        { $unwind: '$students' },
         {
           $lookup: {
             from: 'users',
             localField: 'students.userInfo',
             foreignField: '_id',
-            as: 'student'
+            as: 'studentInfo'
           }
         },
-        // { $unwind: '$student' },
-        // {
-        //   $project: {
-        //     'student.profileImage': 1,
-        //     'student._id': 1,
-        //     'student.firstName': 1,
-        //     'student.lastName': 1,
-        //     'student.school': 1,
-        //     'students': 1
-        //   }
-        // }
+        { $unwind: '$studentInfo' },
+        {
+          $project: {
+            'studentInfo.profileImage': 1,
+            'studentInfo._id': 1,
+            'studentInfo.firstName': 1,
+            'studentInfo.lastName': 1,
+            'studentInfo.school': 1,
+            'students': 1
+          }
+        }
       ]
 
       const results = await fastify.paginate(fastify.mongoose.Group, query, baseAggregateOptions)
-      return results
+      // return results
       results.items = results.items.map(item => ({
-          profileImage: fastify.storage.getUrlProfileImage(item.student.profileImage),
-          studentId: item.student._id,
-          studentName: `${item.student.firstName} ${item.student.lastName}`,
-          schoolName: item.student.school.name.text,
+          profileImage: fastify.storage.getUrlProfileImage(item.studentInfo.profileImage),
+          studentId: item.studentInfo._id,
+          studentName: `${item.studentInfo.firstName} ${item.studentInfo.lastName}`,
+          schoolName: item.studentInfo.school.name.text,
           status: item.students.status,
           requestedDate: item.students.requestedDate,
           jointDate: item.students.jointDate,
