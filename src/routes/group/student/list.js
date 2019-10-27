@@ -17,7 +17,6 @@ module.exports = async function(fastify, opts, next) {
 
       const baseAggregateOptions = [
         { $match: { _id: Types.ObjectId(params.groupId) } },
-        { $unwind: '$students'},
         {
           $lookup: {
             from: 'users',
