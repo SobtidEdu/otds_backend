@@ -135,7 +135,6 @@ module.exports = async (fastify, options) => {
     } else {
 
       const baseOptions = [
-        user.role == ROLE.ADMIN ? {} : { $match: { owner: user._id} },
         {
           $project: { 
             _id: 1,
@@ -148,6 +147,10 @@ module.exports = async (fastify, options) => {
           }
         }
       ]
+
+      if (user.role !== ROLE.ADMIN) {
+        baseOptions.push({ $match: { owner: user._id} })
+      }
       
       const groups = await fastify.paginate(fastify.mongoose.Group, query, baseOptions)
       
