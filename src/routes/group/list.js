@@ -133,8 +133,9 @@ module.exports = async (fastify, options) => {
 
       return groups 
     } else {
+
       const baseOptions = [
-        { $match: { owner: user._id} },
+        user.role == ROLE.ADMIN ? {} : { $match: { owner: user._id} },
         {
           $project: { 
             _id: 1,
