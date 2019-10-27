@@ -25,21 +25,21 @@ module.exports = async function(fastify, opts, next) {
             as: 'student'
           }
         },
-        { $unwind: '$student' },
-        {
-          $project: {
-            'student.profileImage': 1,
-            'student._id': 1,
-            'student.firstName': 1,
-            'student.lastName': 1,
-            'student.school': 1,
-            'students': 1
-          }
-        }
+        // { $unwind: '$student' },
+        // {
+        //   $project: {
+        //     'student.profileImage': 1,
+        //     'student._id': 1,
+        //     'student.firstName': 1,
+        //     'student.lastName': 1,
+        //     'student.school': 1,
+        //     'students': 1
+        //   }
+        // }
       ]
 
       const results = await fastify.paginate(fastify.mongoose.Group, query, baseAggregateOptions)
-      
+      return results
       results.items = results.items.map(item => ({
           profileImage: fastify.storage.getUrlProfileImage(item.student.profileImage),
           studentId: item.student._id,

@@ -14,7 +14,14 @@ module.exports = async (fastify, opts) => {
   }, async (request) => {
     const { userId } = request.params
     
-    await fastify.mongoose.User.remove({ _id: userId })
+    await Promise.all([
+      fastify.mongoose.User.remove({ _id: userId }),
+      fastify.mongoose.Group.deleteMany({ owner: userId }),
+      fastify.mongoose.Group.updateMany({ 'students.userInfo': userId }, {
+        $pull: { students: { userInfo: userId } }
+      }),
+      fastify.mongoose.Testing.deleteMany({ userId })
+    ])
 
     return { message: 'ลบผู้ใช้งานเรียบร้อย' }
   })
