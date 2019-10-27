@@ -39,5 +39,18 @@ module.exports = async (fastify, opts) => {
     return response
   })
 
-  
+  fastify.put('/:examId/group', {
+    preValidation: [
+      (request) => fastify.validate(schema, request),
+      fastify.authenticate(),
+      fastify.authorize([ROLE.TEACHER, ROLE.SUPER_TEACHER, ROLE.ADMIN])
+    ]
+  }, async (request) => {
+    const { params, body } = request;
+    
+    let { groupIds } = body
+    await fastify.mongoose.Group.updateMany({ _id: { $in: groupIds } }, { exams: { $push: { _id: params.examId } } })
+
+    return { message: 'เพิ่มข้อสอบเข้ากลุ่มสำเร็จ' }
+  })
 }

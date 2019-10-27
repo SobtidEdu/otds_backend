@@ -1,7 +1,26 @@
 'use strict'
 const { ROLE } = require('@config/user')
 module.exports = async (fastify, options) => {
-  const schema = {}
+  const schema = {
+    body: {
+      validation: {
+        $async: true,
+        type: 'object',
+        properties: {
+          name: { 
+            type: 'string',
+            isExist: { prop: 'name', collection: 'provinces' } 
+          }
+        },
+        required: ['name'],
+      },
+      message: {
+        name: {
+          isExist: 'มีจังหวัดนี้อยู่ในระบบแล้ว'
+        },
+      }
+    }
+  }
 
   fastify.post('/', 
   { 
