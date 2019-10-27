@@ -24,7 +24,7 @@ module.exports = async (fastify) => {
     if (user.role != ROLE.ADMIN) {
       conditioner.owner = user._id
     }
-    await fastify.mongoose.ExamSet.updateOne(conditioner, data)
+    await fastify.mongoose.Exam.updateOne(conditioner, data)
     
     return { message: 'Exam has been updated' }
   })

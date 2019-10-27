@@ -9,14 +9,15 @@ module.exports = async (fastify, options) => {
         properties: {
           name: { 
             type: 'string',
-            isExist: { prop: 'name', collection: 'provinces' } 
+            isExist: { prop: 'name', collection: 'provinces' }
           }
         },
         required: ['name'],
       },
       message: {
         name: {
-          isExist: 'มีจังหวัดนี้อยู่ในระบบแล้ว'
+          isExist: 'มีจังหวัดนี้อยู่ในระบบแล้ว',
+          required: 'กรุณากรอกชื่อจังหวัด'
         },
       }
     }
