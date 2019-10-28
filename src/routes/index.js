@@ -50,6 +50,7 @@ module.exports = async (fastify, options) => {
     }
   })
 
+  fastify.get('/info', async () => ({ message: 'OTDS Version 1'}))
   fastify.register(require('./auth'), { prefix: 'auth' })
   fastify.register(require('./master'), { prefix: 'master' })
   fastify.register(require('./user'), { prefix: 'users' })
