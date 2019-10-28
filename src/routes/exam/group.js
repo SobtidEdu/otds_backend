@@ -39,7 +39,7 @@ module.exports = async (fastify, opts) => {
       query.limit = 100
     }
 
-    const response = await fastify.paginate(fastify.mongoose.Group, query, baseAggregate)
+    const response = await fastify.mongoose.Group.aggregate(baseAggregate)
     return response
   })
 
