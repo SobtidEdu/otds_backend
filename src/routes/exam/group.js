@@ -2,6 +2,7 @@
 
 const { ROLE } = require('@config/user')
 const mongoose = require('mongoose')
+const moment = require('moment')
 
 module.exports = async (fastify, opts) => {
   fastify.get('/:examId/!group', {
@@ -49,7 +50,7 @@ module.exports = async (fastify, opts) => {
     const { params, body } = request;
     
     let { groupIds } = body
-    await fastify.mongoose.Group.updateMany({ _id: { $in: groupIds } }, { exams: { $push: { _id: params.examId } } })
+    await fastify.mongoose.Group.updateMany({ _id: { $in: groupIds } }, { exams: { $push: { _id: params.examId, status: true, addedAt: moment().unix() } } })
 
     return { message: 'เพิ่มข้อสอบเข้ากลุ่มสำเร็จ' }
   })

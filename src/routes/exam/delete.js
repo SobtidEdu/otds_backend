@@ -30,7 +30,7 @@ module.exports = async (fastify) => {
       fastify.mongoose.Testing.deleteMany({ examId: params.examId }),
       fastify.mongoose.Group.updateMany({ 
         exams: { 
-          $elemMatch: { 
+          $elemMatch: {
             _id: params.examId
           } 
         }
