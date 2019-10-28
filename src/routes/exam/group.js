@@ -28,19 +28,25 @@ module.exports = async (fastify, opts) => {
             }
           ]
         }
+      },
+      {
+        $project: {
+          name: 1,
+          code: 1,
+          logo: 1
+        }
       }
     ]
 
     if (user.role !== ROLE.ADMIN) {
       baseAggregate[0]['$match']['$and'].push({ owner: mongoose.Types.ObjectId(user._id) })
     }
-    
-    if (!query.limit) {
-      query.limit = 100
-    }
 
     const response = await fastify.mongoose.Group.aggregate(baseAggregate)
-    return response
+    return response.map(group => {
+      group.logo = fastify.storage.getUrlGroupLogo(group.logo)
+      return group
+    })
   })
 
   fastify.put('/:examId/group', {
