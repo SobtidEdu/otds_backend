@@ -12,12 +12,11 @@ module.exports = async (fastify, opts) => {
     ]
   }, async (request) => {
     const { user, params, query } = request
-    
-    const baseAggregate = [
+
+    let baseAggregate = [
       {
         $match: {
           $and: [
-            { owner: mongoose.Types.ObjectId(user._id) },
             { 
               exams: {
                 $elemMatch: {
@@ -31,6 +30,10 @@ module.exports = async (fastify, opts) => {
         }
       }
     ]
+
+    if (user.role !== ROLE.ADMIN) {
+      baseAggregate[0]['$match']['$and'].push({ owner: mongoose.Types.ObjectId(user._id) })
+    }
     
     if (!query.limit) {
       query.limit = 100
