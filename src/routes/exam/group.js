@@ -19,10 +19,8 @@ module.exports = async (fastify, opts) => {
           $and: [
             { 
               exams: {
-                $elemMatch: {
-                  $ne: {
-                    _id: mongoose.Types.ObjectId(params.examId)
-                  }
+                $not: {
+                  $elemMatch: { _id: mongoose.Types.ObjectId(params.examId) }
                 }
               }
             }
@@ -31,6 +29,7 @@ module.exports = async (fastify, opts) => {
       },
       {
         $project: {
+          _id: 1,
           name: 1,
           code: 1,
           logo: 1
