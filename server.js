@@ -100,7 +100,7 @@ const {
 fastify.register(
   require("fastify-mongoose-driver"),
   {
-    uri: `mongodb://${MONGO_USERNAME}:${MONGO_PASSWORD}@${MONGO_HOST}:${MONGO_PORT}/${MONGO_DBNAME}`,
+    uri: `mongodb://${MONGO_USERNAME}:${MONGO_PASSWORD}@mongodb:${MONGO_PORT}/${MONGO_DBNAME}`,
     settings: {
       useNewUrlParser: true,
       useCreateIndex: true
