@@ -82,7 +82,7 @@ module.exports = async (fastify, opts) => {
 
     const exams = await fastify.mongoose.Exam.aggregate(baseAggregate)
 
-    return list.map(examSuggestion => exams.find(exam => exam._id.toString() == examSuggestion.exam))
+    return list.map(examSuggestion => exams.find(exam => exam._id.toString() == examSuggestion.exam)).filter(exam => exam != null)
   })
 
   fastify.post('/:examId/suggestion', {
