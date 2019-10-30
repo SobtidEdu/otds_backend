@@ -1,6 +1,7 @@
 const fp = require('fastify-plugin')
 const base64ToImage = require('base64-to-image')
 const path = require('path')
+const fs = require('fs')
 const { PROFILE_IMAGE_PATH, GROUP_LOGO_PATH } = require('@config/storage')
 
 module.exports = fp( async (fastify, options) => {
@@ -9,6 +10,11 @@ module.exports = fp( async (fastify, options) => {
       const dirpath = path.resolve(PROFILE_IMAGE_PATH)
       const option = { fileName, imageType }
       return base64ToImage(dataBase64, `${dirpath}/`, option)
+    },
+
+    removeProfileImage: (fileName) => {
+      const dirpath = path.resolve(PROFILE_IMAGE_PATH)
+      fs.unlinkSync(dirpath+'/'+fileName)
     },
     
     getUrlProfileImage: (filename) =>  `${fastify.env.APP_URL}/${PROFILE_IMAGE_PATH}/${ filename ? filename : 'default.png'}`, // return default image if null or empty

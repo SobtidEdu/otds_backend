@@ -2,7 +2,7 @@
 
 const bcrypt = require('bcrypt')
 const _ = require('lodash')
-const { ROLE } = require('@config/user')
+const moment = require('moment')
 
 module.exports = async (fastify, opts) => { 
   fastify.get('/profile', {
@@ -44,10 +44,12 @@ module.exports = async (fastify, opts) => {
     })
 
     if (body.profileImage && body.profileImage.startsWith('data:image/')) {
-      const filename = `profile-${user._id}`
+      const filename = `profile-${user._id}${moment().unix()}`
       const extension = fastify.utils.getExtensionImage(body.profileImage)
       const imageInfo = fastify.storage.diskProfileImage(body.profileImage, filename, extension)
       
+      if (user.profileImage) fastify.storage.removeProfileImage(user.profileImage)
+
       body.profileImage = imageInfo.fileName
     }
 
