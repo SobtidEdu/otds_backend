@@ -112,7 +112,7 @@ fastify.register(
 /**
  * Route Setup
  */
-fastify.register(require('./src/routes'), { prefix: '/api' })
+fastify.register(require('./src/routes'), { prefix: '' })
 
 fastify.setErrorHandler(async (error, request, reply) => {
   console.log(error)
