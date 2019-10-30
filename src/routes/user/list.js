@@ -27,7 +27,8 @@ module.exports = async (fastify, opts) => {
           isBanned: 1,
           isConfirmationEmail: 1,
           isSeenModified: 1,
-          privacyPolicy: 1
+          privacyPolicy: 1,
+          role: 1,
         }
       }
     ]
