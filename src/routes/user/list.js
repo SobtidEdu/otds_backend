@@ -13,7 +13,7 @@ module.exports = async (fastify, opts) => {
   }, async (request) => {
     const { query } = request
     
-    const baseOptions = [
+    let baseOptions = [
       {
         $project: { 
           _id: 1,
@@ -32,6 +32,17 @@ module.exports = async (fastify, opts) => {
         }
       }
     ]
+
+    if (query.searchKeyword && !query.searchKeyword == '') {
+      baseOptions.unshift({
+        $match: {
+          $or: [
+            { name: query.searchKeyword},
+            { 'school.name.text': query.searchKeyword}
+          ]
+        }
+      })
+    }
 
     const results = await fastify.paginate(fastify.mongoose.User, query, baseOptions)
 
