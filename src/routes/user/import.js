@@ -69,42 +69,40 @@ module.exports = async (fastify, opts) => {
         }
       }
 
-      if (user[9] === ROLE.TEACHER) {
-        Object.assign(school, {
-          addressNo: {
-            text: school.addressNo,
-            isModified: false
-          },
-          villageNo: {
-            text: school.villageNo,
-            isModified: false,
-          },
-          lane: {
-            text: school.lane,
-            isModified: false,
-          },
-          road: {
-            text: school.road,
-            isModified: false,
-          },
-          district: {
-            text: school.district,
-            isModified: false,
-          },
-          subDistrict: {
-            text: school.subDistrict,
-            isModified: false,
-          },
-          postalCode: {
-            text: school.postalCode,
-            isModified: false,
-          },
-          department: {
-            text: school.department,
-            isModified: false,
-          }
-        })
-      }
+      Object.assign(school, {
+        addressNo: {
+          text: school.addressNo,
+          isModified: false
+        },
+        villageNo: {
+          text: school.villageNo,
+          isModified: false,
+        },
+        lane: {
+          text: school.lane,
+          isModified: false,
+        },
+        road: {
+          text: school.road,
+          isModified: false,
+        },
+        district: {
+          text: school.district,
+          isModified: false,
+        },
+        subDistrict: {
+          text: school.subDistrict,
+          isModified: false,
+        },
+        postalCode: {
+          text: school.postalCode,
+          isModified: false,
+        },
+        department: {
+          text: school.department,
+          isModified: false,
+        }
+      })
 
       const salt = 10;
       const hashed = bcrypt.hashSync(user[6], salt)
