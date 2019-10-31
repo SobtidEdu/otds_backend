@@ -12,7 +12,7 @@ module.exports = async (fastify, opts) => {
     ]
   }, async (request) => {
     const { query } = request
-
+    
     const baseOptions = [
       {
         $project: { 

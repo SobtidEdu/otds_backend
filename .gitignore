@@ -8,4 +8,5 @@
 /storage/.*
 /storage/images/.*
 
+dbdata/
 data/
