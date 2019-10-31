@@ -59,7 +59,7 @@ module.exports = async (fastify, opts) => {
     if (body.email) {
       body.email = body.email.toLowerCase()
     }
-    
+
     body.school.name.text = body.school.name.text.replace('โรงเรียน', '') //_.trimStart(body.school.name.text, 'โรงเรียน')
 
     _.forIn(body.school, function(value, key) {
@@ -87,6 +87,9 @@ module.exports = async (fastify, opts) => {
     const html = await fastify.htmlTemplate.getConfirmationRegisterTemplate(body)
 
     user = Object.assign(user, body)
+
+    user.isConfirmationEmail = body.role === ROLE.STUDENT && !body.email
+
     await user.save()
     
     if (body.email) {
