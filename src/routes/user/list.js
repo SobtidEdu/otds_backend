@@ -37,8 +37,9 @@ module.exports = async (fastify, opts) => {
       baseOptions.unshift({
         $match: {
           $or: [
-            { name: query.searchKeyword},
-            { 'school.name.text': query.searchKeyword}
+            { firstName: new RegExp(`^${query.searchKeyword}`, 'i') },
+            { lastName: new RegExp(`^${query.searchKeyword}`, 'i') },
+            { 'school.name.text': new RegExp(`^${query.searchKeyword}`, 'i') }
           ]
         }
       })
