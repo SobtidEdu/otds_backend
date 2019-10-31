@@ -7,11 +7,7 @@ module.exports = fp(async (fastify, options, next) => {
   fastify.decorate('paginate', async (mongooseModel, paginateOptions, aggregateBaseOptions = []) => {
     const page = paginateOptions.page*1 || PAGE_NO
     const limit = paginateOptions.limit*1 || PAGE_LIMIT
-    const sortKey = paginateOptions.sort ? Object.keys(paginateOptions.sort)[0] : SORT_KEY
-    const sortMethod = paginateOptions.sort ? paginateOptions.sort[sortKey] : 'desc'
-    const sort = {
-      [sortKey]: sortMethod
-    }
+    const sort = paginateOptions.sort || { [SORT_KEY]: 'desc' }
     
     indexOfMatchOption = aggregateBaseOptions.findIndex(option => option['$match'] !== undefined )
     let matchOption = { $match: {} }
