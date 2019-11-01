@@ -54,10 +54,10 @@ module.exports = async (fastify, options) => {
 
     if (!query.limit) query.limit = 100000
     // Guest: use in register
-    if (!request.user || request.user.role !== ROLE.ADMIN) {
-      query.filters = Object.assign(query.filters || {}, { isActive: true })
-      aggregate = [{ $project: { name: 1 } }]
-    }
+    // if (!request.user || request.user.role !== ROLE.ADMIN) {
+    //   query.filters = Object.assign(query.filters || {},)
+    //   aggregate = [{ $project: { name: 1 } }]
+    // }
     
     return fastify.paginate(fastify.mongoose.School, query, aggregate)
   })
