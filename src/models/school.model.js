@@ -6,10 +6,7 @@ module.exports = {
   name: 'schools',
   alias: 'School',
   schema: {
-    name: {
-      type: String,
-      unique: true
-    },
+    name: { type: String },
     addressNo: { type: String },
     villageNo: { type: String },
     lane: { type: String },
