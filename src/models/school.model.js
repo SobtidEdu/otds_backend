@@ -23,10 +23,6 @@ module.exports = {
       ref: "Province"
     },
     remark: { type: String },
-    isActive: {
-      type: Boolean,
-      default: true
-    },
     createdAt: {
       type: Number,
       default: moment().unix()
