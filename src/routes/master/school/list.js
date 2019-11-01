@@ -56,7 +56,7 @@ module.exports = async (fastify, options) => {
     // Guest: use in register
     if (!request.user || request.user.role !== ROLE.ADMIN) {
       query.filters = Object.assign(query.filters || {}, {isActive: true})
-      aggregate = [{ $project: { name: 1, isActive: 1 } }]
+      aggregate = [{ $project: { name: 1 } }]
     }
     
     return fastify.paginate(fastify.mongoose.School, query, aggregate)
