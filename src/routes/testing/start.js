@@ -21,7 +21,7 @@ module.exports = async (fastify, opts) => {
 
       const testingData = {
         userId: user._id, 
-        isStudentTesting: user.role === 'student' ? true : false,
+        // isStudentTesting: user.role === 'student' ? true : false,
         finishedAt: null,
         examId
       }
@@ -33,10 +33,12 @@ module.exports = async (fastify, opts) => {
       }
 
       const testingExist = await fastify.mongoose.Testing.findOne(finder).lean()
-
+      console.log(testingExist)
       if (testingExist) {
         return { ...testingExist, questions }
       }
+
+      return { 'message': 'test'}
 
       const testing = await fastify.mongoose.Testing.create(Object.assign(testingData, { startedAt: moment().unix() }))
 
