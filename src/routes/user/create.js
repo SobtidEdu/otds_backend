@@ -111,6 +111,7 @@ module.exports = async (fastify, opts) => {
     }
 
     user.isSeenModified = true
+    user.isConfirmationEmail = true
 
     const salt = 10;
     const hashed = bcrypt.hashSync(body.password, salt)

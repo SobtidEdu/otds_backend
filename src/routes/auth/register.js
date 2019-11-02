@@ -88,7 +88,7 @@ module.exports = async (fastify, opts) => {
 
     user = Object.assign(user, body)
 
-    user.isConfirmationEmail = body.role === ROLE.STUDENT && !body.email
+    user.isConfirmationEmail = body.role === ROLE.STUDENT
 
     await user.save()
     
