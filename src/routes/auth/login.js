@@ -30,7 +30,7 @@ module.exports = async (fastify, opts) => {
       fastify.mongoose.User.updateOne({ _id }, { isLoggedOut: false, lastLoggedInAt: moment().unix() })
     ])
 
-    return { role, prefixName, firstName, lastName, profileImage: fastify.storage.getUrlProfileImage(profileImage), email, token }
+    return { _id, role, prefixName, firstName, lastName, profileImage: fastify.storage.getUrlProfileImage(profileImage), email, token }
   })
 
   fastify.post('/logout', {
