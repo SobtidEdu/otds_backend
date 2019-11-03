@@ -21,12 +21,12 @@ module.exports = async (fastify) => {
       let exam = {}
       
       if (query.searchType && query.searchType === 'code') {
-        exam = await fastify.mongoose.Exam.findOne({ code: params.examId }).select('-questions').lean()
+        exam = await fastify.mongoose.Exam.findOne({ code: params.examId }).select(query.includeQuestion ? '' : '-questions').lean()
         if (!exam) {
           throw fastify.httpErrors.notFound(`Not found exam id ${params.examId}`)
         }
       } else {
-        exam = await fastify.mongoose.Exam.findOne({ _id: params.examId }).select('-questions').lean()
+        exam = await fastify.mongoose.Exam.findOne({ _id: params.examId }).select(query.includeQuestion ? '' : '-questions').lean()
         if (!exam) {
           throw fastify.httpErrors.notFound(`ไม่พบชุดข้อสอบ`)
         }
