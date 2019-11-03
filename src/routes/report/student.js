@@ -78,7 +78,7 @@ module.exports = async (fastify, options) => {
     .map(data => ({
       userId: data._id.userId,
       groupId: data._id.groupId,
-      profileImage: data.user.profileImage,
+      profileImage: fastify.storage.getUrlProfileImage(data.user.profileImage),
       name: `${data.user.prefixName} ${data.user.firstName} ${data.user.lastName}`,
       schoolName: data.user.school.name.text,
       testingId: data.testingId,
