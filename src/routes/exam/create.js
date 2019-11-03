@@ -72,46 +72,7 @@ module.exports = async (fastify) => {
 
     const response = await fastify.mongoose.Exam.create(exams)
 
-    // exams.forEach( async (exam, i) => {
-    //   let data = Object.assign({}, body)
-    //   if (data.examSetTotal > 1) {
-    //     data.name = body.name + ` (ชุดที่ ${parseInt(i)+1})`
-    //   }
-    //   let { ResponseItemGroup } = exam.ResponseItemGroup_ResponseTestsetGroup
-    //   data.code = exam.TestSetID
-    //   if (!Array.isArray(exam.ResponseItemGroup_ResponseTestsetGroup.ResponseItemGroup)) {
-    //     ResponseItemGroup = [ResponseItemGroup]
-    //   }
-    //   data.questions = ResponseItemGroup.map(question => ({
-    //     seq: question.ItemSeq,
-    //     id: question.ItemID,
-    //     type: question.QuestionType,
-    //     text: question.ItemQuestion,
-    //     suggestedTime: parseFloat(question.SuggestedTime),
-    //     explanation: question.Explanation,
-    //     lessonId: questions.Lessons ? questions.Lessons : null,
-    //     unit: question.QuestionType === 'SA' ?  question.ItemShortAnswer_ResponseItemGroup.Unit : '',
-    //     answers: question.QuestionType !== 'TF' ? transformAnswerByQuestionType(question) : [],
-    //     subQuestions: question.QuestionType === 'TF' ? question.ItemTFSubquestion_ResponseItemGroup.ItemTFSubquestion.map(subQuestion => ({
-    //       no: subQuestion.ItemNo,
-    //       text: subQuestion.ItemSubQuestion,
-    //       answers: subQuestion.ItemTFChoice_ItemTFSubquestion.ItemTFChoice.map(subAnswer => ({
-    //         seq: subAnswer.ItemChoiceSeq,
-    //         text: subAnswer.ItemChoice,
-    //         key: subAnswer.ItemChoiceKey === 'True'
-    //       }))
-    //     })) : []
-    //   }))
-    //   data.quantity = data.questions.length
-
-    //   if (i = 0) {
-    //     firstExam = (await fastify.mongoose.Exam.create(data)).toObject()
-    //   } else {
-    //     await fastify.mongoose.Exam.create(data)
-    //   }
-    // })
-
-    return response[0]
+    return response
   })
 }
 

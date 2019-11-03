@@ -83,7 +83,7 @@ module.exports = fp(async (fastify, options) => {
       return instance.get(`/ws/RequestFixedRandomTestSet`, { params })
       .then(response => {
         const testSetGroup = response.data.ResponseFixedRandomTestset.ResponseTestsetGroup_ResponseFixedRandomTestset.ResponseTestsetGroup
-        console.log(testSetGroup.ResponseItemGroup_ResponseTestsetGroup.ResponseItemGroup)
+        // console.log(testSetGroup.ResponseItemGroup_ResponseTestsetGroup.ResponseItemGroup)
         return params.NoStudents == 1 ? [testSetGroup] : testSetGroup
       })
       .catch(e => {
@@ -112,7 +112,6 @@ module.exports = fp(async (fastify, options) => {
       return instance.post(`/ws/request-custom-test-set`, {
         request_name: params.RequestedName,
         request_type: params.RequestType,
-        //request_type: params.RequestType,
         test_set_type: 'FI',
         learning_area: "",
         key_stage: "",
