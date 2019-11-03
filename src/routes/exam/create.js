@@ -52,7 +52,7 @@ module.exports = async (fastify) => {
         text: question.ItemQuestion,
         suggestedTime: parseFloat(question.SuggestedTime),
         explanation: question.Explanation,
-        lessonId: questions.Lessons ? questions.Lessons : null,
+        lessonId: question.Lessons ? question.Lessons : null,
         unit: question.QuestionType === 'SA' ?  question.ItemShortAnswer_ResponseItemGroup.Unit : '',
         answers: question.QuestionType !== 'TF' ? transformAnswerByQuestionType(question) : [],
         subQuestions: question.QuestionType === 'TF' ? question.ItemTFSubquestion_ResponseItemGroup.ItemTFSubquestion.map(subQuestion => ({
