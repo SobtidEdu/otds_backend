@@ -35,22 +35,16 @@ module.exports = async (fastify) => {
       exams = [exams]
     }
 
-    for (let i; i < exams.length; i++) {
-      
+    exams = exams.map((exam, i) => {
       let data = Object.assign({}, body)
-
       if (data.examSetTotal > 1) {
         data.name = body.name + ` (ชุดที่ ${parseInt(i)+1})`
       }
-      
-      let { ResponseItemGroup } = exams[i].ResponseItemGroup_ResponseTestsetGroup
-      
-      data.code = exams[i].TestSetID
-      
-      if (!Array.isArray(exams[i].ResponseItemGroup_ResponseTestsetGroup.ResponseItemGroup)) {
+      let { ResponseItemGroup } = exam.ResponseItemGroup_ResponseTestsetGroup
+      data.code = exam.TestSetID
+      if (!Array.isArray(exam.ResponseItemGroup_ResponseTestsetGroup.ResponseItemGroup)) {
         ResponseItemGroup = [ResponseItemGroup]
       }
-      
       data.questions = ResponseItemGroup.map(question => ({
         seq: question.ItemSeq,
         id: question.ItemID,
@@ -73,12 +67,10 @@ module.exports = async (fastify) => {
       }))
       data.quantity = data.questions.length
 
-      if (i = 0) {
-        firstExam = (await fastify.mongoose.Exam.create(data)).toObject()
-      } else {
-        await fastify.mongoose.Exam.create(data)
-      }
-    }
+      return data
+    })
+
+    const response = await fastify.mongoose.Exam.create(exams)
 
     // exams.forEach( async (exam, i) => {
     //   let data = Object.assign({}, body)
@@ -119,7 +111,7 @@ module.exports = async (fastify) => {
     //   }
     // })
 
-    return firstExam
+    return response[0]
   })
 }
 
