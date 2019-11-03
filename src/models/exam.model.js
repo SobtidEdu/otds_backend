@@ -70,6 +70,7 @@ module.exports = {
       text: { type: String },
       suggestedTime: { type: Number },
       explanation: { type: String },
+      unit: { type: String },
       answers: Schema.Types.Mixed,
       subQuestions: Schema.Types.Mixed
     }],
