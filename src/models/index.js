@@ -12,4 +12,5 @@ module.exports = [
   require('./notification.model'),
   require('./exam-configuration.model'),
   require('./exam-suggestion.model'),
+  require('./login-stat.model')
 ]

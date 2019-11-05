@@ -1,9 +1,7 @@
 'use strict'
 
-const { ROLE, GROUP_STATUS } = require('@config/user')
+const { ROLE } = require('@config/user')
 const { STUDENT_STATUS } = require('@config/group')
-const util = require('util');
-const Memcached = require('memcached');
 
 module.exports = async (fastify, options) => {
 
