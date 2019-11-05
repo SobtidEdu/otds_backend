@@ -18,7 +18,7 @@ module.exports = async (fastify, options) => {
     const aggregate = [
       {
         $match: {
-          year: query.year
+          year: parseInt(query.year)
         }
       },
       {
@@ -81,6 +81,62 @@ module.exports = async (fastify, options) => {
       teacher: stats.teacher,
       superTeacher: stats.superTeacher,
       admin: stats.admin,
+      total: [stats.student, stats.teacher, stats.superTeacher, stats.admin].reduce((total, num) => total + num)
     }))
+  })
+
+  fastify.get('/login/detail/:year/:month', {
+    preValidation: [
+      fastify.authenticate(),
+      fastify.authorize([ROLE.ADMIN])
+    ]
+  }, async (request, reply) => {
+    const { params } = request
+
+    const aggregate = [
+      {
+        $match: {
+          year: parseInt(params.year),
+          month: parseInt(params.month)
+        }
+      },
+      {
+        $unwind: "$users"
+      },
+      {
+        $lookup: {
+          from: 'users',
+          localField: 'users._id',
+          foreignField: '_id',
+          as: 'user'
+        }
+      },
+      {
+        $unwind: "$user"
+      },
+      {
+        $lookup: {
+          from: 'provinces',
+          localField: 'user.school.province.id',
+          foreignField: '_id',
+          as: 'province'
+        }
+      },
+      {
+        $unwind: "$province"
+      },
+      {
+        $group: {
+          _id: {
+            province: "$province.name",
+            region: "$province.region",
+          },
+          count: { $sum: 1 }
+        }
+      }
+    ] 
+
+    const response = await fastify.mongoose.LoginStat.aggregate(aggregate)
+    return response
   })
 }
