@@ -33,7 +33,7 @@ module.exports = async (fastify, opts) => {
       fastify.mongoose.LoginStat.update({ day: date.getDate(), month: date.getMonth()+1, year: date.getFullYear() }, { $push: { users: { _id: user._id, role } } }, { upsert: true })
     ])
 
-    return { role, prefixName, firstName, lastName, profileImage: fastify.storage.getUrlProfileImage(profileImage), email, token }
+    return { _id, role, prefixName, firstName, lastName, profileImage: fastify.storage.getUrlProfileImage(profileImage), email, token }
   })
 
   fastify.post('/logout', {

@@ -12,6 +12,8 @@ module.exports = async (fastify, opts) => {
 
     const suggestionExam = await fastify.mongoose.ExamSuggestion.findOne({}).lean()
 
+    if (!suggestionExam) return []
+    
     const { list } = suggestionExam
 
     if (!list || list.length == 0) return []
@@ -99,7 +101,7 @@ module.exports = async (fastify, opts) => {
     let examSuggestion = await fastify.mongoose.ExamSuggestion.findOne({})
 
     if (!examSuggestion) {
-      examSuggestion = new fastify.mongoose.ExamSuggestion()
+      examSuggestion = new fastify.mongoose.ExamSuggestion({ list: [] })
     }
 
     examSuggestion.list.push({ exam: exam._id })

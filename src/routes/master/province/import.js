@@ -37,14 +37,14 @@ module.exports = async (fastify, options) => {
     
     const length = provinces.length
 
-    console.log(provinces)
-
     for (let i = 1; i < length; i++) {
       const province = provinces[i]
+
+      if (!['ใต้', 'กลาง', 'ตะวันออกเฉียงเหนือ', 'ตะวันออก', 'ตะวันตก', 'เหนือ'].includes(province[1])) return fastify.httpErrors.badRequest(`ภูมิภาคไม่ถูกต้อง '${province[1]}' แถวที่ [${i}]`)
+
       await fastify.mongoose.Province.findOneAndUpdate({
         name: province[0]
       }, {
-        isActive: ['1', ''].includes(province[2]) ? true : false,
         region: province[1],
         createdAt: moment().unix(),
         updatedAt: moment().unix(),

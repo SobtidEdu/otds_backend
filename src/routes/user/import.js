@@ -57,53 +57,48 @@ module.exports = async (fastify, opts) => {
 
       const school = await fastify.mongoose.School.findOne({ name: user[5] })
       if (!school) return fastify.httpErrors.badRequest(`ไม่พบโรงเรียน '${user[5]}' แถวที่ [${i+1}]`)
-      
-      let schoolCreate = {
+
+      const schoolCreate = {
         name: {
           text: user[5],
           isModified: false
         },
+        addressNo: {
+          text: school.addressNo,
+          isModified: false
+        },
+        villageNo: {
+          text: school.villageNo,
+          isModified: false,
+        },
+        lane: {
+          text: school.lane,
+          isModified: false,
+        },
+        road: {
+          text: school.road,
+          isModified: false,
+        },
+        district: {
+          text: school.district,
+          isModified: false,
+        },
+        subDistrict: {
+          text: school.subDistrict,
+          isModified: false,
+        },
+        postalCode: {
+          text: school.postalCode,
+          isModified: false,
+        },
         province: {
           id: school.province._id,
           isModified: false,
+        },
+        department: {
+          text: school.department,
+          isModified: false,
         }
-      }
-
-      if (user[9] === ROLE.TEACHER) {
-        Object.assign(school, {
-          addressNo: {
-            text: school.addressNo,
-            isModified: false
-          },
-          villageNo: {
-            text: school.villageNo,
-            isModified: false,
-          },
-          lane: {
-            text: school.lane,
-            isModified: false,
-          },
-          road: {
-            text: school.road,
-            isModified: false,
-          },
-          district: {
-            text: school.district,
-            isModified: false,
-          },
-          subDistrict: {
-            text: school.subDistrict,
-            isModified: false,
-          },
-          postalCode: {
-            text: school.postalCode,
-            isModified: false,
-          },
-          department: {
-            text: school.department,
-            isModified: false,
-          }
-        })
       }
 
       const salt = 10;

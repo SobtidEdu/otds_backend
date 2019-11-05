@@ -15,7 +15,14 @@ module.exports = async (fastify, options) => {
     const prefix = await fastify.mongoose.Prefix.findOne({}).lean()
     const { data } = prefix
 
+    // Validate duplicated prefix name
+    console.log(data)
+    console.log(params.prefixId)
+    console.log(data)
+    if (data.find(pf => pf.name == body.name && pf._id.toString() !== params.prefixId)) throw fastify.httpErrors.unprocessableEntity('คำนำหน้าชื่อซ้ำ')
+
     const indexPrefix = data.findIndex(p => p._id.toString() === params.prefixId)
+
     if (indexPrefix > -1) {
       const prefixUpdate = {
         name: body.name || data[indexPrefix].name,

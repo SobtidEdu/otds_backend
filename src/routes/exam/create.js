@@ -16,7 +16,7 @@ module.exports = async (fastify) => {
     
     const { user, body } = request
     let exams = null
-    let firstExam = new fastify.mongoose.Exam(body)
+    let firstExam = null
 
     body.owner = user._id
     body.bankType = body.bankType ? fastify.utils.capitalize(body.bankType) : 'Public'
@@ -35,7 +35,7 @@ module.exports = async (fastify) => {
       exams = [exams]
     }
 
-    exams.forEach( async (exam, i) => {
+    exams = exams.map((exam, i) => {
       let data = Object.assign({}, body)
       if (data.examSetTotal > 1) {
         data.name = body.name + ` (ชุดที่ ${parseInt(i)+1})`
@@ -52,6 +52,8 @@ module.exports = async (fastify) => {
         text: question.ItemQuestion,
         suggestedTime: parseFloat(question.SuggestedTime),
         explanation: question.Explanation,
+        lessonId: question.Lessons ? question.Lessons : null,
+        unit: question.QuestionType === 'SA' ?  question.ItemShortAnswer_ResponseItemGroup.Unit : '',
         answers: question.QuestionType !== 'TF' ? transformAnswerByQuestionType(question) : [],
         subQuestions: question.QuestionType === 'TF' ? question.ItemTFSubquestion_ResponseItemGroup.ItemTFSubquestion.map(subQuestion => ({
           no: subQuestion.ItemNo,
@@ -64,14 +66,13 @@ module.exports = async (fastify) => {
         })) : []
       }))
       data.quantity = data.questions.length
-      if (i = 0) {
-        firstExam = (await fastify.mongoose.Exam.create(data)).toObject()
-      } else {
-        await fastify.mongoose.Exam.create(data)
-      }
+
+      return data
     })
 
-    return firstExam
+    const response = await fastify.mongoose.Exam.create(exams)
+
+    return response
   })
 }
 

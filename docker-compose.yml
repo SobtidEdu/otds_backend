@@ -9,15 +9,15 @@ services:
     restart: unless-stopped
     env_file: .env
     ports:
-      - "80:3000"
+      - "3100:3000"
     volumes:
       - ./src:/usr/src/app/src
       - ./storage:/usr/src/app/storage
       - ./server.js:/usr/src/app/server.js
-    # depends_on:
-    #  - db
-    # networks:
-    #   - app-network
+    depends_on:
+     - mongodb
+    networks:
+      - app-network
     # command: sh wait-for.sh db:27017 -- /home/node/app/node_modules/.bin/nodemon server.js
   # cache-server:
   #   image: memcached
@@ -31,26 +31,22 @@ services:
   #       reservations:
   #         cpus: '0.25'
   #         memory: 20M
-#   db:
-#     image: mongo:4.1.8-xenial
-#     container_name: otds_mongodb
-#     restart: unless-stopped
-#     env_file: .env
-#     environment:
-#       - MONGO_INITDB_ROOT_USERNAME=$MONGO_USERNAME
-#       - MONGO_INITDB_ROOT_PASSWORD=$MONGO_PASSWORD
-#     ports:
-#       - "27017:27017"
-#     volumes:
-#       - dbdata:/data/db
-#     networks:
-#       - app-network
-#     command: mongod --auth
+  mongodb:
+    image: mongo:4.2
+    container_name: otds_mongodb
+    restart: unless-stopped
+    ports:
+      - "27017:27017"
+    volumes:
+      - ./dbdata:/data/db
+    networks:
+      - app-network
+    command: mongod --auth
 
-# networks: 
-#   app-network:
-#     driver: bridge
+networks: 
+  app-network:
+    driver: bridge
 
-# volumes:
-#   dbdata:
-#   node_modules:  
+volumes:
+  dbdata:
+  # node_modules:  

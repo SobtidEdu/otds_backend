@@ -6,10 +6,7 @@ module.exports = {
   name: 'schools',
   alias: 'School',
   schema: {
-    name: {
-      type: String,
-      unique: true
-    },
+    name: { type: String },
     addressNo: { type: String },
     villageNo: { type: String },
     lane: { type: String },
@@ -23,10 +20,6 @@ module.exports = {
       ref: "Province"
     },
     remark: { type: String },
-    isActive: {
-      type: Boolean,
-      default: true
-    },
     createdAt: {
       type: Number,
       default: moment().unix()

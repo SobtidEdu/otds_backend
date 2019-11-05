@@ -16,6 +16,8 @@ module.exports = async (fastify, options) => {
 
     const group = await fastify.mongoose.Group.findOne({ _id: params.id })
 
+    if (!group) throw fastify.httpErrors.notFound('Not found group id')
+    
     const myGroup = user.groups.toObject().find(myGroup => myGroup.info.toString() === group._id.toString())
 
     const groupDetail = {

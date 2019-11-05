@@ -83,7 +83,7 @@ module.exports = fp(async (fastify, options) => {
       return instance.get(`/ws/RequestFixedRandomTestSet`, { params })
       .then(response => {
         const testSetGroup = response.data.ResponseFixedRandomTestset.ResponseTestsetGroup_ResponseFixedRandomTestset.ResponseTestsetGroup
-        // console.log(testSetGroup)
+        // console.log(testSetGroup.ResponseItemGroup_ResponseTestsetGroup.ResponseItemGroup)
         return params.NoStudents == 1 ? [testSetGroup] : testSetGroup
       })
       .catch(e => {
@@ -112,7 +112,6 @@ module.exports = fp(async (fastify, options) => {
       return instance.post(`/ws/request-custom-test-set`, {
         request_name: params.RequestedName,
         request_type: params.RequestType,
-        //request_type: params.RequestType,
         test_set_type: 'FI',
         learning_area: "",
         key_stage: "",
@@ -140,6 +139,24 @@ module.exports = fp(async (fastify, options) => {
       console.log(params)
       // return params
       return instance.get(`/ws/RequestFirstItemCAT`, { params })
+      .then(response => {
+        const testSetGroup = response.data.ResponseFixedRandomTestset.ResponseTestsetGroup_ResponseFixedRandomTestset.ResponseTestsetGroup
+        return params.NoStudents == 1 ? [testSetGroup] : testSetGroup
+      })
+      .catch(e => {
+        const errorResponse = e.response.data
+        console.error(errorResponse)
+        throw new Error(errorResponse.ResponseFirstItemCAT.ErrorMessage)
+      })
+    },
+
+    requestSendTestsetStat: async (params) => {
+      params.RequestedName = OTIMS_USER
+      params.RequestedNo = `${OTIMS_USER}RequestSendTestsetStat${params.RequestType}${moment().format('YYYYMMDDHHmmSSS')}`
+
+      console.log(params)
+      // return params
+      return instance.get(`/ws/RequestSendTestSetStat`, { params })
       .then(response => {
         const testSetGroup = response.data.ResponseFixedRandomTestset.ResponseTestsetGroup_ResponseFixedRandomTestset.ResponseTestsetGroup
         return params.NoStudents == 1 ? [testSetGroup] : testSetGroup
