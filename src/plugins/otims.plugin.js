@@ -141,7 +141,7 @@ module.exports = fp(async (fastify, options) => {
       return instance.get(`/ws/RequestFirstItemCAT`, { params })
       .then(response => {
         console.log(response.data)
-        const testSetGroup = response.data.ResponseFixedRandomTestset.ResponseTestsetGroup_ResponseFixedRandomTestset.ResponseTestsetGroup
+        const testSetGroup = response.data.ResponseFirstItemCAT.ResponseTestsetGroup_ResponseFixedRandomTestset.ResponseTestsetGroup
         return params.NoStudents == 1 ? [testSetGroup] : testSetGroup
       })
       .catch(e => {

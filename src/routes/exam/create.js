@@ -10,13 +10,11 @@ module.exports = async (fastify) => {
   fastify.post('/', {
     preValidation: [
       (request) => fastify.validate(schema, request),
-      fastify.authenticate()
+      fastify.authenticate({ allowGuest: true })
     ]
   }, async (request) => {
-    
     const { user, body } = request
     let exams = null
-    let firstExam = null
 
     body.owner = user._id
     body.bankType = body.bankType ? fastify.utils.capitalize(body.bankType) : 'Public'

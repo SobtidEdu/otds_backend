@@ -5,7 +5,7 @@ const { ROLE } = require('@config/user')
 module.exports = async (fastify, opts) => {
   fastify.get('/', {
     preValidation: [
-      fastify.authenticate()
+      fastify.authenticate({ allowGuest: true })
     ]
   }, async (request) => {
     const { user, query } = request
