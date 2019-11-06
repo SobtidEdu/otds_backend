@@ -54,7 +54,8 @@ module.exports = async function(fastify, opts, next) {
             type: 1,
             status: 1,
             subject: 1,
-            testing: 1
+            testing: 1,
+            oneTimeDone: 1
           }
         }
       ])

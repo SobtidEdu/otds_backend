@@ -61,6 +61,7 @@ module.exports = async (fastify, opts) => {
             testing: 1,
             type: 1,
             status: 1,
+            oneTimeDone: 1,
             createdAt: 1,
           }
         }
