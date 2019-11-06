@@ -144,6 +144,7 @@ module.exports = fp(async (fastify, options) => {
         return params.NoStudents == 1 ? [testSetGroup] : testSetGroup
       })
       .catch(e => {
+        console.error(e)
         const errorResponse = e.response.data
         console.error(errorResponse)
         throw new Error(errorResponse.ResponseFirstItemCAT.ErrorMessage)
