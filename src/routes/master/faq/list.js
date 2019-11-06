@@ -13,15 +13,17 @@ module.exports = async (fastify, options) => {
   }, async (request) => {
     const { user } = request
     let finder = {}
-    if (user.role === ROLE.ADMIN) {}
+
+    if (!user) {
+      finder = { visible: 'guest', isActive: true }
+    }
     else if (user.role === ROLE.STUDENT) {
       finder = { visible: 'student', isActive: true }
     }
     else if (user.role === ROLE.TEACHER || user.role === ROLE.SUPER_TEACHER) {
       finder = { visible: 'teahcer', isActive: true }
-    } else {
-      finder = { visible: 'guest', isActive: true }
     }
+    
     return await fastify.mongoose.FAQ.find(finder)
   })
 }
