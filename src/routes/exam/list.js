@@ -27,6 +27,7 @@ module.exports = async (fastify, opts) => {
             as: 'owner'
           }
         },
+        { $unwind: "$owner" },
         { 
           $lookup: {
             from: 'testings',
@@ -35,19 +36,16 @@ module.exports = async (fastify, opts) => {
               { 
                 $match: {
                   $expr: {
-                    $and: [
-                      { $eq: ['$examId', '$$id'] },
-                      { $eq: ['$finishedAt', null ]}
-                    ]
+                    $eq: ['$examId', '$$id']
                   }
                 }
               },
-              { $project: { _id : 1 } }
+              { $sort: { startedAt : -1 } },
+              { $limit: 1 }
             ],
-            as: 'latestTesting'
+            as: 'testing'
           }
         },
-        { $unwind: "$owner" },
         { $unwind: { path: "$latestTesting", "preserveNullAndEmptyArrays": true } },
         {
           $project: { 
@@ -61,7 +59,7 @@ module.exports = async (fastify, opts) => {
               lastName: 1,
               role: 1
             },
-            latestTesting: 1,
+            testing: 1,
             type: 1,
             status: 1,
             createdAt: 1,
