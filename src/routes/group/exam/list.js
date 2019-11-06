@@ -22,7 +22,44 @@ module.exports = async function(fastify, opts, next) {
 
       let examIdsArray = group.exams.map(exam => exam._id)
       
-      const exams = await fastify.mongoose.Exam.find({ _id: { $in: examIdsArray } }).select('_id code name type status subject').lean()
+      const exams = await fastify.mongoose.Exam.aggregate([
+        { 
+          $match: {
+            _id: { $in: examIdsArray }
+          }
+        },
+        { 
+          $lookup: {
+            from: 'testings',
+            let: { id: '$_id' },
+            pipeline: [
+              { 
+                $match: {
+                  $expr: {
+                    $eq: ['$examId', '$$id']
+                  }
+                }
+              },
+              { $sort: { finishedAt : 1 } },
+              { $limit: 1 }
+            ],
+            as: 'testing'
+          }
+        },
+        {
+          $project: {
+            _id: 1,
+            code: 1,
+            name: 1,
+            type: 1,
+            status: 1,
+            subject: 1,
+            testing: 1
+          }
+        }
+      ])
+
+
       return exams.map(exam => {
         const examInGroup = group.exams.find(examInGroup => examInGroup._id.toString() === exam._id.toString())
         return {...exam, statusInGroup: examInGroup.status, addedAt: examInGroup.addedAt}

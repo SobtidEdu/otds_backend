@@ -40,13 +40,12 @@ module.exports = async (fastify, opts) => {
                   }
                 }
               },
-              { $sort: { startedAt : -1 } },
+              { $sort: { finishedAt : 1 } },
               { $limit: 1 }
             ],
             as: 'testing'
           }
         },
-        { $unwind: { path: "$latestTesting", "preserveNullAndEmptyArrays": true } },
         {
           $project: { 
             _id: 1,

@@ -39,7 +39,7 @@ module.exports = async (fastify) => {
       if (query.groupId) {
         queryTesting.groupId = query.groupId
       }
-      const testing = await fastify.mongoose.Testing.find(queryTesting).sort({ finishedAt: -1 }).limit(1)
+      const testing = await fastify.mongoose.Testing.find(queryTesting).sort({ finishedAt: 1 }).limit(1)
 
       return { ...exam, testing }
     } catch (e) {
