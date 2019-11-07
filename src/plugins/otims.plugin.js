@@ -151,6 +151,26 @@ module.exports = fp(async (fastify, options) => {
       })
     },
 
+    requestNextItemCAT: async (params) => {
+      params.RequestedName = OTIMS_USER
+      params.RequestedNo = `${OTIMS_USER}RequestNextItemCAT${params.RequestType}${moment().format('YYYYMMDDHHmmSSS')}`
+      params.TestSetType = `CT`
+
+      // return params
+      return instance.get(`/ws/RequestNextItemCAT`, { params })
+      .then(response => {
+        const nextItemCAT = response.data.ResponseNextItemCAT
+        console.log(nextItemCAT)
+        return nextItemCAT
+      })
+      .catch(e => {
+        console.error(e)
+        const errorResponse = e.response.data
+        console.error(errorResponse)
+        throw new Error(errorResponse.ResponseFirstItemCAT.ErrorMessage)
+      })
+    },
+
     requestSendTestsetStat: async (params) => {
       params.RequestedName = OTIMS_USER
       params.RequestedNo = `${OTIMS_USER}RequestSendTestsetStat${params.RequestType}${moment().format('YYYYMMDDHHmmSSS')}`
