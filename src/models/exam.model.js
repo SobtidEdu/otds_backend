@@ -71,6 +71,7 @@ module.exports = {
       suggestedTime: { type: Number },
       explanation: { type: String },
       unit: { type: String },
+      lessonId: { type: Number },
       answers: Schema.Types.Mixed,
       subQuestions: Schema.Types.Mixed
     }],
