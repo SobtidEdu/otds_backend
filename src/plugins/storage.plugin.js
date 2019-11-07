@@ -14,7 +14,12 @@ module.exports = fp( async (fastify, options) => {
 
     removeProfileImage: (fileName) => {
       const dirpath = path.resolve(PROFILE_IMAGE_PATH)
-      fs.unlinkSync(dirpath+'/'+fileName)
+      try {
+        fs.unlinkSync(dirpath+'/'+fileName)
+      } catch (e) {
+        console.log(`Doesn't have image`)
+      }
+      
     },
     
     getUrlProfileImage: (filename) =>  `${fastify.env.APP_URL}/${PROFILE_IMAGE_PATH}/${ filename ? filename : 'default.png'}`, // return default image if null or empty
