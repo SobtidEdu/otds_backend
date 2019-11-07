@@ -4,7 +4,7 @@ const moment = require('moment')
 
 module.exports = async (fastify, opts) => { 
   fastify.get('/:testingId/result', {
-    preValidation:fastify.authenticate(),
+    preValidation:fastify.authenticate({ allowGuest: true }),
   }, async (request) => {
     let  { params } = request
 

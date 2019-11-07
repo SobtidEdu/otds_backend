@@ -11,7 +11,7 @@ module.exports = async (fastify, opts) => {
       fastify.authenticate({ allowGuest: true })
     ],
   }, async (request) => {
-    const { user, params } = request
+    const { params } = request
     
     const { testingId } = params
 

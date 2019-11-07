@@ -9,10 +9,10 @@ module.exports = async (fastify, opts) => {
       fastify.authenticate({ allowGuest: true })
     ],
   }, async (request) => {
-    const { user, body, params } = request
+    const { body, params } = request
     const { questionId, order, type, answer, note } = body
 
-    const testing = await fastify.mongoose.Testing.findOne({ _id: params.testingId, userId: user._id })
+    const testing = await fastify.mongoose.Testing.findOne({ _id: params.testingId })
     
     if (!testing) throw fastify.httpErrors.notFound(`Not found testing id: ${params.testingId}`)
 
