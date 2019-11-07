@@ -74,7 +74,7 @@ module.exports = async (fastify, options) => {
     ]
     
     const response = await fastify.mongoose.Testing.aggregate(aggregate)
-    return response
+    return response.filter(testing => !(testing._id.groupId && testing.group.length == 0))
     .map(data => ({
       userId: data._id.userId,
       groupId: data._id.groupId,
