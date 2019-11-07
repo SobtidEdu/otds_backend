@@ -136,13 +136,12 @@ module.exports = fp(async (fastify, options) => {
       params.RequestedNo = `${OTIMS_USER}RequestFirstItemCAT${params.RequestType}${moment().format('YYYYMMDDHHmmSSS')}`
       params.TestSetType = `CT`
 
-      console.log(params)
       // return params
       return instance.get(`/ws/RequestFirstItemCAT`, { params })
       .then(response => {
-        console.log(response.data)
-        const testSetGroup = response.data.ResponseFirstItemCAT.ResponseTestsetGroup_ResponseFixedRandomTestset.ResponseTestsetGroup
-        return params.NoStudents == 1 ? [testSetGroup] : testSetGroup
+        const firstItemCAT = response.data.ResponseFirstItemCAT
+        console.log(firstItemCAT)
+        return firstItemCAT
       })
       .catch(e => {
         console.error(e)
