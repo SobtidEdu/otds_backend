@@ -15,7 +15,7 @@ module.exports = async (fastify, opts) => {
     ]
   }, async (request) => {
     const { params, body } = request
-
+    const user = await fastify.mongoose.User.findOne({ _id: params.userId })
     if (body.school) {
       body.school.name.text = _.trimStart(body.school.name.text, 'โรงเรียน')
 
@@ -40,10 +40,6 @@ module.exports = async (fastify, opts) => {
     }
 
     if (body.password) {
-      const isValidCredential = await bcrypt.compareSync(body.password.old, user.password.hashed)
-      if (!isValidCredential) {
-        throw fastify.httpErrors.badRequest('รหัสผ่านผิดไม่ถูกต้อง')
-      }
       const salt = 10;
       const hashed = bcrypt.hashSync(body.password.new, salt)
       body.password = {
