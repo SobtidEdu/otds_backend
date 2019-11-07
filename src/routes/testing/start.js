@@ -42,10 +42,12 @@ module.exports = async (fastify, opts) => {
         finder.groupId = groupId
       }
 
-      const testingExist = await fastify.mongoose.Testing.findOne(finder).lean()
+      if (user) {
+        const testingExist = await fastify.mongoose.Testing.findOne(finder).lean()
       
-      if (testingExist) {
-        return { ...testingExist, questions }
+        if (testingExist) {
+          return { ...testingExist, questions }
+        }
       }
 
       const testing = await fastify.mongoose.Testing.create(Object.assign(testingData, { startedAt: moment().unix() }))
