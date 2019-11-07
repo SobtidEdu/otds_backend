@@ -23,49 +23,34 @@ module.exports = async (fastify, opts) => {
       }
     }
 
-    if (exam.type !== 'CAT') {
-      const { questions } = exam
+    const { questions } = exam
 
-      const testingData = {
-        // isStudentTesting: user.role === 'student' ? true : false,
-        finishedAt: null,
-        examId
-      }
-
-      if (user) {
-        testingData.userId = user._id
-      }
-
-      const finder = testingData
-
-      if (groupId) {
-        finder.groupId = groupId
-      }
-
-      if (user) {
-        const testingExist = await fastify.mongoose.Testing.findOne(finder).lean()
-      
-        if (testingExist) {
-          return { ...testingExist, questions }
-        }
-      }
-
-      const testing = await fastify.mongoose.Testing.create(Object.assign(testingData, { startedAt: moment().unix() }))
-
-      return { ...testing.toObject(), questions }
-
-    } else {
-      const params = {
-        // TestSetID: exam.subject
-        KeyStage: exam.grade,
-        LearningArea: exam.subject,
-        // TotalTime: กำหนดเวลาในการทำ (optional)
-        NoItems: exam.examSetTotal,
-        FollowStrand: "false",
-        BankType: exam.bankType,
-      }
-
-      return await fastify.otimsApi.requestFirstItemCAT(params)
+    const testingData = {
+      // isStudentTesting: user.role === 'student' ? true : false,
+      finishedAt: null,
+      examId
     }
+
+    if (user) {
+      testingData.userId = user._id
+    }
+
+    const finder = testingData
+
+    if (groupId) {
+      finder.groupId = groupId
+    }
+
+    if (user) {
+      const testingExist = await fastify.mongoose.Testing.findOne(finder).lean()
+    
+      if (testingExist) {
+        return { ...testingExist, questions }
+      }
+    }
+
+    const testing = await fastify.mongoose.Testing.create(Object.assign(testingData, { startedAt: moment().unix() }))
+
+    return { ...testing.toObject(), questions }
   })
 }

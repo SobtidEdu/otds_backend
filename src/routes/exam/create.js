@@ -42,6 +42,10 @@ module.exports = async (fastify) => {
       data.code = exam.TestSetID
       
       if (data.type == 'CAT') {
+        data.oneTimeDone = true
+        data.withoutRegistered = false
+        data.displayHowTo = false
+        data.displaySolution = false
         const { answers, type } = transformAnswerCAT(exam)
         data.questions = [{
           seq: exam.ItemSeq,
