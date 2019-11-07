@@ -25,10 +25,10 @@ module.exports = async (fastify, opts) => {
       })
     }
 
-    if (body.profileImage && body.profileImage.includes('data:image/')) {
-      const filename = `profile-${params.userId}`
+    if (body.profileImage && body.profileImage.startsWith('data:image/')) {
+      const filename = `profile-${user._id}${moment().unix()}`
       const extension = fastify.utils.getExtensionImage(body.profileImage)
-      const imageInfo = fastify.storage.diskProfileImage(body.profileImage, filename)
+      const imageInfo = fastify.storage.diskProfileImage(body.profileImage, filename, extension)
       
       if (user.profileImage) fastify.storage.removeProfileImage(user.profileImage)
 

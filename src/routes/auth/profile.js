@@ -51,6 +51,8 @@ module.exports = async (fastify, opts) => {
       if (user.profileImage) fastify.storage.removeProfileImage(user.profileImage)
 
       body.profileImage = imageInfo.fileName
+    } else {
+      delete body.profileImage
     }
 
     if (body.password) {
