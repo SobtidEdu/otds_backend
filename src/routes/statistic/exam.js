@@ -110,7 +110,7 @@ module.exports = async (fastify, options) => {
     const { params } = request
 
     const start = moment(`${params.year}${params.month}01000000 `, "YYYYMMDDHHmmss").unix()
-    const end = moment(`${params.year}${params.month}31235959 `, "YYYYMMDDHHmmss").unix()
+    const end = moment(`${params.year}${params.month}30235959 `, "YYYYMMDDHHmmss").unix()
 
     const aggregate = [
       {
@@ -131,7 +131,10 @@ module.exports = async (fastify, options) => {
       }
     ] 
 
-    const response = await fastify.mongoose.LoginStat.aggregate(aggregate)
-    return response
+    const response = await fastify.mongoose.Exam.aggregate(aggregate)
+    return response.map((stat) => ({
+      type: stat._id.type,
+      total: stat.count
+    }))
   })
 }
