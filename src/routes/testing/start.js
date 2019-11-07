@@ -14,16 +14,26 @@ module.exports = async (fastify, opts) => {
     const { examId, groupId } = body
 
     const exam = await fastify.mongoose.Exam.findOne({ _id: examId }).lean()
-    if (!exam) return fastify.httpErrors.notFound()
+    if (!exam) throw fastify.httpErrors.notFound('ไม่พบชุดข้อสอบ')
+    if (!user && !exam.withoutRegistered) throw fastify.httpErrors.forbidden('ไม่อนุญาตให้เข้าทำข้อสอบชุดนี้')
+    if (exam.oneTimeDone && user) {
+      const existingTesting = await fastify.mongoose.Testing.findOne({ examId: exam._id, userId: user._id })
+      if (existingTesting && existingTesting.finishedAt !== null) {
+        throw fastify.httpErrors.forbidden('ไม่อนุญาตให้เข้าทำข้อสอบชุดนี้')
+      }
+    }
 
     if (exam.type !== 'CAT') {
       const { questions } = exam
 
       const testingData = {
-        userId: user._id, 
         // isStudentTesting: user.role === 'student' ? true : false,
         finishedAt: null,
         examId
+      }
+
+      if (user) {
+        testingData.userId = user._id
       }
 
       const finder = testingData
