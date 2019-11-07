@@ -24,7 +24,7 @@ module.exports = async (fastify) => {
     if (body.type == EXAM_TYPE.GENERAL || body.type == EXAM_TYPE.COMPETITION) {
       exams = await fastify.otimsApi.requestFixedRandomTestSet(params)
     } else if (body.type == EXAM_TYPE.CAT) {
-      exams = await fastify.otimsApi.requestFirstItemCAT(params)
+      return await fastify.mongoose.Exam.create(body)
     } else if (body.type == EXAM_TYPE.CUSTOM) {
       exams = await fastify.otimsApi.requestCustomTestSet(params)
     }

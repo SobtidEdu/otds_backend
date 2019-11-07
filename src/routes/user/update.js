@@ -5,11 +5,9 @@ const { ROLE } = require('@config/user')
 const _ = require('lodash')
 
 module.exports = async (fastify, opts) => { 
-  const schema = {}
 
   fastify.patch('/:userId', {
     preValidation: [
-      (request) => fastify.validate(schema, request),
       fastify.authenticate(),
       fastify.authorize([ ROLE.ADMIN ])
     ]
@@ -17,7 +15,7 @@ module.exports = async (fastify, opts) => {
     const { params, body } = request
     const user = await fastify.mongoose.User.findOne({ _id: params.userId })
     if (body.school) {
-      body.school.name.text = _.trimStart(body.school.name.text, 'โรงเรียน')
+      body.school.name.text = body.school.name.text.replace('โรงเรียน', '') 
 
       _.forIn(body.school, (value, key) => {
         if (value.isModified == true) {
