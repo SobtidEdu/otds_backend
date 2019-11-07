@@ -16,7 +16,7 @@ module.exports = async (fastify, options) => {
     await fastify.nodemailer.sendMail({
       from: fastify.env.EMAIL_FROM,
       to: fastify.env.EMAIL_ADMIN,
-      subject: `FAQ คำถามเพิ่มเติม - ${body.title}`,
+      subject: `eTesting system - ${body.title}`,
       html: `<div>${body.message}<p>จากคุณ ${body.name} &lt;${body.email}&gt;</p></div>`
     })
 
