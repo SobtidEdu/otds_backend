@@ -11,12 +11,12 @@ module.exports = async (fastify) => {
   fastify.get('/:examId', {
     preValidation: [
       (request) => fastify.validate(schema, request),
-      fastify.authenticate()
+      fastify.authenticate({ allowGuest: true })
     ]
   }, async (request) => {
     
     const { params, query, user } = request
-
+    let testing = {}
     try {
       let exam = {}
       
@@ -35,11 +35,14 @@ module.exports = async (fastify) => {
         exam.isContinueTesting = await fastify.mongoose.Testing.count({ examId: exam._id, finishedAt: null })
       }
 
-      const queryTesting = { examId: exam._id, userId: user._id, groupId: { $exists: false }, }
-      if (query.groupId) {
-        queryTesting.groupId = query.groupId
+      if (user) {
+        const queryTesting = { examId: exam._id, userId: user._id, groupId: { $exists: false }, }
+        if (query.groupId) {
+          queryTesting.groupId = query.groupId
+        }
+        testing = await fastify.mongoose.Testing.find(queryTesting).sort({ finishedAt: 1 }).limit(1)
       }
-      const testing = await fastify.mongoose.Testing.find(queryTesting).sort({ finishedAt: 1 }).limit(1)
+      
 
       return { ...exam, testing }
     } catch (e) {
