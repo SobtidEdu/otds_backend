@@ -46,6 +46,8 @@ module.exports = async (fastify, opts) => {
         hashed,
         algo: 'bcrypt'
       }
+    } else {
+      delete body.password
     }
     
     await fastify.mongoose.User.updateOne({ _id: params.userId }, body)
