@@ -16,8 +16,8 @@ module.exports = async (fastify, opts) => {
     const user = await fastify.mongoose.User.findOne({ _id: params.userId })
     if (!user) throw fastify.httpErrors.notFound(`Not found user id ${params.userId}`)
 
-    _.forIn(user.school, (value, key) => {
-      user.school[key].isModified = true
+    _.forIn(user.school.toObject(), (value, key) => {
+      user.school[key].isModified = false
     })
 
     user.isSeenModified = true
