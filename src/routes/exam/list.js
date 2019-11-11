@@ -196,6 +196,7 @@ module.exports = async (fastify, opts) => {
           latestTesting: { $max: '$testings.finishedAt'}
         }
       },
+      query.search ?
       {
         $match: { 
           $or: [
@@ -203,7 +204,7 @@ module.exports = async (fastify, opts) => {
             { code: new RegExp(`^${query.search}`, 'i') }
           ]
         }
-      }
+      } : {}
     ]
 
     return await fastify.paginate(fastify.mongoose.Exam, query, baseAggregate)
