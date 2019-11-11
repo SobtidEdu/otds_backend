@@ -7,7 +7,7 @@ const moment = require('moment')
 
 module.exports = async (fastify, opts) => { 
 
-  fastify.patch('/:userId', {
+  fastify.patch('/:userId/check-address', {
     preValidation: [
       fastify.authenticate(),
       fastify.authorize([ ROLE.ADMIN ])
