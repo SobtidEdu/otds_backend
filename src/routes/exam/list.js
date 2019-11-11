@@ -195,6 +195,14 @@ module.exports = async (fastify, opts) => {
           countTestings: { $size: '$testings' },
           latestTesting: { $max: '$testings.finishedAt'}
         }
+      },
+      {
+        $match: { 
+          $or: [
+            { name: new RegExp(`^${query.search}`, 'i') },
+            { code: new RegExp(`^${query.search}`, 'i') }
+          ]
+        }
       }
     ]
 
