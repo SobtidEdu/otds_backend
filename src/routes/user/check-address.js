@@ -1,9 +1,7 @@
 'use strict' 
 
-const bcrypt = require('bcrypt')
 const { ROLE } = require('@config/user')
 const _ = require('lodash')
-const moment = require('moment')
 
 module.exports = async (fastify, opts) => { 
 
@@ -13,12 +11,16 @@ module.exports = async (fastify, opts) => {
       fastify.authorize([ ROLE.ADMIN ])
     ]
   }, async (request) => {
-    const { params, body } = request
-    const user = await fastify.mongoose.User.findOne({ _id: params.userId })
+    const { params } = request
     
+    const user = await fastify.mongoose.User.findOne({ _id: params.userId })
+    if (!user) throw fastify.httpErrors.notFound(`Not found user id ${params.userId}`)
+
     _.forIn(user.school, (value, key) => {
-      user.school[key].isSeenModified = true
+      user.school[key].isModified = true
     })
+
+    user.isSeenModified = true
     
     await user.save()
     

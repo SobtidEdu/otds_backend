@@ -12,6 +12,7 @@ module.exports = async (fastify, options) => {
   fastify.register(userDetail)
   fastify.register(userCreate)
   fastify.register(userUpdate)
+  fastify.register(require('./check-address'))
   fastify.register(userDelete)
   fastify.register(userImport)
 }
