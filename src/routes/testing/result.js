@@ -14,7 +14,7 @@ module.exports = async (fastify, opts) => {
     let testingTime =  testing.finishedAt - testing.startedAt
     let score = testing.progressTestings.reduce((total, progressTesting) => total + (progressTesting.isCorrect ? 1 : 0), 0)
 
-    const { userId, examId, startedAt, finishedAt } = testing
+    const { userId, examId, startedAt, finishedAt, theta } = testing
     let listTestings = await fastify.mongoose.Testing.find({ examId, userId, finishedAt: { $ne: null } }).sort({ finishedAt: 'desc' }).lean()
     let newScores = listTestings.map(testing => testing.progressTestings.reduce((total, progressTesting) => total + (progressTesting.isCorrect ? 1 : 0), 0))
     let oldScores = newScores
@@ -30,7 +30,8 @@ module.exports = async (fastify, opts) => {
       oldAvg: oldScores.reduce((total, score) => total + score, 0) / oldScores.length,
       time: listTestings.length,
       startedAt,
-      finishedAt
+      finishedAt,
+      theta
     }
   })
 }
