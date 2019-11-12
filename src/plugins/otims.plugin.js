@@ -167,7 +167,7 @@ module.exports = fp(async (fastify, options) => {
         console.error(e)
         const errorResponse = e.response.data
         console.error(errorResponse)
-        throw new Error(errorResponse.ResponseFirstItemCAT.ErrorMessage)
+        throw new Error(errorResponse.ResponseNextItemCAT.ErrorMessage)
       })
     },
 
