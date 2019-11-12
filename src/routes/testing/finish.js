@@ -26,7 +26,7 @@ module.exports = async (fastify, opts) => {
 
     let { progressTestings } = testing
 
-    if (!exam.type == 'CAT') {
+    if (exam.type !== 'CAT') {
       let score = 0
       progressTestings = questions.map(question => {
         const progressTesting = progressTestings.find(pt => pt.questionId.toString() === question._id.toString())
