@@ -53,6 +53,7 @@ module.exports = async (fastify, opts) => {
             subject: 1,
             code: 1,
             owner: {
+              _id: 1,
               prefixName: 1,
               firstName: 1,
               lastName: 1,
@@ -97,8 +98,11 @@ module.exports = async (fastify, opts) => {
             status: 1,
             createdAt: 1,
             owner: {
-              role: 1,
-              name: { $concat: ['$owner.firstName', ' ', '$owner.lastName'] }
+              _id: 1,
+              prefixName: 1,
+              firstName: 1,
+              lastName: 1,
+              role: 1
             },
             countTestings: { $size: '$testings' },
             latestTesting: { $max: '$testings.finishedAt'}
@@ -189,8 +193,11 @@ module.exports = async (fastify, opts) => {
           status: 1,
           createdAt: 1,
           owner: {
-            role: 1,
-            name: { $concat: ['$owner.firstName', ' ', '$owner.lastName'] }
+            _id: 1,
+            prefixName: 1,
+            firstName: 1,
+            lastName: 1,
+            role: 1
           },
           countTestings: { $size: '$testings' },
           latestTesting: { $max: '$testings.finishedAt'}
