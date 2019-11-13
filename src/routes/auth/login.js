@@ -2,6 +2,7 @@
 
 const { ROLE } = require('@config/user')
 const bcrypt = require('bcrypt')
+const md5 = require('md5')
 const moment = require('moment')
 
 module.exports = async (fastify, opts) => { 
@@ -16,9 +17,16 @@ module.exports = async (fastify, opts) => {
     }
     if (!user) throw fastify.httpErrors.badRequest('อีเมลหรือรหัสผ่านผิดพลาด')
 
-    const isValidCredential = await bcrypt.compareSync(password, user.password.hashed)
-    if (!isValidCredential) throw fastify.httpErrors.badRequest('อีเมลหรือรหัสผ่านผิดพลาด')
+    let isValidCredential = false
+    if (user.password.algo === 'bcrypt') {
+      isValidCredential = await bcrypt.compareSync(password, user.password.hashed)
+    } else if (user.password.algo === 'md5') {
+      const [ hashed, salt ] = user.password.hashed.split(':')
+      isValidCredential = hashed === md5(password+salt)
+    }
 
+    if (!isValidCredential) throw fastify.httpErrors.badRequest('อีเมลหรือรหัสผ่านผิดพลาด')
+    
     if (!user.isConfirmationEmail && user.role === ROLE.TEACHER) throw fastify.httpErrors.badRequest('กรุณายืนยันการลงทะเบียนทาง Email')
 
     if (user.isBanned) throw fastify.httpErrors.badRequest('ผู้ใช้บัญชีนี้ถูกระงับการใช้งาน กรุกณาติดต่อผู้ดูแลระบบ')

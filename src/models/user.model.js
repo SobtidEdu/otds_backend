@@ -138,6 +138,8 @@ module.exports = {
     lastLoggedInAt: {
       type: Number
     },
+    oldSystemId: { type: Number },
+    isSeenTutorial: { type: Boolean, default: false },
     createdAt: {
       type: Number,
       default: moment().unix()
