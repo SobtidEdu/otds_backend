@@ -38,7 +38,7 @@ class Synchronizer {
     let items = []
 
     for (let i = 1; i <= round; i++) {
-      if (i < round) continue;
+      // if (i < round) continue;
       firstRecordInRound = ((i-1)*recordsPerRound)+1
       lastRecordInRound = i*recordsPerRound < total ? i*recordsPerRound : total
       amountRecordInRound = lastRecordInRound - firstRecordInRound
@@ -48,10 +48,11 @@ class Synchronizer {
       console.log(`${this.sqlQueryCmd} LIMIT ${firstRecordInRound - 1}, ${recordsPerRound}`)
       console.log(` Manipulating... ${firstRecordInRound} - ${lastRecordInRound}`)
       for (let j = 0; j < amountRecordInRound; j++) {
-        items[j] = callback(sources[j], {})
+        items[j] = await callback(sources[j], {})
       }
 
       console.log(` Inserting... ${firstRecordInRound} - ${lastRecordInRound}`)
+      // console.log(items)
       await this.mongodb.collection(this.mongoCollection).insertMany(items)
     }
   }

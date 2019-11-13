@@ -5,7 +5,7 @@ const mysql = require('mysql');
 
 const config = {
   host: process.env.SYNC_DB_HOST,
-  user: process.env.SYNC_DB_USER,
+  user: process.env.SYNC_DB_USERNAME,
   password: process.env.SYNC_DB_PASSWORD,
   port: process.env.SYNC_DB_PORT,
   database: process.env.SYNC_DB_NAME
