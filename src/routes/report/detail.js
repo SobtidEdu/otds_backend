@@ -35,7 +35,7 @@ module.exports = async (fastify, options) => {
     }))
   })
 
-  fastify.get('/:examId/static/lesson', {
+  fastify.get('/:testingId/static/lesson', {
     preValidation: [
       fastify.authenticate(),
       fastify.authorize([ROLE.STUDENT])
@@ -46,7 +46,7 @@ module.exports = async (fastify, options) => {
     const aggregate = [
       {
         $match: { 
-          examId: mongoose.Types.ObjectId(params.examId),
+          _id: mongoose.Types.ObjectId(params.testingId),
           userId: mongoose.Types.ObjectId(user._id),
           finishedAt: { $ne: null }
         }
