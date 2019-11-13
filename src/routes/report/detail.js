@@ -47,7 +47,7 @@ module.exports = async (fastify, options) => {
       {
         $match: { 
           _id: mongoose.Types.ObjectId(params.testingId),
-          userId: mongoose.Types.ObjectId(user._id),
+          // userId: mongoose.Types.ObjectId(user._id),
           finishedAt: { $ne: null }
         }
       },
@@ -69,13 +69,12 @@ module.exports = async (fastify, options) => {
 
     const examStat = response[0]
     const lessons = await fastify.otimsApi.getLessons({ learning_area: examStat.exam.subject, key_stage: examStat.exam.grade })
-    
     const stats = []
 
     examStat.exam.questions.forEach((question) => {
       let lessonName = '-'
       if (question.lessonId) {
-        const lessonFound = lessons.find(l => l.id == question.lessonId)
+        const lessonFound = lessons.find(l => l.code == question.lessonId)
         lessonName = lessonFound ? lessonFound.name : '-'
       }
 
@@ -93,7 +92,7 @@ module.exports = async (fastify, options) => {
         })
       }
     })
-
+    
     let score = stats.map((stat, index) => [index+1, stat.score, stat.total_score])
     score.unshift(['ลำดับ', 'คะแนน', 'คะแนนเต็ม'])
 
