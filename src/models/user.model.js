@@ -22,10 +22,6 @@ module.exports = {
       required: true,
       trim: true
     },
-    gender: {
-      type: String,
-      enum: Object.values(GENDER)
-    },
     username: {
       type: String
     },

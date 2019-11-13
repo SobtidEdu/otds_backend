@@ -53,7 +53,7 @@ module.exports = async (fastify, options) => {
           },
           year: {
             $dateToString: {
-              format: '%m',
+              format: '%Y',
               date: {
                 $toDate: {
                   $multiply: [1000, "$createdAt"]
