@@ -112,7 +112,7 @@ module.exports = async (fastify, options) => {
     const start = moment(`${params.year}${params.month}01000000 `, "YYYYMMDDHHmmss").unix()
     const end = moment(`${params.year}${params.month}30235959 `, "YYYYMMDDHHmmss").unix()
 
-    if (params.type == 'examType') {
+    if (params.type == 'type') {
       const aggregate = [
         {
           $match: {
