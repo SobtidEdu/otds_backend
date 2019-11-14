@@ -72,7 +72,7 @@ module.exports = async (fastify, options) => {
     const stats = []
 
     examStat.exam.questions.forEach((question) => {
-      let lessonName = '-'
+      let lessonName = 'ไม่มีบทเรียน'
       if (question.lessonId) {
         const lessonFound = lessons.find(l => l.code == question.lessonId)
         lessonName = lessonFound ? lessonFound.name : '-'
