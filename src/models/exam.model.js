@@ -48,7 +48,6 @@ module.exports = {
     duration: { type: Number },
     name: { type: String },
     description: { type: String },
-    quantity: { type: Number },
     displayHowTo: { type: Boolean },
     displaySolution: { type: Boolean },
     oneTimeDone: { type: Boolean },

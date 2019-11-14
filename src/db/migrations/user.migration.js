@@ -4,7 +4,7 @@ const { connectMongodb } = require('./mongo-connection')
 
 module.exports = {
   sync: async (synchronizer) => {
-    console.log('Synchonizing school .....')
+    console.log('Synchonizing user .....')
     const { mongoConnection, mongodb } = await connectMongodb()
     synchronizer.setSqlQueryCmd('SELECT ot_users.*, ot_schools.name as school_name FROM ot_users LEFT JOIN ot_schools ON ot_users.school_id = ot_schools.id')
     synchronizer.setMongoCollection('users')

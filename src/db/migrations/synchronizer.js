@@ -38,12 +38,13 @@ class Synchronizer {
     let items = []
 
     for (let i = 1; i <= round; i++) {
-      // if (i < round) continue;
+      if (i < round) continue;
       firstRecordInRound = ((i-1)*recordsPerRound)+1
       lastRecordInRound = i*recordsPerRound < total ? i*recordsPerRound : total
       amountRecordInRound = lastRecordInRound - firstRecordInRound
       console.log(`Round ${i}/${round} upstreaming ${recordsPerRound} records each round`)
       console.log(` Quering... ${firstRecordInRound} - ${lastRecordInRound}`)
+      console.log(`${this.sqlQueryCmd} ORDER BY id ASC LIMIT ${firstRecordInRound - 1}, ${recordsPerRound}`)
       const sources = await this.mysql.query(`${this.sqlQueryCmd} ORDER BY id ASC LIMIT ${firstRecordInRound - 1}, ${recordsPerRound}`)
       console.log(`${this.sqlQueryCmd} LIMIT ${firstRecordInRound - 1}, ${recordsPerRound}`)
       console.log(` Manipulating... ${firstRecordInRound} - ${lastRecordInRound}`)
