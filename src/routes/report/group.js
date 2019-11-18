@@ -85,7 +85,7 @@ module.exports = async (fastify, options) => {
       latestStartedAt: data.latestStartedAt,
       latestScore: data.latestScore,
       name: data.name,
-      logo: fastify.storage.getUrlProfileImage(data.logo),
+      logo: fastify.storage.getUrlGroupLogo(data.logo),
       totalStudent: data.totalStudent,
       minScore: data.minScore,
       maxScore: data.maxScore,
