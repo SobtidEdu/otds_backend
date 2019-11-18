@@ -14,7 +14,7 @@ module.exports = async (fastify, opts) => {
   }, async (request) => {
     const { params } = request
 
-    return await fastify.mongoose.ExamConfiguration.update({ type: 'SUBJECT' }, { $pull: { data: { id: params.id } } })
+    return await fastify.mongoose.ExamConfiguration.update({ type: 'SUBJECT' }, { $pull: { data: { id: params.subjectId } } })
   })
     
 }
