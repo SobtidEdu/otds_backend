@@ -77,6 +77,7 @@ module.exports = async (fastify, opts) => {
             subject: 1,
             competition: 1,
             name: 1,
+            grade: 1,
             description: 1,
             quantity: 1,
             duration: 1,
