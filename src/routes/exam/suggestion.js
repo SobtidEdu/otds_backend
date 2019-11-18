@@ -78,6 +78,7 @@ module.exports = async (fastify, opts) => {
             competition: 1,
             name: 1,
             description: 1,
+            quantity: 1,
             duration: 1,
             type: 1,
             withoutRegistered: 1
