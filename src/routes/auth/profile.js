@@ -59,10 +59,10 @@ module.exports = async (fastify, opts) => {
     if (body.password) {
       let isValidCredential = false
       if (user.password.algo === 'bcrypt') {
-        isValidCredential = await bcrypt.compareSync(password, user.password.hashed)
+        isValidCredential = await bcrypt.compareSync(body.password.old, user.password.hashed)
       } else if (user.password.algo === 'md5') {
         const [ hashed, salt ] = user.password.hashed.split(':')
-        isValidCredential = hashed === md5(password+salt)
+        isValidCredential = hashed === md5(body.password.old+salt)
       }
 
       if (!isValidCredential) throw fastify.httpErrors.badRequest('อีเมลหรือรหัสผ่านผิดพลาด')
