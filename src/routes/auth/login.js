@@ -7,11 +7,13 @@ const moment = require('moment')
 
 module.exports = async (fastify, opts) => { 
   fastify.post('/login', async (request) => {
-    const { email, password } = request.body
+    let { email, password } = request.body
+    
+    email = email.toLowerCase()
 
     let user
     if (email.indexOf('@') !== -1) {
-      user = await fastify.mongoose.User.findOne({ email: email.toLowerCase() })
+      user = await fastify.mongoose.User.findOne({ email })
     } else {
       user = await fastify.mongoose.User.findOne({ username: email })
     }

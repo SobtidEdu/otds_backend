@@ -6,7 +6,7 @@ module.exports = fp( async (fastify, options) => {
       async: true,
       type: 'string',
       validate: async (schema, data) => {
-        if (schema.prop === 'email') {
+        if (schema.prop === 'email' || schema.prop === 'username') {
           if (!data) return true
           data = data.toLowerCase()
         }

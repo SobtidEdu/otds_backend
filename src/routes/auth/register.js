@@ -56,10 +56,14 @@ module.exports = async (fastify, opts) => {
 
     let user = new fastify.mongoose.User
 
+    if (body.username) {
+      body.username = body.username.toLowerCase()
+    }
+
     if (body.email) {
       body.email = body.email.toLowerCase()
     }
-
+    
     body.school.name.text = body.school.name.text.replace('โรงเรียน', '') //_.trimStart(body.school.name.text, 'โรงเรียน')
 
     _.forIn(body.school, function(value, key) {
