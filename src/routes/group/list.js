@@ -136,6 +136,7 @@ module.exports = async (fastify, options) => {
       groups.items =  groups.items.map((group) => {
         group.logo = fastify.storage.getUrlGroupLogo(group.logo)
         group.studentCount = group.students.reduce((total, student) => total + (student.status === 'join' ? 1 : 0), 0)
+        group.haveStudentRequest = group.students.find((student) => student.status === 'request') ? true : false
         delete group.students
         return group
       })
