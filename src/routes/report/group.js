@@ -207,7 +207,7 @@ module.exports = async (fastify, options) => {
       // return response
       return response.map(data => ({
         userId: data._id,
-        profileImage: data.user.profileImage,
+        profileImage: fastify.storage.getUrlProfileImage(data.user.profileImage),
         name: `${data.user.prefixName} ${data.user.firstName} ${data.user.lastName}`,
         schoolName: data.user.school.name.text,
         testingId: data.testingId,
