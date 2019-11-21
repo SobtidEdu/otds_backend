@@ -140,13 +140,13 @@ module.exports = async (fastify, options) => {
 
       const myMaxScoreTesting = response[1].reduce((score, testing) => testing.score > score ? testing.score : score, 0)
       const myBestTesting = response[1].find(testing => testing.score === myMaxScoreTesting)
-
+      console.log(response[0])
       const testingStats = {
         rankingNo: myBestTesting ? response[0].findIndex(testing => testing._id == myBestTesting.score) + 1 : null,
         startedAt: myBestTesting ? myBestTesting.startedAt: null,
-        maxScore: myMaxScoreTesting,
-        minScore: response[1].reduce((score, testing) => testing.score < score ? testing.score : score, 0),
-        avgScore: response[1].reduce((score, testing) => testing.score + score, 0) / testing.length
+        maxScore: response[0].length > 0 ? response[0].reduce((score, testing) => testing._id > score ? testing._id : score, response[0][0]._id) : null,
+        minScore: response[0].length > 0 ? response[0].reduce((score, testing) => testing._id < score ? testing._id : score, response[0][0]._id) : null,
+        avgScore: response[0].length > 0 ? (response[0].reduce((score, testing) => testing._id + score, 0) / response[0].length) : null
       }
       return {
         testingStats,
