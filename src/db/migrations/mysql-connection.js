@@ -5,7 +5,7 @@ const mysql = require('mysql');
 
 const config = {
   host: process.env.SYNC_DB_HOST,
-  user: process.env.SYNC_DB_USER,
+  user: process.env.SYNC_DB_USERNAME,
   password: process.env.SYNC_DB_PASSWORD,
   port: process.env.SYNC_DB_PORT,
   database: process.env.SYNC_DB_NAME
@@ -20,7 +20,10 @@ class MySQLConnection {
   query(sql, args) {
     return new Promise((resolve, reject) => {
       this.connection.query(sql, args, (err, rows) => {
-        if (err) return reject(err)
+        if (err) {
+          console.log(err)
+          return reject(err)
+        }
         resolve(rows)
       })
     })

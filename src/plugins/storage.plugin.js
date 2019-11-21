@@ -14,10 +14,15 @@ module.exports = fp( async (fastify, options) => {
 
     removeProfileImage: (fileName) => {
       const dirpath = path.resolve(PROFILE_IMAGE_PATH)
-      fs.unlinkSync(dirpath+'/'+fileName)
+      try {
+        fs.unlinkSync(dirpath+'/'+fileName)
+      } catch (e) {
+        console.log(`Doesn't have image`)
+      }
+      
     },
     
-    getUrlProfileImage: (filename) =>  `${fastify.env.APP_URL}/${PROFILE_IMAGE_PATH}/${ filename ? filename : 'default.png'}`, // return default image if null or empty
+    getUrlProfileImage: (filename) => filename ? `${fastify.env.APP_URL}/${PROFILE_IMAGE_PATH}/${filename}` : null,
     
     diskGroupLogo: (dataBase64, fileName, imageType = 'png') => {
       const dirpath = path.resolve(GROUP_LOGO_PATH)
@@ -25,6 +30,6 @@ module.exports = fp( async (fastify, options) => {
       return base64ToImage(dataBase64, `${dirpath}/`, option)
     },
     
-    getUrlGroupLogo: (filename) => `${fastify.env.APP_URL}/${GROUP_LOGO_PATH}/${filename ? filename : 'default.png'}` 
+    getUrlGroupLogo: (filename) => filename ? `${fastify.env.APP_URL}/${GROUP_LOGO_PATH}/${filename}` : null 
   })
 })

@@ -12,7 +12,7 @@ module.exports = async (fastify, opts) => {
     
     let baseAggregate = []
     
-    if (user.role == ROLE.STUDENT) {
+    if (user.role != ROLE.ADMIN) {
       baseAggregate = [
         {
           $match: {
@@ -53,6 +53,7 @@ module.exports = async (fastify, opts) => {
             subject: 1,
             code: 1,
             owner: {
+              _id: 1,
               prefixName: 1,
               firstName: 1,
               lastName: 1,
@@ -66,7 +67,7 @@ module.exports = async (fastify, opts) => {
           }
         }
       ]
-    } else if (user.role == ROLE.ADMIN) {
+    } else {
       baseAggregate = [
         {
           $lookup: {
@@ -97,8 +98,11 @@ module.exports = async (fastify, opts) => {
             status: 1,
             createdAt: 1,
             owner: {
-              role: 1,
-              name: { $concat: ['$owner.firstName', ' ', '$owner.lastName'] }
+              _id: 1,
+              prefixName: 1,
+              firstName: 1,
+              lastName: 1,
+              role: 1
             },
             countTestings: { $size: '$testings' },
             latestTesting: { $max: '$testings.finishedAt'}
@@ -106,26 +110,7 @@ module.exports = async (fastify, opts) => {
         }
       ]
     }
-    else {
-      baseAggregate = [
-        {
-          $match: {
-            owner: user._id
-          }
-        },
-        {
-          $project: {
-            _id: 1,
-            name: 1,
-            subject: 1,
-            code: 1,
-            type: 1,
-            status: 1,
-            createdAt: 1,
-          }
-        }
-      ]
-    }
+
     if (!query.limit) {
       query.limit = 100
     }
@@ -189,8 +174,11 @@ module.exports = async (fastify, opts) => {
           status: 1,
           createdAt: 1,
           owner: {
-            role: 1,
-            name: { $concat: ['$owner.firstName', ' ', '$owner.lastName'] }
+            _id: 1,
+            prefixName: 1,
+            firstName: 1,
+            lastName: 1,
+            role: 1
           },
           countTestings: { $size: '$testings' },
           latestTesting: { $max: '$testings.finishedAt'}
@@ -198,6 +186,17 @@ module.exports = async (fastify, opts) => {
       }
     ]
 
+    if (query.search) {
+      baseAggregate.push({
+        $match: { 
+          $or: [
+            { name: new RegExp(`^${query.search}`, 'i') },
+            { code: new RegExp(`^${query.search}`, 'i') }
+          ]
+        }
+      })
+    }
+    
     return await fastify.paginate(fastify.mongoose.Exam, query, baseAggregate)
   })
 }

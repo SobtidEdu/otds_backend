@@ -38,32 +38,51 @@ module.exports = async (fastify) => {
       if (data.examSetTotal > 1) {
         data.name = body.name + ` (ชุดที่ ${parseInt(i)+1})`
       }
-      let { ResponseItemGroup } = exam.ResponseItemGroup_ResponseTestsetGroup
+      
       data.code = exam.TestSetID
-      if (!Array.isArray(exam.ResponseItemGroup_ResponseTestsetGroup.ResponseItemGroup)) {
-        ResponseItemGroup = [ResponseItemGroup]
+      
+      if (data.type == 'CAT') {
+        data.oneTimeDone = true
+        data.withoutRegistered = false
+        data.displayHowTo = false
+        data.displaySolution = false
+        const { answers, type } = transformAnswerCAT(exam)
+        data.questions = [{
+          seq: exam.ItemSeq,
+          id: exam.ItemID,
+          answers,
+          type,
+          text: exam.ItemQuestion,
+          suggestedTime: exam.SuggestedTime,
+          explanation: exam.Explanation,
+        }]
+      } else {
+        let { ResponseItemGroup } = exam.ResponseItemGroup_ResponseTestsetGroup
+        if (!Array.isArray(exam.ResponseItemGroup_ResponseTestsetGroup.ResponseItemGroup)) {
+          ResponseItemGroup = [ResponseItemGroup]
+        }
+        data.questions = ResponseItemGroup.map(question => ({
+          seq: question.ItemSeq,
+          id: question.ItemID,
+          type: question.QuestionType,
+          text: question.ItemQuestion,
+          suggestedTime: parseFloat(question.SuggestedTime),
+          explanation: question.Explanation,
+          lessonId: question.Lessons ? question.Lessons : null,
+          unit: question.QuestionType === 'SA' ?  question.ItemShortAnswer_ResponseItemGroup.Unit : '',
+          answers: question.QuestionType !== 'TF' ? transformAnswerByQuestionType(question) : [],
+          subQuestions: question.QuestionType === 'TF' ? question.ItemTFSubquestion_ResponseItemGroup.ItemTFSubquestion.map(subQuestion => ({
+            no: subQuestion.ItemNo,
+            text: subQuestion.ItemSubQuestion,
+            answers: subQuestion.ItemTFChoice_ItemTFSubquestion.ItemTFChoice.map(subAnswer => ({
+              seq: subAnswer.ItemChoiceSeq,
+              text: subAnswer.ItemChoice,
+              key: subAnswer.ItemChoiceKey === 'True'
+            }))
+          })) : []
+        }))  
+        data.quantity = data.questions.length
       }
-      data.questions = ResponseItemGroup.map(question => ({
-        seq: question.ItemSeq,
-        id: question.ItemID,
-        type: question.QuestionType,
-        text: question.ItemQuestion,
-        suggestedTime: parseFloat(question.SuggestedTime),
-        explanation: question.Explanation,
-        lessonId: question.Lessons ? question.Lessons : null,
-        unit: question.QuestionType === 'SA' ?  question.ItemShortAnswer_ResponseItemGroup.Unit : '',
-        answers: question.QuestionType !== 'TF' ? transformAnswerByQuestionType(question) : [],
-        subQuestions: question.QuestionType === 'TF' ? question.ItemTFSubquestion_ResponseItemGroup.ItemTFSubquestion.map(subQuestion => ({
-          no: subQuestion.ItemNo,
-          text: subQuestion.ItemSubQuestion,
-          answers: subQuestion.ItemTFChoice_ItemTFSubquestion.ItemTFChoice.map(subAnswer => ({
-            seq: subAnswer.ItemChoiceSeq,
-            text: subAnswer.ItemChoice,
-            key: subAnswer.ItemChoiceKey === 'True'
-          }))
-        })) : []
-      }))
-      data.quantity = data.questions.length
 
       return data
     })
@@ -159,6 +178,20 @@ const transformAnswerByQuestionType = (question) => {
         seq: answer.ItemRightSideSeq,
         text: answer.ItemRightSide,
       }))
+    }
+  }
+}
+
+const transformAnswerCAT = (exam) => {
+  const { ItemChoiceCAT_ResponseFirstItemCAT } = exam
+  if (ItemChoiceCAT_ResponseFirstItemCAT) {
+    return { 
+      answers: ItemChoiceCAT_ResponseFirstItemCAT.ItemChoiceCAT.map(answer => ({
+        seq: answer.ItemChoiceSeq,
+        text: answer.ItemChoice,
+        key: answer.ItemChoiceKey === 'True',
+      })),
+      type: 'MC'
     }
   }
 }

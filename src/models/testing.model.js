@@ -39,6 +39,8 @@ module.exports = {
     score: {
       type: Number
     },
+    theta: { type: String },
+    se: { type: String },
     startedAt: {
       type: Number,
       default: moment().unix()

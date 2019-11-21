@@ -1,6 +1,7 @@
 'use strict' 
 
 const bcrypt = require('bcrypt')
+const md5 = require('md5')
 const _ = require('lodash')
 const moment = require('moment')
 
@@ -15,7 +16,7 @@ module.exports = async (fastify, opts) => {
     
     user.profileImage = fastify.storage.getUrlProfileImage(user.profileImage)
 
-    return _.pick(user, ['_id', 'prefixName', 'username', 'firstName', 'lastName', 'gender', 'department', 'province', 'profileImage', 'email', 'role', 'school'])
+    return _.pick(user, ['_id', 'prefixName', 'username', 'firstName', 'lastName', 'school', 'role', 'email', 'profileImage', 'isSeenTermAndCondition', 'oldSystemId', 'isSeenTutorial'])
   })
 
   fastify.patch('/profile', {
@@ -53,13 +54,21 @@ module.exports = async (fastify, opts) => {
       if (user.profileImage) fastify.storage.removeProfileImage(user.profileImage)
 
       body.profileImage = imageInfo.fileName
+    } else {
+      delete body.profileImage
     }
 
     if (body.password) {
-      const isValidCredential = await bcrypt.compareSync(body.password.old, user.password.hashed)
-      if (!isValidCredential) {
-        throw fastify.httpErrors.badRequest('รหัสผ่านผิดไม่ถูกต้อง')
+      let isValidCredential = false
+      if (user.password.algo === 'bcrypt') {
+        isValidCredential = await bcrypt.compareSync(body.password.old, user.password.hashed)
+      } else if (user.password.algo === 'md5') {
+        const [ hashed, salt ] = user.password.hashed.split(':')
+        isValidCredential = hashed === md5(body.password.old+salt)
       }
+
+      if (!isValidCredential) throw fastify.httpErrors.badRequest('อีเมลหรือรหัสผ่านผิดพลาด')
+      
       const salt = 10;
       const hashed = bcrypt.hashSync(body.password.new, salt)
       body.password = {

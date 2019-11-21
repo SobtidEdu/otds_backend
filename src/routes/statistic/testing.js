@@ -4,7 +4,7 @@ const { ROLE } = require('@config/user')
 const moment = require('moment')
 
 module.exports = async (fastify, options) => {
-  fastify.get('/exam', {
+  fastify.get('/testing', {
     preValidation: [
       fastify.authenticate(),
       fastify.authorize([ROLE.ADMIN])
@@ -22,7 +22,7 @@ module.exports = async (fastify, options) => {
     const aggregate = [
       {
         $match: {
-          createdAt: {
+          finishedAt: {
             $gte: start,
             $lt: end
           }
@@ -31,7 +31,7 @@ module.exports = async (fastify, options) => {
       {
         $lookup: {
           from: 'users',
-          localField: 'owner',
+          localField: 'userId',
           foreignField: '_id',
           as: 'user'
         }
@@ -46,7 +46,7 @@ module.exports = async (fastify, options) => {
               format: '%m',
               date: {
                 $toDate: {
-                  $multiply: [1000, "$createdAt"]
+                  $multiply: [1000, "$finishedAt"]
                 }
               }
             }
@@ -56,7 +56,7 @@ module.exports = async (fastify, options) => {
               format: '%Y',
               date: {
                 $toDate: {
-                  $multiply: [1000, "$createdAt"]
+                  $multiply: [1000, "$finishedAt"]
                 }
               }
             }
@@ -89,8 +89,9 @@ module.exports = async (fastify, options) => {
       }
     ]
 
-    const response = await fastify.mongoose.Exam.aggregate(aggregate)
-    return response.map(stats => ({
+    const response = await fastify.mongoose.Testing.aggregate(aggregate)
+    return response
+    .map(stats => ({
       month: stats._id.month,
       year: stats._id.year,
       student: stats.student,
@@ -101,7 +102,7 @@ module.exports = async (fastify, options) => {
     }))
   })
 
-  fastify.get('/exam/detail/:year/:month/:type', {
+  fastify.get('/testing/detail/:year/:month/:type', {
     preValidation: [
       fastify.authenticate(),
       fastify.authorize([ROLE.ADMIN])
@@ -116,23 +117,34 @@ module.exports = async (fastify, options) => {
       const aggregate = [
         {
           $match: {
-            createdAt: {
+            finishedAt: {
               $gte: start,
               $lt: end
             }
           }
         },
         {
+          $lookup: {
+            from: 'exams',
+            localField: 'examId',
+            foreignField: '_id',
+            as: 'exam'
+          }
+        },
+        {
+          $unwind: '$exam'
+        },
+        {
           $group: {
             _id: {
-              type: "$type",
+              type: "$exam.type",
             },
             count: { $sum: 1 }
           }
         }
       ] 
   
-      const response = await fastify.mongoose.Exam.aggregate(aggregate)
+      const response = await fastify.mongoose.Testing.aggregate(aggregate)
       return response.map((stat) => ({
         type: stat._id.type,
         total: stat.count
@@ -143,7 +155,7 @@ module.exports = async (fastify, options) => {
       const aggregate = [
         {
           $match: {
-            createdAt: {
+            finishedAt: {
               $gte: start,
               $lt: end
             }
@@ -151,8 +163,19 @@ module.exports = async (fastify, options) => {
         },
         {
           $lookup: {
+            from: 'exams',
+            localField: 'examId',
+            foreignField: '_id',
+            as: 'exam'
+          }
+        },
+        {
+          $unwind: '$exam'
+        },
+        {
+          $lookup: {
             from: 'users',
-            localField: 'owner',
+            localField: 'userId',
             foreignField: '_id',
             as: 'user'
           }
@@ -162,7 +185,9 @@ module.exports = async (fastify, options) => {
         },
         {
           $project: {
-            grade: 1,
+            exam: {
+              grade: 1,
+            },
             student: {
               $cond: [{ $eq: ["$user.role", ROLE.STUDENT] }, 1, 0]
             },
@@ -180,7 +205,7 @@ module.exports = async (fastify, options) => {
         {
           $group: {
             _id: {
-              grade: "$grade",
+              grade: "$exam.grade",
             },
             student: { $sum: "$student"},
             teacher: { $sum: "$teacher"},
@@ -190,70 +215,10 @@ module.exports = async (fastify, options) => {
         }
       ]
 
-      const response = await fastify.mongoose.Exam.aggregate(aggregate)
-      return response.map((stat) => ({
+      const response = await fastify.mongoose.Testing.aggregate(aggregate)
+      return response
+      .map((stat) => ({
         grade: stat._id.grade,
-        student: stat.student,
-        teacher: stat.teacher,
-        superTeacher: stat.superTeacher,
-        admin: stat.admin
-      }))
-    }
-    
-    if (params.type == 'criterion') {
-      const aggregate = [
-        {
-          $match: {
-            createdAt: {
-              $gte: start,
-              $lt: end
-            }
-          }
-        },
-        {
-          $lookup: {
-            from: 'users',
-            localField: 'owner',
-            foreignField: '_id',
-            as: 'user'
-          }
-        },
-        {
-          $unwind: "$user"
-        },
-        {
-          $project: {
-            criterion: 1,
-            student: {
-              $cond: [{ $eq: ["$user.role", ROLE.STUDENT] }, 1, 0]
-            },
-            teacher: {
-              $cond: [{ $eq: ["$user.role", ROLE.TEACHER] }, 1, 0]
-            },
-            superTeacher: {
-              $cond: [{ $eq: ["$user.role", ROLE.SUPER_TEACHER] }, 1, 0]
-            },
-            admin: {
-              $cond: [{ $eq: ["$user.role", ROLE.ADMIN] }, 1, 0]
-            }
-          }
-        },
-        {
-          $group: {
-            _id: {
-              criterion: "$criterion",
-            },
-            student: { $sum: "$student"},
-            teacher: { $sum: "$teacher"},
-            superTeacher: { $sum: "$superTeacher"},
-            admin: { $sum: "$admin"},
-          }
-        }
-      ]
-
-      const response = await fastify.mongoose.Exam.aggregate(aggregate)
-      return response.map((stat) => ({
-        criterion: stat._id.criterion,
         student: stat.student,
         teacher: stat.teacher,
         superTeacher: stat.superTeacher,
@@ -265,7 +230,7 @@ module.exports = async (fastify, options) => {
       const aggregate = [
         {
           $match: {
-            createdAt: {
+            finishedAt: {
               $gte: start,
               $lt: end
             }
@@ -273,8 +238,19 @@ module.exports = async (fastify, options) => {
         },
         {
           $lookup: {
+            from: 'exams',
+            localField: 'examId',
+            foreignField: '_id',
+            as: 'exam'
+          }
+        },
+        {
+          $unwind: '$exam'
+        },
+        {
+          $lookup: {
             from: 'users',
-            localField: 'owner',
+            localField: 'userId',
             foreignField: '_id',
             as: 'user'
           }
@@ -284,7 +260,9 @@ module.exports = async (fastify, options) => {
         },
         {
           $project: {
-            subject: 1,
+            exam: {
+              subject: 1
+            },
             student: {
               $cond: [{ $eq: ["$user.role", ROLE.STUDENT] }, 1, 0]
             },
@@ -302,7 +280,7 @@ module.exports = async (fastify, options) => {
         {
           $group: {
             _id: {
-              subject: "$subject",
+              subject: "$exam.subject",
             },
             student: { $sum: "$student"},
             teacher: { $sum: "$teacher"},
@@ -312,7 +290,7 @@ module.exports = async (fastify, options) => {
         }
       ]
 
-      const response = await fastify.mongoose.Exam.aggregate(aggregate)
+      const response = await fastify.mongoose.Testing.aggregate(aggregate)
       return response.map((stat) => ({
         subject: stat._id.subject,
         student: stat.student,

@@ -10,13 +10,13 @@
     "start:prod": "node server.js",
     "start:dev": "node ./node_modules/nodemon/bin/nodemon.js server.js",
     "db:seed": "node ./db/seeds",
-    "db:migrate": "node ./db/migrations",
+    "db:migrate": "node ./src/db/migrations",
     "migrate": "node node_modules/db-migrate/bin/db-migrate",
     "test": "jest test",
     "coverage": "jest --collectCoverageFrom=test/**.js --coverage"
   },
   "dependencies": {
-    "@sentry/node": "5.6.2",
+    "@sentry/node": "^5.7.1",
     "ajv": "^6.10.0",
     "ajv-errors": "^1.0.1",
     "axios": "^0.19.0",
@@ -41,6 +41,7 @@
     "fastify-static": "^2.4.0",
     "inquirer": "^6.2.2",
     "jquery": "^3.4.1",
+    "md5": "^2.2.1",
     "memcached": "^2.2.2",
     "module-alias": "^2.2.0",
     "moment": "^2.24.0",

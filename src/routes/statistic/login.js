@@ -138,5 +138,10 @@ module.exports = async (fastify, options) => {
 
     const response = await fastify.mongoose.LoginStat.aggregate(aggregate)
     return response
+    .map(response => ({
+      province: response._id.province,
+      region: response._id.region,
+      count: response.count,
+    }))
   })
 }

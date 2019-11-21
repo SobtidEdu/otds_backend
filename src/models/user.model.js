@@ -22,10 +22,6 @@ module.exports = {
       required: true,
       trim: true
     },
-    gender: {
-      type: String,
-      enum: Object.values(GENDER)
-    },
     username: {
       type: String
     },
@@ -120,6 +116,10 @@ module.exports = {
       type: Boolean,
       default: true
     },
+    isSeenDataPrivacy: {
+      type: Boolean,
+      default: true
+    },
     notices: [
       {
         id: { type: Number },
@@ -142,6 +142,8 @@ module.exports = {
     lastLoggedInAt: {
       type: Number
     },
+    oldSystemId: { type: Number },
+    isSeenTutorial: { type: Boolean, default: false },
     createdAt: {
       type: Number,
       default: moment().unix()

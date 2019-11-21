@@ -18,11 +18,14 @@ module.exports = async (fastify, opts) => {
 
     const { data } = subject
 
-    const index = data.findIndex(s => s.id === params.subjectId)
+    const index = data.findIndex(s => s.id == params.subjectId)
+
     if (index > -1) {
+      data[index].name = body.name !== undefined ? body.name : data[index].name
       data[index].isActive = body.isActive !== undefined ? body.isActive : data[index].isActive
+      await fastify.mongoose.ExamConfiguration.updateOne({ _id: subject._id }, { data })
     }
-    await fastify.mongoose.ExamConfiguration.updateOne({ _id: subject._id }, { data })
+    
     return { message: 'แก้ไขข้อมูลวิชาสำเร็จ' }
   })
 
@@ -41,7 +44,7 @@ module.exports = async (fastify, opts) => {
     let index = data.findIndex(s => s.id === params.subjectId)
 
     if (index == -1) throw fastify.httpErrors.badRequest('Invalid subject id')
-
+    
     const moveSubject = data[index]
 
     data.splice(index, 1)

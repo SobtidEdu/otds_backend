@@ -51,24 +51,10 @@ module.exports = async (fastify, options) => {
       fastify.authenticate()
     ]
   }, async (request, reply) => {
-    let memcached
-    try {
-      memcached = new Memcached('192.168.0.167:11211', {retries:10,retry:10000})  
-    } catch (e) {
-      console.log(e)
-    }
     
     const { user, query } = request;
 
     if (user.role === ROLE.STUDENT) {
-      
-      // try {
-      //   const response = await util.promisify(memcached.get)(query.groupId)
-      //   console.log(response)
-      // } catch (e) {
-      //   console.log(e)
-      // }
-
       const baseOptions = [
         { 
           $match: {
@@ -122,13 +108,6 @@ module.exports = async (fastify, options) => {
         ownerName: group.ownerName
       }))
 
-      // try {
-      //   const response = await util.promisify(memcached.set)(query.groupId, JSON.stringify(groups), 1800)
-      //   console.log(response)
-      // } catch (e) {
-      //   console.log(e)
-      // }
-
       return groups 
     } else {
 
@@ -157,6 +136,7 @@ module.exports = async (fastify, options) => {
       groups.items =  groups.items.map((group) => {
         group.logo = fastify.storage.getUrlGroupLogo(group.logo)
         group.studentCount = group.students.reduce((total, student) => total + (student.status === 'join' ? 1 : 0), 0)
+        group.haveStudentRequest = group.students.find((student) => student.status === 'request') ? true : false
         delete group.students
         return group
       })

@@ -24,7 +24,6 @@ module.exports = {
         },
         status: {
           type: String,
-          
         },
         requestedDate: {
           type: Number,
@@ -37,6 +36,10 @@ module.exports = {
         leftDate: {
           type: Number,
           default: null
+        },
+        teacherSeenLeft: {
+          type: Boolean,
+          default: false
         }
       }
     ],

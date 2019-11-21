@@ -136,19 +136,38 @@ module.exports = fp(async (fastify, options) => {
       params.RequestedNo = `${OTIMS_USER}RequestFirstItemCAT${params.RequestType}${moment().format('YYYYMMDDHHmmSSS')}`
       params.TestSetType = `CT`
 
-      console.log(params)
       // return params
       return instance.get(`/ws/RequestFirstItemCAT`, { params })
       .then(response => {
-        console.log(response.data)
-        const testSetGroup = response.data.ResponseFirstItemCAT.ResponseTestsetGroup_ResponseFixedRandomTestset.ResponseTestsetGroup
-        return params.NoStudents == 1 ? [testSetGroup] : testSetGroup
+        const firstItemCAT = response.data.ResponseFirstItemCAT
+        console.log(firstItemCAT)
+        return firstItemCAT
       })
       .catch(e => {
         console.error(e)
         const errorResponse = e.response.data
         console.error(errorResponse)
         throw new Error(errorResponse.ResponseFirstItemCAT.ErrorMessage)
+      })
+    },
+
+    requestNextItemCAT: async (params) => {
+      params.RequestedName = OTIMS_USER
+      params.RequestedNo = `${OTIMS_USER}RequestNextItemCAT${params.RequestType}${moment().format('YYYYMMDDHHmmSSS')}`
+      params.TestSetType = `CT`
+
+      // return params
+      return instance.get(`/ws/RequestNextItemCAT`, { params })
+      .then(response => {
+        const nextItemCAT = response.data.ResponseNextItemCAT
+        console.log(nextItemCAT)
+        return nextItemCAT
+      })
+      .catch(e => {
+        console.error(e)
+        const errorResponse = e.response.data
+        console.error(errorResponse)
+        throw new Error(errorResponse.ResponseNextItemCAT.ErrorMessage)
       })
     },
 

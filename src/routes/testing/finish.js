@@ -11,7 +11,7 @@ module.exports = async (fastify, opts) => {
       fastify.authenticate({ allowGuest: true })
     ],
   }, async (request) => {
-    const { user, params } = request
+    const { params } = request
     
     const { testingId } = params
 
@@ -25,30 +25,35 @@ module.exports = async (fastify, opts) => {
     const finishedAt = moment().unix()
 
     let { progressTestings } = testing
-    let score = 0
-    progressTestings = questions.map(question => {
-      const progressTesting = progressTestings.find(pt => pt.questionId.toString() === question._id.toString())
-      if (progressTesting) {
-        progressTesting.isCorrect = checkCorrect(question.type, (question.type !== 'TF' ? question.answers : question.subQuestions), progressTesting.answer)
-        if (progressTesting.isCorrect) {
-          score++
-        }
-        return progressTesting
-      } else {
-        return {
-          questionId: question._id,
-          order: question.seq,
-          answer: null,
-          isCorrect: false,
-          isMark: false
-        }
-      }
-    })
 
-    testing.progressTestings = progressTestings
+    if (exam.type !== 'CAT') {
+      let score = 0
+      progressTestings = questions.map(question => {
+        const progressTesting = progressTestings.find(pt => pt.questionId.toString() === question._id.toString())
+        if (progressTesting) {
+          progressTesting.isCorrect = checkCorrect(question.type, (question.type !== 'TF' ? question.answers : question.subQuestions), progressTesting.answer)
+          if (progressTesting.isCorrect) {
+            score++
+          }
+          return progressTesting
+        } else {
+          return {
+            questionId: question._id,
+            order: question.seq,
+            answer: null,
+            isCorrect: false,
+            isMark: false
+          }
+        }
+      })
+
+      testing.progressTestings = progressTestings
+      testing.score = score
+    }
+
     testing.finishedAt = finishedAt
-    testing.score = score
     return await testing.save()
+    
   })
 }
 

@@ -40,9 +40,9 @@ module.exports = async (fastify, options) => {
       {
         $match: { 
           $or: [
-            { name: query.q },
-            { code: query.q },
-            { ownerName: new RegExp(`^${query.q}`, 'i') },
+            // { name: query.q },
+            { code: query.q.toUpperCase() },
+            // { ownerName: new RegExp(`^${query.q}`, 'i') },
               // { ownerName: new RegExp('^'+query.q, 'i') },
               // { 'onwer.lastName': new RegExp(query.q, 'i') }
           ],

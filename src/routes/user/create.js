@@ -59,7 +59,7 @@ module.exports = async (fastify, opts) => {
       body.email = body.email.toLowerCase()
     }
 
-    body.school.name.text = _.trimStart(body.school.name.text, 'โรงเรียน')
+    body.school.name.text = body.school.name.text.replace('โรงเรียน', '')
     const school = await fastify.mongoose.School.findOne({ name: body.school.name.text })
 
     body.school = {

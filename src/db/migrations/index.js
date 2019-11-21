@@ -4,7 +4,7 @@ const program = require('commander')
 const { connectMongodb } = require('./mongo-connection')
 const Synchronizer = require('./synchronizer')
 const synchronizer = new Synchronizer()
-const groupCommands = ['competition', 'province', 'school', 'user']
+const groupCommands = ['user', 'exam']
 
 program
   .version('1.0.0')

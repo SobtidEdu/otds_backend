@@ -19,8 +19,9 @@ const listOfExam = require('./exam/list')
 module.exports = async (fastify, options) => {
 
   fastify.register(groupList)
-  fastify.register(groupDetail)
+  fastify.register(require('./left'))
   fastify.register(groupSearch)
+  fastify.register(groupDetail)
   fastify.register(groupCreate)
   fastify.register(groupUpdate)
   fastify.register(groupDelete)

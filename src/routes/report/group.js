@@ -85,7 +85,7 @@ module.exports = async (fastify, options) => {
       latestStartedAt: data.latestStartedAt,
       latestScore: data.latestScore,
       name: data.name,
-      logo: data.logo,
+      logo: fastify.storage.getUrlGroupLogo(data.logo),
       totalStudent: data.totalStudent,
       minScore: data.minScore,
       maxScore: data.maxScore,
@@ -124,7 +124,7 @@ module.exports = async (fastify, options) => {
           $match: { 
             examId: mongoose.Types.ObjectId(params.examId),
             groupId: mongoose.Types.ObjectId(params.groupId),
-            userId: mongoose.Types.ObjectId(params.userId),
+            userId: mongoose.Types.ObjectId(user._id),
             finishedAt: { $ne: null }
           }
         },
@@ -140,12 +140,13 @@ module.exports = async (fastify, options) => {
 
       const myMaxScoreTesting = response[1].reduce((score, testing) => testing.score > score ? testing.score : score, 0)
       const myBestTesting = response[1].find(testing => testing.score === myMaxScoreTesting)
+      
       const testingStats = {
-        rankingNo: myBestTesting ? response[0].findIndex(testing => testing.score == myBestTesting._id) + 1 : null,
+        rankingNo: myBestTesting ? response[0].findIndex(testing => testing._id == myBestTesting.score) + 1 : null,
         startedAt: myBestTesting ? myBestTesting.startedAt: null,
-        maxScore: myMaxScoreTesting,
-        maxScore: response[1].reduce((score, testing) => testing.score < score ? testing.score : score, 0),
-        avgScore: response[1].reduce((score, testing) => testing.score + score, 0)
+        maxScore: response[0].length > 0 ? response[0].reduce((score, testing) => testing._id > score ? testing._id : score, response[0][0]._id) : null,
+        minScore: response[0].length > 0 ? response[0].reduce((score, testing) => testing._id < score ? testing._id : score, response[0][0]._id) : null,
+        avgScore: response[0].length > 0 ? (response[0].reduce((score, testing) => testing._id + score, 0) / response[0].length) : null
       }
       return {
         testingStats,
