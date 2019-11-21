@@ -7,10 +7,21 @@ const moment = require('moment')
 module.exports = async (fastify, opts) => { 
   fastify.patch('/seen-notice', {
     preValidation: [
-      fastify.authenticate()
+      fastify.authenticate([ROLE.TEACHER, ROLE.SUPER_TEACHER, ROLE.STUDENT])
     ]
   }, async (request) => {
-    const { user } = request
+    const { user, body } = request
+
+    const index = user.notices.findIndex(notice => notice.id == body.noticeId)
     
+    if (user.notices[index].times > 1) {
+      user.notices[index].times--
+    } else {
+      user.notices.splice(index, 1)
+    }
+    
+    await user.save()
+
+    return { message: 'success' }
   })
 }

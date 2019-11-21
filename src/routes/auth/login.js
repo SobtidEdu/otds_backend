@@ -33,7 +33,7 @@ module.exports = async (fastify, opts) => {
 
     if (user.isBanned) throw fastify.httpErrors.badRequest('ผู้ใช้บัญชีนี้ถูกระงับการใช้งาน กรุกณาติดต่อผู้ดูแลระบบ')
 
-    const { _id, role, prefixName, firstName, lastName, profileImage } = user.toObject()
+    const { _id, role, username, prefixName, firstName, lastName, profileImage, notices, oldSystemId, isSeenTutorial, isSeenTermAndCondition } = user.toObject()
 
     const date = new Date()
 
@@ -43,7 +43,7 @@ module.exports = async (fastify, opts) => {
       fastify.mongoose.LoginStat.update({ day: date.getDate(), month: date.getMonth()+1, year: date.getFullYear() }, { $push: { users: { _id: user._id, role } } }, { upsert: true })
     ])
 
-    return { _id, role, prefixName, firstName, lastName, profileImage: fastify.storage.getUrlProfileImage(profileImage), email, token }
+    return { _id, role, username, prefixName, firstName, lastName, profileImage: fastify.storage.getUrlProfileImage(profileImage), email, token, notices, oldSystemId, isSeenTutorial, isSeenTermAndCondition }
   })
 
   fastify.post('/logout', {

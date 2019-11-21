@@ -27,6 +27,10 @@ module.exports = async (fastify, options) => {
         }
       }
     )
+
+    if (body.isNotice) {
+      await fastify.mongoose.User.updateMany({ role: body.role }, { isSeenDataPrivacy: false })
+    }
     
     return { message: 'อัพเดตข้อมูลเรียบร้อย' }
   })
