@@ -148,7 +148,7 @@ module.exports = async (fastify, options) => {
     
     const [testings, exam] = await Promise.all([
       fastify.mongoose.Testing.aggregate(aggregate),
-      fastify.mongoose.Exam.findOne(params.examId)
+      fastify.mongoose.Exam.findOne({ _id: params.examId })
     ])
     // return response
     return {
