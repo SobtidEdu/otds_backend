@@ -101,4 +101,59 @@ module.exports = async (fastify, options) => {
     return { score, lesson }
     // return stats
   })
+
+  fastify.get('/:examId/deep-stats', {
+    preValidation: [
+      fastify.authenticate(),
+      fastify.authorize([ROLE.TEACHER, ROLE.SUPER_TEACHER, ROLE.ADMIN])
+    ]
+  }, async (request) => {
+    const { params } = request
+
+    const aggregate = [
+      {
+        $match: { 
+          examId: mongoose.Types.ObjectId(params.examId),
+          finishedAt: { $ne: null }
+        }
+      },
+      {
+        $lookup: {
+          from: 'users',
+          localField: 'userId',
+          foreignField: '_id',
+          as: 'user'
+        }
+      },
+      {
+        $unwind: '$user'
+      },
+      {
+        $project: {
+          user: {
+            prefixName: 1,
+            firstName: 1,
+            lastName: 1,
+            school: {
+              name: 1
+            }
+          },
+          progressTestings: 1,
+          score: 1,
+          startedAt: 1,
+          finishedAt: 1,
+        }
+      }
+    ]
+    
+    const [testings, exam] = await Promise.all([
+      fastify.mongoose.Testing.aggregate(aggregate),
+      fastify.mongoose.Exam.findOne(params.examId)
+    ])
+    // return response
+    return {
+      testings,
+      questions: exam.questions
+    }
+  })
 }
