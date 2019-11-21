@@ -19,13 +19,15 @@ module.exports = async function(fastify, opts, next) {
       const group = await fastify.mongoose.Group.findOne({ _id: params.groupId }).select('students')
       if (!group) throw  fastify.httpErrors.notFound(fastify.message('group.notFound'))
   
-      const index = group.students.findIndex(student => student.userInfo.toString() == user._id.toString())
+      const index = group.students.findIndex(student => {
+        console.log(student.userInfo.toString())
+        console.log(user._id.toString())
+        return student.userInfo.toString() == user._id.toString()
+      })
       const addUserToGroupProm = index > -1 ?
         fastify.mongoose.Group.updateOne({ 
           _id: group._id,
-          students: {
-            userInfo: user._id
-          }
+          'students.userInfo': user._id
         }, {
           $set: { 
             'students.$.requestedDate': moment().unix(), 
