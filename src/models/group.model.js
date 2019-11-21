@@ -24,7 +24,6 @@ module.exports = {
         },
         status: {
           type: String,
-          
         },
         requestedDate: {
           type: Number,
