@@ -116,6 +116,10 @@ module.exports = {
       type: Boolean,
       default: true
     },
+    isSeenDataPrivacy: {
+      type: Boolean,
+      default: true
+    },
     notices: [
       {
         id: { type: Number },

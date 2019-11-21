@@ -56,7 +56,7 @@ module.exports = async (fastify, options) => {
           code: 1,
           user: {
             _id: 1,
-            imageProfile: 1,
+            profileImage: 1,
             prefixName: 1,
             firstName: 1,
             lastName: 1,
@@ -76,7 +76,7 @@ module.exports = async (fastify, options) => {
     return response
     .map(student => ({
       _id: student.user._id,
-      imageProfile: student.user.imageProfile,
+      profileImage: student.user.profileImage,
       prefixName: student.user.prefixName,
       firstName: student.user.firstName,
       lastName: student.user.lastName,
