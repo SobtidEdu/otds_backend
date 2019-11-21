@@ -146,7 +146,7 @@ module.exports = async (fastify, options) => {
         startedAt: myBestTesting ? myBestTesting.startedAt: null,
         maxScore: myMaxScoreTesting,
         minScore: response[1].reduce((score, testing) => testing.score < score ? testing.score : score, 0),
-        avgScore: response[1].reduce((score, testing) => testing.score + score, 0)
+        avgScore: response[1].reduce((score, testing) => testing.score + score, 0) / testing.length
       }
       return {
         testingStats,
