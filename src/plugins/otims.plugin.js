@@ -171,14 +171,60 @@ module.exports = fp(async (fastify, options) => {
       })
     },
 
-    requestSendTestsetStat: async (params) => {
+    requestSendTestsetStat: async (data) => {
+      let TimeSpent = 0
       params.RequestedName = OTIMS_USER
       params.RequestedNo = `${OTIMS_USER}RequestSendTestsetStat${params.RequestType}${moment().format('YYYYMMDDHHmmSSS')}`
+      params.TestSetID = data.code
+      params.TestSetGroupResult = []
+      for (let i in data.results) {
+        TimeSpent = Math.floor(Math.random() * 250) + 10
+        switch (data.results[i].type) {
+          case 'MC':
+            TestSetGroupResult.push({
+              ItemID: data.results[i].id,
+              ItemSelectedChoice: data.results[i].answer,
+              ItemResult: data.results[i].result,
+              TimeSpent
+            })
+          break;
+          case 'SA':
+            TestSetGroupResult.push({
+              ItemID: data.results[i].id,
+              ItemAnswer: data.results[i].answer,
+              ItemResult: data.results[i].result,
+              TimeSpent
+            })
+          break;
+          case 'TF':
+            data.results[i].answer.forEach(tf => {
+              TestSetGroupResult.push({
+                ItemID: data.results[i].id,
+                ItemSelectedChoice: tf.key,
+                ItemResult: data.results[i].result,
+                TimeSpent
+              })
+            })
+          break;
+          case 'MA':
+            data.results[i].answer.forEach(ma => {
+              TestSetGroupResult.push({
+                ItemID: data.results[i].id,
+                ItemLeftSideSeq: ma.seq,
+                ItemSelectedChoice: ma.match,
+                ItemResult: data.results[i].result,
+                TimeSpent
+              })
+            })
+          break;
+        }
+      }
 
       console.log(params)
       // return params
       return instance.get(`/ws/RequestSendTestSetStat`, { params })
       .then(response => {
+        console.log(response.data.ResponseSendTestSetStat)
         const testSetGroup = response.data.ResponseFixedRandomTestset.ResponseTestsetGroup_ResponseFixedRandomTestset.ResponseTestsetGroup
         return params.NoStudents == 1 ? [testSetGroup] : testSetGroup
       })
