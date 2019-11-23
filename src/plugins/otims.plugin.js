@@ -175,7 +175,7 @@ module.exports = fp(async (fastify, options) => {
       let TimeSpent = 0
       let params = {}
       params.RequestedName = OTIMS_USER
-      params.RequestedNo = `${OTIMS_USER}RequestSendTestsetStat${params.RequestType}${moment().format('YYYYMMDDHHmmSSS')}`
+      params.RequestedNo = `${OTIMS_USER}RequestSendTestsetStat1${moment().format('YYYYMMDDHHmmSSS')}`
       params.TestSetID = data.code
       params.TestSetGroupResult = []
       for (let i in data.results) {
@@ -230,10 +230,9 @@ module.exports = fp(async (fastify, options) => {
         return params.NoStudents == 1 ? [testSetGroup] : testSetGroup
       })
       .catch(e => {
-        console.log(e)
         const errorResponse = e.response.data
         console.error(errorResponse)
-        throw new Error(errorResponse.ResponseFirstItemCAT.ErrorMessage)
+        // throw new Error(errorResponse.ResponseFirstItemCAT.ErrorMessage)
       })
     }
   })
