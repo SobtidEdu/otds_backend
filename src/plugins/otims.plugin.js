@@ -173,6 +173,7 @@ module.exports = fp(async (fastify, options) => {
 
     requestSendTestsetStat: async (data) => {
       let TimeSpent = 0
+      let params = {}
       params.RequestedName = OTIMS_USER
       params.RequestedNo = `${OTIMS_USER}RequestSendTestsetStat${params.RequestType}${moment().format('YYYYMMDDHHmmSSS')}`
       params.TestSetID = data.code
