@@ -182,7 +182,7 @@ module.exports = fp(async (fastify, options) => {
         TimeSpent = Math.floor(Math.random() * 250) + 10
         switch (data.results[i].type) {
           case 'MC':
-            TestSetGroupResult.push({
+            params.TestSetGroupResult.push({
               ItemID: data.results[i].id,
               ItemSelectedChoice: data.results[i].answer,
               ItemResult: data.results[i].result,
@@ -190,7 +190,7 @@ module.exports = fp(async (fastify, options) => {
             })
           break;
           case 'SA':
-            TestSetGroupResult.push({
+            params.TestSetGroupResult.push({
               ItemID: data.results[i].id,
               ItemAnswer: data.results[i].answer,
               ItemResult: data.results[i].result,
@@ -199,7 +199,7 @@ module.exports = fp(async (fastify, options) => {
           break;
           case 'TF':
             data.results[i].answer.forEach(tf => {
-              TestSetGroupResult.push({
+              params.TestSetGroupResult.push({
                 ItemID: data.results[i].id,
                 ItemSelectedChoice: tf.key,
                 ItemResult: data.results[i].result,
@@ -209,7 +209,7 @@ module.exports = fp(async (fastify, options) => {
           break;
           case 'MA':
             data.results[i].answer.forEach(ma => {
-              TestSetGroupResult.push({
+              params.TestSetGroupResult.push({
                 ItemID: data.results[i].id,
                 ItemLeftSideSeq: ma.seq,
                 ItemSelectedChoice: ma.match,
