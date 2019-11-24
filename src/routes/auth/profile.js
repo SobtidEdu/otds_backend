@@ -16,7 +16,7 @@ module.exports = async (fastify, opts) => {
     
     user.profileImage = fastify.storage.getUrlProfileImage(user.profileImage)
 
-    return _.pick(user, ['_id', 'prefixName', 'username', 'firstName', 'lastName', 'school', 'role', 'email', 'profileImage', 'isSeenTermAndCondition', 'oldSystemId', 'isSeenTutorial'])
+    return _.pick(user, ['_id', 'prefixName', 'username', 'firstName', 'lastName', 'school', 'role', 'email', 'profileImage', 'isSeenTermAndCondition', 'oldSystemId', 'isSeenTutorial', 'isSeenDataPrivacy'])
   })
 
   fastify.patch('/profile', {

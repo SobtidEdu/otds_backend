@@ -26,6 +26,11 @@ module.exports = async (fastify, opts) => {
 
     let { progressTestings } = testing
 
+    let resultTestingToOtims = {
+      code: exam.code,
+      results: []
+    }
+
     if (exam.type !== 'CAT') {
       let score = 0
       progressTestings = questions.map(question => {
@@ -35,8 +40,20 @@ module.exports = async (fastify, opts) => {
           if (progressTesting.isCorrect) {
             score++
           }
+          resultTestingToOtims.results.push({
+            id: question.id,
+            type: question.type,
+            answer: progressTesting.answer,
+            result: progressTesting.isCorrect ? 1 : 0
+          })
           return progressTesting
         } else {
+          resultTestingToOtims.results.push({
+            id: question.id,
+            type: question.type,
+            answer: null,
+            result: 0
+          })
           return {
             questionId: question._id,
             order: question.seq,
@@ -50,6 +67,8 @@ module.exports = async (fastify, opts) => {
       testing.progressTestings = progressTestings
       testing.score = score
     }
+    
+    await fastify.otimsApi.requestSendTestsetStat(resultTestingToOtims)
 
     testing.finishedAt = finishedAt
     return await testing.save()
