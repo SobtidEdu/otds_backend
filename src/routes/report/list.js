@@ -119,7 +119,7 @@ module.exports = async (fastify, options) => {
       return exams.map(exam => {
         let testingsLatest = []
         exam.testings.forEach(testing => {
-          if (testing.finishedAt !== null) {
+          if (testing.finishedAt !== null && testing.userId) {
             const testingdLatestIndex = testingsLatest.findIndex(tl => tl.userId == testing.userId.toString())
             if (testingdLatestIndex > -1) {
               testingsLatest[testingdLatestIndex] = testing
