@@ -223,7 +223,7 @@ module.exports = fp(async (fastify, options) => {
 
       console.log(params)
       // return params
-      return instance.post(`/ws/RequestSendTestSetStat`, { data: params })
+      return instance.post(`/ws/RequestSendTestSetStat`, params)
       .then(response => {
         console.log(response.data.ResponseSendTestSetStat)
         const testSetGroup = response.data.ResponseFixedRandomTestset.ResponseTestsetGroup_ResponseFixedRandomTestset.ResponseTestsetGroup
