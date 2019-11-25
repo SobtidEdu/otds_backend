@@ -14,6 +14,10 @@ module.exports = {
         type: "ObjectId",
         ref: "User"
       },
+      loggedAt: {
+        type: Number,
+        default: moment().unix()
+      },
       role: { type: String }
     }]
   }

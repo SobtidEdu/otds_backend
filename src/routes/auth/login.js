@@ -40,7 +40,7 @@ module.exports = async (fastify, opts) => {
     const [token] = await Promise.all([
       fastify.jwt.sign({ _id }),
       fastify.mongoose.User.updateOne({ _id }, { isLoggedOut: false, lastLoggedInAt: moment().unix() }),
-      fastify.mongoose.LoginStat.update({ day: date.getDate(), month: date.getMonth()+1, year: date.getFullYear() }, { $push: { users: { _id: user._id, role } } }, { upsert: true })
+      fastify.mongoose.LoginStat.update({ day: date.getDate(), month: date.getMonth()+1, year: date.getFullYear() }, { $push: { users: { _id: user._id, role, loggedAt: moment().unix() } } }, { upsert: true })
     ])
 
     return { _id, role, username, prefixName, firstName, lastName, profileImage: fastify.storage.getUrlProfileImage(profileImage), email, token, notices, oldSystemId, isSeenTutorial, isSeenTermAndCondition, isSeenDataPrivacy }

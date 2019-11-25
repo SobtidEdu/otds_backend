@@ -1,6 +1,7 @@
 'use strict'
 
 const { ROLE } = require('@config/user')
+const moment = require('moment')
 
 module.exports = async (fastify, options) => {
   fastify.get('/login', {
@@ -142,6 +143,117 @@ module.exports = async (fastify, options) => {
       province: response._id.province,
       region: response._id.region,
       count: response.count,
+    }))
+  })
+
+  fastify.get('/login/transactions/:year/:month', {
+    preValidation: [
+      fastify.authenticate(),
+      fastify.authorize([ROLE.ADMIN])
+    ]
+  }, async (request, reply) => {
+    const { params } = request
+
+    const aggregate = [
+      {
+        $match: {
+          year: parseInt(params.year),
+          month: parseInt(params.month)
+        }
+      },
+      {
+        $unwind: "$users"
+      },
+      {
+        $lookup: {
+          from: 'users',
+          localField: 'users._id',
+          foreignField: '_id',
+          as: 'user'
+        }
+      },
+      {
+        $unwind: "$user"
+      }
+    ] 
+
+    const response = await fastify.mongoose.LoginStat.aggregate(aggregate)
+    return response
+    .map((item, index) => ({
+      order: index+1,
+      username: item.user.username ? item.user.username : '',
+      email: item.user.email,
+      firstName: item.user.firstName,
+      lastName: item.user.lastName,
+      schoolName: item.user.school.name.text,
+      role: item.user.role,
+      date: `${item.day}/${item.month}/${item.year+543}`,
+      time: item.loggedAt ? moment.unix(item.loggedAt).format('HH:mm:ss') : ''
+    }))
+  })
+
+  fastify.get('/login/transactions2/:year/:month', {
+    preValidation: [
+      fastify.authenticate(),
+      fastify.authorize([ROLE.ADMIN])
+    ]
+  }, async (request, reply) => {
+    const { params } = request
+
+    const aggregate = [
+      {
+        $match: {
+          year: parseInt(params.year),
+          month: parseInt(params.month)
+        }
+      },
+      {
+        $unwind: "$users"
+      },
+      {
+        $group: {
+          _id: "$users._id",
+          loggedAt: { $last: "$startedAt" },
+          count: { $sum: 1 }
+        }
+      },
+      {
+        $lookup: {
+          from: 'users',
+          localField: '_id',
+          foreignField: '_id',
+          as: 'user'
+        }
+      },
+      {
+        $unwind: "$user"
+      },
+      {
+        $lookup: {
+          from: 'provinces',
+          localField: 'user.school.province.id',
+          foreignField: '_id',
+          as: 'province'
+        }
+      },
+      {
+        $unwind: "$province"
+      }
+    ]
+
+    const response = await fastify.mongoose.LoginStat.aggregate(aggregate)
+    return response
+    .map((item, index) => ({
+      order: index+1,
+      username: item.user.username ? item.user.username : '',
+      email: item.user.email,
+      firstName: item.user.firstName,
+      lastName: item.user.lastName,
+      schoolName: item.user.school.name.text,
+      provinceName: item.province.name,
+      role: item.user.role,
+      loginCount: item.count,
+      lastLoginAt: item.loggedAt ? moment.unix(item.loggedAt).format('HH:mm:ss') : ''
     }))
   })
 }
