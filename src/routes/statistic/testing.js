@@ -300,4 +300,70 @@ module.exports = async (fastify, options) => {
       }))
     }
   })
+
+  fastify.get('/testing/transactions/:year/:month', {
+    preValidation: [
+      fastify.authenticate(),
+      fastify.authorize([ROLE.ADMIN])
+    ]
+  }, async (request, reply) => {
+    const { params } = request
+
+    const start = moment(`${params.year}${params.month}01000000 `, "YYYYMMDDHHmmss").unix()
+    const end = moment(`${params.year}${params.month}30235959 `, "YYYYMMDDHHmmss").unix()
+
+    const aggregate = [
+      {
+        $match: {
+          startedAt: {
+            $gte: start,
+            $lt: end
+          }
+        }
+      },
+      {
+        $lookup: {
+          from: 'users',
+          localField: 'userId',
+          foreignField: '_id',
+          as: 'user'
+        }
+      },
+      {
+        $unwind: "$user"
+      },
+      {
+        $lookup: {
+          from: 'exams',
+          localField: 'examId',
+          foreignField: '_id',
+          as: 'exam'
+        }
+      },
+      {
+        $unwind: "$exam"
+      }
+    ]
+
+    const response = await fastify.mongoose.Testing.aggregate(aggregate)
+    return response
+    .map((item, index) => ({
+      order: index+1,
+      username: item.user.username,
+      email: item.user.email,
+      firstName: item.user.firstName,
+      lastName: item.user.lastName,
+      schoolName: item.user.school.name.text,
+      role: item.user.role,
+      code: item.exam.code,
+      name: item.exam.name,
+      type: item.exam.type,
+      competitionYears: item.exam.type == 'C' ? item.exam.competition.years.join(',') : '-',
+      subject: item.exam.subject,
+      grade: item.exam.grade,
+      quantity: item.exam.quantity,
+      date: moment.unix(item.startedAt).add(543, 'y').format('DD/MM/YYYY'),
+      time: moment.unix(item.startedAt).format('HH:mm:ss')
+    }))
+  })
 }
