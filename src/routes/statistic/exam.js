@@ -322,4 +322,88 @@ module.exports = async (fastify, options) => {
       }))
     }
   })
+
+  fastify.get('/exam/transactions/:year/:month', {
+    preValidation: [
+      fastify.authenticate(),
+      fastify.authorize([ROLE.ADMIN])
+    ]
+  }, async (request, reply) => {
+    const { params } = request
+
+    const start = moment(`${params.year}${params.month}01000000 `, "YYYYMMDDHHmmss").unix()
+    const end = moment(`${params.year}${params.month}30235959 `, "YYYYMMDDHHmmss").unix()
+
+    const aggregate = [
+      {
+        $match: {
+          createdAt: {
+            $gte: start,
+            $lt: end
+          }
+        }
+      },
+      {
+        $lookup: {
+          from: 'users',
+          localField: 'owner',
+          foreignField: '_id',
+          as: 'user'
+        }
+      },
+      {
+        $unwind: "$user"
+      },
+      {
+        $lookup: {
+          from: 'testings',
+          localField: '_id',
+          foreignField: 'examId',
+          as: 'testings'
+        }
+      },
+      {
+        $project: {
+          user: {
+            username: 1,
+            email: 1,
+            firstName: 1,
+            lastName: 1,
+            school: 1,
+            role: 1
+          },
+          code: 1,
+          name: 1,
+          type: 1,
+          competition: 1,
+          subject: 1,
+          grade: 1,
+          criterion: 1,
+          quantity: 1,
+          testingCount: { $cond: { if: { $isArray: "$testings" }, then: { $size: "$testings" }, else: 0 } },
+          createdAt: 1
+        }
+      }
+    ] 
+  
+    const response = await fastify.mongoose.Exam.aggregate(aggregate)
+    return response
+    .map((item, index) => ({
+      order: index+1,
+      username: item.user.username,
+      email: item.user.email,
+      firstName: item.user.firstName,
+      lastName: item.user.lastName,
+      schoolName: item.user.school.name.text,
+      role: item.user.role,
+      type: item.type,
+      competitionYears: item.type == 'C' ? item.competition.years.join(',') : '-',
+      subject: item.subject,
+      grade: item.grade,
+      quantity: item.quantity,
+      testingCount: item.testingCount,
+      date: moment.unix(item.createdAt).add(543, 'y').format('DD/MM/YYYY'),
+      time: moment.unix(item.createdAt).format('HH:mm:ss')
+    }))
+  })
 }
