@@ -54,13 +54,7 @@ module.exports = async (fastify, options) => {
       group.logo = imageInfo.fileName
     }
 
-    await Promise.all([
-      group.save(),
-      fastify.mongoose.User.update(
-        { _id: user._id },
-        { $push: { groups: { info: group, status: 'owner' } } }
-      )
-    ])
+    await group.save()
 
     return reply.status(201).send({
       message: fastify.message('group.created'),

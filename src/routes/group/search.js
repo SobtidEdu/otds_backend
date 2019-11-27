@@ -1,5 +1,8 @@
 'use strict'
 
+const { ROLE } = require('@config/user')
+const { STUDENT_STATUS } = require('@config/group')
+
 module.exports = async (fastify, options) => {
 
   const schema = {}
@@ -7,7 +10,8 @@ module.exports = async (fastify, options) => {
   fastify.get('/search', {
     preValidation: [
       (request) => fastify.validate(schema, request),
-      fastify.authenticate()
+      fastify.authenticate(),
+      fastify.authorize([ROLE.STUDENT])
     ]
   }, async (request) => {
 
@@ -15,9 +19,28 @@ module.exports = async (fastify, options) => {
 
     if (!query.q) return []
 
-    const myGroupIdArray = Array.from(user.groups.map(group => group.info))
-
     let baseAggregateOptions = [
+      {
+        $match: {
+          $and: [
+            { code: query.q.toUpperCase() },
+            {
+              $or: [
+                {
+                  students: {
+                    $elemMatch: {
+                      status: { $in: [STUDENT_STATUS.LEFT, STUDENT_STATUS.DISMISS, STUDENT_STATUS.REJECT] }
+                    }
+                  }
+                },
+                {
+                  'students.status': { $ne: user._id }
+                }
+              ]
+            }
+          ]
+        }
+      },
       { 
         $lookup: {
           from: 'users',
@@ -36,25 +59,11 @@ module.exports = async (fastify, options) => {
           ownerName: { $concat: [ "$owner.firstName", " ", "$owner.lastName"] }, 
           createdAt: 1
         }
-      },
-      {
-        $match: { 
-          $or: [
-            // { name: query.q },
-            { code: query.q.toUpperCase() },
-            // { ownerName: new RegExp(`^${query.q}`, 'i') },
-              // { ownerName: new RegExp('^'+query.q, 'i') },
-              // { 'onwer.lastName': new RegExp(query.q, 'i') }
-          ],
-          $and: [
-            { _id: { $nin: myGroupIdArray } }
-          ] 
-        }
       }
     ]
 
     const searchedGroup = await fastify.paginate(fastify.mongoose.Group, query, baseAggregateOptions)
-
+    
     searchedGroup.items = searchedGroup.items
     .map(group => {
       group.logo = fastify.storage.getUrlGroupLogo(group.logo)

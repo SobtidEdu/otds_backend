@@ -20,8 +20,6 @@ module.exports = async function(fastify, opts, next) {
       if (!group) throw  fastify.httpErrors.notFound(fastify.message('group.notFound'))
   
       const index = group.students.findIndex(student => {
-        console.log(student.userInfo.toString())
-        console.log(user._id.toString())
         return student.userInfo.toString() == user._id.toString()
       })
       const addUserToGroupProm = index > -1 ?

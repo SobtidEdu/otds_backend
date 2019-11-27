@@ -28,7 +28,7 @@ module.exports = async (fastify, options) => {
       group.logo = imageInfo.fileName
     }
 
-    const result = await fastify.mongoose.Group.findOneAndUpdate({ _id: params.groupId }, group)
+    await fastify.mongoose.Group.findOneAndUpdate({ _id: params.groupId }, group)
     
     return { message: fastify.message('group.updated') }
   })

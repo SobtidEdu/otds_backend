@@ -9,21 +9,27 @@ module.exports = async (fastify, opts, next) => {
     preValidation: [
       (request) => fastify.validate(schema, request),
       fastify.authenticate(),
-      fastify.authorize([ROLE.TEACHER, ROLE.SUPER_TEACHER, ROLE.ADMIN])
     ]
   }, async (request) => {
-    const { params, body } = request
+    const { user, params, body } = request
 
     const { studentIds } = body
 
     const group = await fastify.mongoose.Group.findOne({ _id: params.groupId })
     if (!group) throw  fastify.httpErrors.notFound(fastify.message('group.notFound'))
 
-    await Promise.all([
-      fastify.mongoose.Group.updateOne({_id: group._id}, { $pull: { 'students' : { userInfo: { $in: studentIds } } } }),
-      fastify.mongoose.User.updateMany({ _id: { $in: studentIds } }, { $pull: { groups : { info: group._id } } })
-    ])
-
+    if (user.role === ROLE.STUDENT) {
+      await Promise.all([
+        fastify.mongoose.Group.updateOne({_id: group._id}, { $pull: { 'students.userInfo' : user._id } }),
+        fastify.mongoose.User.updateOne({ _id: user._id }, { $pull: { groups : { info: group._id } } })
+      ])
+    } else {
+      await Promise.all([
+        fastify.mongoose.Group.updateOne({_id: group._id}, { $pull: { 'students' : { userInfo: { $in: studentIds } } } }),
+        fastify.mongoose.User.updateMany({ _id: { $in: studentIds } }, { $pull: { groups : { info: group._id } } })
+      ])
+    }
+    
     return { message: fastify.message('group.remove') }
   })
 }

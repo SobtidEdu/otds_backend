@@ -16,12 +16,7 @@ module.exports = async (fastify, options) => {
     
     const group = await fastify.mongoose.Group.findOne({ _id: params.id })
 
-    if (group) {
-      const response = await Promise.all([
-        fastify.mongoose.Group.findOneAndDelete({_id: group._id }),
-        fastify.mongoose.User.update({ _id: user._id }, { $pull: { groups: group._id } })
-      ]);
-    }
+    await fastify.mongoose.Group.findOneAndDelete({_id: group._id })
 
     return { message: fastify.message('group.deleted') }
   })
