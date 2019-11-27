@@ -14,10 +14,6 @@ module.exports = async (fastify, options) => {
             type: 'integer',
             minimum: 1
           },
-          limit: { 
-            type: 'integer',
-            enum: [10, 25, 50, 100]
-          },
           sort: {
             type: 'object',
             properties: {
@@ -83,7 +79,12 @@ module.exports = async (fastify, options) => {
             name: 1,
             code: 1,
             logo: 1,
-            ownerName: { $concat: [ "$owner.firstName", " ", "$owner.lastName"] },
+            owner: {
+              prefixName: 1,
+              firstName: 1,
+              lastName: 1,
+              role: 1,
+            },
             'students.status': 1,
             'students.jointDate': 1,
             createdAt: 1
@@ -101,7 +102,7 @@ module.exports = async (fastify, options) => {
         code: group.code,
         status: group.students[0].status,
         jointDate: group.students[0].jointDate,
-        ownerName: group.ownerName
+        owner: group.owner
       }))
 
       return groups 
@@ -137,17 +138,6 @@ module.exports = async (fastify, options) => {
           }
         }
       ]
-
-      if (user.role !== ROLE.ADMIN) {
-        baseOptions.push({ $match: { owner: user._id} })
-      } else {
-        baseOptions = baseOptions.concat([
-          
-        ])
-      }
-
-
-      query.limit = 100
       
       const groups = await fastify.paginate(fastify.mongoose.Group, query, baseOptions)
       
@@ -155,7 +145,6 @@ module.exports = async (fastify, options) => {
         group.logo = fastify.storage.getUrlGroupLogo(group.logo)
         group.studentCount = group.students.reduce((total, student) => total + (student.status === 'join' ? 1 : 0), 0)
         group.haveStudentRequest = group.students.find((student) => student.status === 'request') ? true : false
-        group.owner = {}
         delete group.students
         return group
       })
@@ -177,8 +166,6 @@ module.exports = async (fastify, options) => {
           }
         }
       ]
-
-      query.limit = 100
       
       const groups = await fastify.paginate(fastify.mongoose.Group, query, baseOptions)
       
@@ -186,7 +173,6 @@ module.exports = async (fastify, options) => {
         group.logo = fastify.storage.getUrlGroupLogo(group.logo)
         group.studentCount = group.students.reduce((total, student) => total + (student.status === 'join' ? 1 : 0), 0)
         group.haveStudentRequest = group.students.find((student) => student.status === 'request') ? true : false
-        group.owner = {}
         delete group.students
         return group
       })
