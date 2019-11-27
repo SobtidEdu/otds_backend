@@ -125,7 +125,7 @@ module.exports = {
     console.log('Clearing user .....')
     
     try {
-      await mongodb.collection('users').drop()
+      await mongodb.collection('users').deleteMany({ oldSystemId: { $exists: true } })
     } catch (err) {
       if (err.code === 26) console.log('There isn\'t the user collection')
       else console.log(err)

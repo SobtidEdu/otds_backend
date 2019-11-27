@@ -127,18 +127,6 @@ module.exports = {
         times: { type: Number }
       }
     ],
-    groups: [
-      {
-        info: {
-          type: "ObjectId",
-          ref: "Group"
-        },
-        status: {
-          type: String, 
-          enum: Object.values(GROUP_STATUS)
-        }
-      }
-    ],
     lastLoggedInAt: {
       type: Number
     },
