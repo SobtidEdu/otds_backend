@@ -2,7 +2,7 @@
 
 const { ROLE } = require('@config/user')
 const { STUDENT_STATUS } = require('@config/group')
-const { mongoose } = require('mongoose')
+const mongoose = require('mongoose')
 
 module.exports = async (fastify, options) => {
 
