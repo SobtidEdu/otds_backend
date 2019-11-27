@@ -88,6 +88,14 @@ module.exports = async (fastify, opts) => {
             as: 'testings'
           }
         },
+        { 
+          $lookup: {
+            from: 'groups',
+            localField: '_id',
+            foreignField: 'exams._id',
+            as: 'groups'
+          }
+        },
         {
           $project: {
             _id: 1,
@@ -105,6 +113,7 @@ module.exports = async (fastify, opts) => {
               role: 1
             },
             countTestings: { $size: '$testings' },
+            groupCount: { $size: '$groups' },
             latestTesting: { $max: '$testings.finishedAt'}
           }
         }
@@ -164,6 +173,14 @@ module.exports = async (fastify, opts) => {
           as: 'testings'
         }
       },
+      { 
+        $lookup: {
+          from: 'groups',
+          localField: '_id',
+          foreignField: 'exams._id',
+          as: 'groups'
+        }
+      },
       {
         $project: {
           _id: 1,
@@ -181,7 +198,9 @@ module.exports = async (fastify, opts) => {
             role: 1
           },
           countTestings: { $size: '$testings' },
-          latestTesting: { $max: '$testings.finishedAt'}
+          groupCount: { $size: '$groups' },
+          latestTesting: { $max: '$testings.finishedAt'},
+
         }
       }
     ]
