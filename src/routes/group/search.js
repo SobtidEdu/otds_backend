@@ -2,6 +2,7 @@
 
 const { ROLE } = require('@config/user')
 const { STUDENT_STATUS } = require('@config/group')
+const { mongoose } = require('mongoose')
 
 module.exports = async (fastify, options) => {
 
@@ -34,7 +35,7 @@ module.exports = async (fastify, options) => {
                   }
                 },
                 {
-                  'students.status': { $ne: user._id }
+                  'students.userInfo': { $ne: mongoose.Types.ObjectId(user._id) }
                 }
               ]
             }
@@ -63,7 +64,7 @@ module.exports = async (fastify, options) => {
     ]
 
     const searchedGroup = await fastify.paginate(fastify.mongoose.Group, query, baseAggregateOptions)
-    
+
     searchedGroup.items = searchedGroup.items
     .map(group => {
       group.logo = fastify.storage.getUrlGroupLogo(group.logo)
