@@ -3,13 +3,13 @@ const moment = require('moment')
 const { connectMongodb } = require('./mongo-connection')
 
 module.exports = {
-  sync: async (synchronizer) => {
+  sync: async (synchronizer, continueRound) => {
     console.log('Synchonizing user .....')
     const { mongoConnection, mongodb } = await connectMongodb()
     synchronizer.setSqlQueryCmd('SELECT ot_users.*, ot_schools.name as school_name FROM ot_users LEFT JOIN ot_schools ON ot_users.school_id = ot_schools.id')
     synchronizer.setMongoCollection('users')
 
-    await synchronizer.synchronize(1000, async (from, to) => {
+    await synchronizer.synchronize(1000, continueRound, async (from, to) => {
       from.name = from.name.split(' ')
       from.school_name = from.school_name ? from.school_name.replace('โรงเรียน', '') : ''
       const school = await mongodb.collection('schools').findOne({ name: from.school_name })

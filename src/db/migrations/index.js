@@ -9,14 +9,15 @@ const groupCommands = ['user', 'exam']
 program
   .version('1.0.0')
   .command('sync <cmd>')
-  .action(async (cmd) => {
+  .option('-c, --continue <continue>', 'Continue from round number')
+  .action(async (cmd, options) => {
     console.log('===== OTDS Migration Getting Start =====')
     await synchronizer.connectDB()
     if (cmd == 'all') {
       for (migration of groupCommands) {
         let migrate = require(`./${migration}.migration`)
       
-        await migrate.sync(synchronizer)
+        await migrate.sync(synchronizer, )
       }
     } else {
       if (!groupCommands.includes(cmd)) {
@@ -26,7 +27,7 @@ program
 
       const migrate = require(`./${cmd}.migration`)
       
-      await migrate.sync(synchronizer)
+      await migrate.sync(synchronizer, options.continue)
     }
     await synchronizer.close()
     console.log('===== OTDS Migration End =====')

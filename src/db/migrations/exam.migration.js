@@ -4,25 +4,31 @@ const { connectMongodb } = require('./mongo-connection')
 const mysql = require('./mysql-connection')
 
 module.exports = {
-  sync: async (synchronizer) => {
+  sync: async (synchronizer, continueRound) => {
     console.log('Synchonizing exam .....')
     const { mongoConnection, mongodb } = await connectMongodb()
     synchronizer.setSqlQueryCmd('SELECT * FROM xml_result_teacher')
     synchronizer.setMongoCollection('exams')
 
-    await synchronizer.synchronize(1000, async (from, to) => {
+    await synchronizer.synchronize(5, continueRound, async (from, to) => {
       const user = await mongodb.collection('users').findOne({ oldSystemId: from.user_id })
+      if (!user) {
+        return null
+      }
       let rawQuestion = await mysql.query(`SELECT txt_xml FROM ot_exam_xml WHERE code = '${from.code}'`)
-      rawQuestion = rawQuestion[0] ? JSON.parse(rawQuestion[0].txt_xml) : []
+      rawQuestion = rawQuestion[0] ? JSON.parse(rawQuestion[0].txt_xml) : null
       
+      console.log(from.code)
       to.owner = user._id
+      to.oldSystemCode = from.code
       to.code = from.TestSetID
       to.subject = from.learning_area
       to.grade = from.key_stage
       to.type = from.TestType
       to.name = from.name
       to.status = from.status == 1
-      to.questions = rawQuestion.ResponseItemGroup ? rawQuestion.ResponseItemGroup.map(question => ({
+      if (rawQuestion && !Array.isArray(rawQuestion.ResponseItemGroup)) rawQuestion.ResponseItemGroup = [rawQuestion.ResponseItemGroup]
+      to.questions = rawQuestion ? rawQuestion.ResponseItemGroup.map(question => ({
         seq: question.ItemSeq,
         id: question.ItemID,
         type: question.QuestionType,
@@ -32,16 +38,16 @@ module.exports = {
         lessonId: question.Lessons ? question.Lessons : null,
         unit: question.QuestionType === 'SA' ?  question.ItemShortAnswer_ResponseItemGroup.Unit : '',
         answers: question.QuestionType !== 'TF' ? transformAnswerByQuestionType(question) : [],
-        subQuestions: question.QuestionType === 'TF' ? question.ItemTFSubquestion_ResponseItemGroup.ItemTFSubquestion.map(subQuestion => ({
-          no: subQuestion.ItemNo,
-          text: subQuestion.ItemSubQuestion,
-          answers: subQuestion.ItemTFChoice_ItemTFSubquestion.ItemTFChoice.map(subAnswer => ({
+        subQuestions: question.QuestionType === 'TF' ? [{
+          no: null,
+          text: '',
+          answers: question.ItemTrueFalseChoice_ResponseItemGroup.ItemTrueFalseChoice.map(subAnswer => ({
             seq: subAnswer.ItemChoiceSeq,
             text: subAnswer.ItemChoice,
             key: subAnswer.ItemChoiceKey === 'True'
           }))
-        })) : []
-      })) : []
+        }] : []
+      })): []
       to.quantity = to.questions.length
       to.examSetTotal = from.ri_set_count
       to.criterion = 'none'
@@ -62,23 +68,22 @@ module.exports = {
       
       to.createdAt = moment().unix()
       // console.log(to)
-      console.log(to)
       return to
     })
     await mongoConnection.close()
     console.log('exam synchonized .....')
   },
   clear: async (mongodb) => {
-    console.log('Clearing user .....')
+    console.log('Clearing exam .....')
     
     try {
-      await mongodb.collection('users').drop()
+      await mongodb.collection('exams').deleteMany({ oldSystemCode: { $exists: true } })
     } catch (err) {
-      if (err.code === 26) console.log('There isn\'t the user collection')
+      if (err.code === 26) console.log('There isn\'t the exam collection')
       else console.log(err)
     }
     
-    console.log('Cleared user .....')
+    console.log('Cleared exam .....')
   }
 }
 
