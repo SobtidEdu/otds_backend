@@ -187,6 +187,7 @@ module.exports = async (fastify, options) => {
           $project: {
             exam: {
               grade: 1,
+              type: 1,
             },
             student: {
               $cond: [{ $eq: ["$user.role", ROLE.STUDENT] }, 1, 0]
@@ -206,6 +207,7 @@ module.exports = async (fastify, options) => {
           $group: {
             _id: {
               grade: "$exam.grade",
+              type: "$exam.type",
             },
             student: { $sum: "$student"},
             teacher: { $sum: "$teacher"},
@@ -219,6 +221,7 @@ module.exports = async (fastify, options) => {
       return response
       .map((stat) => ({
         grade: stat._id.grade,
+        type: stat._id.type,
         student: stat.student,
         teacher: stat.teacher,
         superTeacher: stat.superTeacher,
@@ -261,7 +264,8 @@ module.exports = async (fastify, options) => {
         {
           $project: {
             exam: {
-              subject: 1
+              subject: 1,
+              type: 1
             },
             student: {
               $cond: [{ $eq: ["$user.role", ROLE.STUDENT] }, 1, 0]
@@ -281,6 +285,7 @@ module.exports = async (fastify, options) => {
           $group: {
             _id: {
               subject: "$exam.subject",
+              type: "$exam.type"
             },
             student: { $sum: "$student"},
             teacher: { $sum: "$teacher"},
@@ -293,6 +298,7 @@ module.exports = async (fastify, options) => {
       const response = await fastify.mongoose.Testing.aggregate(aggregate)
       return response.map((stat) => ({
         subject: stat._id.subject,
+        type: stat._id.type,
         student: stat.student,
         teacher: stat.teacher,
         superTeacher: stat.superTeacher,
