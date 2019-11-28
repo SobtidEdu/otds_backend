@@ -13,21 +13,13 @@ module.exports = async (fastify, opts, next) => {
   }, async (request) => {
     const { user, params, body } = request
 
-    const { studentIds } = body
-
     const group = await fastify.mongoose.Group.findOne({ _id: params.groupId })
     if (!group) throw  fastify.httpErrors.notFound(fastify.message('group.notFound'))
 
     if (user.role === ROLE.STUDENT) {
-      await Promise.all([
-        fastify.mongoose.Group.updateOne({_id: group._id}, { $pull: { 'students.userInfo' : user._id } }),
-        fastify.mongoose.User.updateOne({ _id: user._id }, { $pull: { groups : { info: group._id } } })
-      ])
+      await fastify.mongoose.Group.updateOne({_id: group._id}, { $pull: { students: { userInfo: user._id } } })
     } else {
-      await Promise.all([
-        fastify.mongoose.Group.updateOne({_id: group._id}, { $pull: { 'students' : { userInfo: { $in: studentIds } } } }),
-        fastify.mongoose.User.updateMany({ _id: { $in: studentIds } }, { $pull: { groups : { info: group._id } } })
-      ])
+      await fastify.mongoose.Group.updateOne({_id: group._id}, { $pull: { 'students' : { userInfo: { $in: body.studentIds } } } })
     }
     
     return { message: fastify.message('group.remove') }
