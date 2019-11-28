@@ -30,24 +30,13 @@ module.exports = async function(fastify, opts, next) {
         return student
       })
       
-      await Promise.all([
-        fastify.mongoose.Group.updateOne({
-          _id: group._id
-        }, { 
-          $set: { 
-            students: studentUpdate
-          } 
-        }),
-        fastify.mongoose.User.updateMany({
-          _id: { $in: studentIds },
-          groups: { $elemMatch: { info: group._id, status: GROUP_STATUS.REQUEST } }
-        }, { 
-          $set: { 
-            'groups.$.joinAt': moment().unix(), 
-            'groups.$.status': GROUP_STATUS.JOIN 
-          } 
-        })
-      ])
+      await fastify.mongoose.Group.updateOne({
+        _id: group._id
+      }, { 
+        $set: { 
+          students: studentUpdate
+        } 
+      })
 
       return { message: fastify.message('group.approval') }
     })
