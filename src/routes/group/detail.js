@@ -14,11 +14,11 @@ module.exports = async (fastify, options) => {
   }, async (request) => {
     const { user, params } = request
 
-    const group = await fastify.mongoose.Group.findOne({ _id: params.id }).populate('owner', 'prefixName firstName lastName', fastify.mongoose.User)
+    const group = await fastify.mongoose.Group.findOne({ _id: params.id }).populate('owner', 'prefixName firstName lastName', fastify.mongoose.User).lean()
     
     if (!group) throw fastify.httpErrors.notFound('Not found group id')
     
-    const myGroup = user.groups.toObject().find(myGroup => myGroup.info.toString() === group._id.toString())
+    const myGroup = group.students.find(student => student.userInfo.toString() === user._id.toString())
 
     const groupDetail = {
       logo: fastify.storage.getUrlGroupLogo(group.logo),
