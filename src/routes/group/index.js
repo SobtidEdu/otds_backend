@@ -34,6 +34,7 @@ module.exports = async (fastify, options) => {
   fastify.register(rejectStudentToJoinGroup)
   fastify.register(studentLeaveGroup)
   fastify.register(removeStudentFormGroup)
+  fastify.register(require('./student/dismiss'))
 
   // EXAM ZONE //
   fastify.register(listOfExam)
