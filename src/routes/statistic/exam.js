@@ -408,6 +408,7 @@ module.exports = async (fastify, options) => {
       code: item.code,
       name: item.name,
       type: item.type,
+      criterion: item.criterion,
       competitionYears: item.type == 'C' ? item.competition.years.join(',') : '-',
       subject: item.subject,
       grade: item.grade,

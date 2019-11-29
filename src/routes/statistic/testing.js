@@ -364,6 +364,7 @@ module.exports = async (fastify, options) => {
       code: item.exam.code,
       name: item.exam.name,
       type: item.exam.type,
+      criterion: item.exam.criterion,
       competitionYears: item.exam.type == 'C' ? item.exam.competition.years.join(',') : '-',
       subject: item.exam.subject,
       grade: item.exam.grade,
