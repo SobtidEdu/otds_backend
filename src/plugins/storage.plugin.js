@@ -29,6 +29,15 @@ module.exports = fp( async (fastify, options) => {
       const option = { fileName, imageType }
       return base64ToImage(dataBase64, `${dirpath}/`, option)
     },
+
+    removeGroupLogo: (fileName) => {
+      const dirpath = path.resolve(GROUP_LOGO_PATH)
+      try {
+        fs.unlinkSync(dirpath+'/'+fileName)
+      } catch (e) {
+        console.log(`Doesn't have image`)
+      }
+    },
     
     getUrlGroupLogo: (filename) => filename ? `${fastify.env.APP_URL}/${GROUP_LOGO_PATH}/${filename}` : null 
   })
