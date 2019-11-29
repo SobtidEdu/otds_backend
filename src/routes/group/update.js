@@ -25,7 +25,11 @@ module.exports = async (fastify, options) => {
       const filename = `group-${group._id}`
       const imageInfo = fastify.storage.diskGroupLogo(body.logo, filename)
       
+      if (group.logo) fastify.storage.removeGroupLogo(group.logo)
+
       group.logo = imageInfo.fileName
+    } else {
+      delete body.logo
     }
 
     await fastify.mongoose.Group.findOneAndUpdate({ _id: params.groupId }, group)
