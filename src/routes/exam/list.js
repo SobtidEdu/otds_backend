@@ -212,6 +212,7 @@ module.exports = async (fastify, opts) => {
         lastPage,
         totalCount,
         items: items.map(res => ({
+          _id: res.exam._id,
           code: res.exam.code,
           subject: res.exam.subject,
           name: res.exam.name,
