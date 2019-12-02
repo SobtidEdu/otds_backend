@@ -224,6 +224,7 @@ module.exports = async (fastify, opts) => {
             lastName: res.user.lastName,
             role: res.user.role,
           },
+          oneTimeDone: res.exam.oneTimeDone,
           createdAt: res.exam.createdAt,
           status: res.startedAt ? (res.finishedAt ? 'finished' : 'doing') : null
         }))
