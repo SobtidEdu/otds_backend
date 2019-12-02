@@ -12,62 +12,7 @@ module.exports = async (fastify, opts) => {
     
     let baseAggregate = []
     
-    if (user.role != ROLE.ADMIN) {
-      baseAggregate = [
-        {
-          $match: {
-            owner: user._id
-          }
-        },
-        { 
-          $lookup: {
-            from: 'users',
-            localField: 'owner',
-            foreignField: '_id',
-            as: 'owner'
-          }
-        },
-        { $unwind: "$owner" },
-        { 
-          $lookup: {
-            from: 'testings',
-            let: { id: '$_id' },
-            pipeline: [
-              { 
-                $match: {
-                  $expr: {
-                    $eq: ['$examId', '$$id']
-                  }
-                }
-              },
-              { $sort: { finishedAt : 1 } },
-              { $limit: 1 }
-            ],
-            as: 'testing'
-          }
-        },
-        {
-          $project: { 
-            _id: 1,
-            name: 1,
-            subject: 1,
-            code: 1,
-            owner: {
-              _id: 1,
-              prefixName: 1,
-              firstName: 1,
-              lastName: 1,
-              role: 1
-            },
-            testing: 1,
-            type: 1,
-            status: 1,
-            oneTimeDone: 1,
-            createdAt: 1,
-          }
-        }
-      ]
-    } else {
+    if (user.role == ROLE.ADMIN) {
       baseAggregate = [
         {
           $lookup: {
@@ -118,15 +63,9 @@ module.exports = async (fastify, opts) => {
           }
         }
       ]
-    }
 
-    if (!query.limit) {
-      query.limit = 100
-    }
+      const response = await fastify.paginate(fastify.mongoose.Exam, query, baseAggregate)
 
-    const response = await fastify.paginate(fastify.mongoose.Exam, query, baseAggregate)
-
-    if (user.role == ROLE.ADMIN) {
       const examSuggestion = await fastify.mongoose.ExamSuggestion.findOne({})
 
       let examSuggestionList = []
@@ -140,9 +79,192 @@ module.exports = async (fastify, opts) => {
           ...item
         }
       })
-    }
 
-    return response
+      return response
+
+    } else if (user.role == ROLE.STUDENT) {
+      baseAggregate = [
+        {
+          $match: {
+            owner: user._id
+          }
+        },
+        {
+          $lookup: {
+            from: 'testings',
+            pipeline: [
+              { $match: { userId: user._id } },
+              { $project: { examId: 1, updatedAt: 1, userId: 1, groupId: 1, startedAt: 1, finishedAt: 1 } }
+            ],
+            as: 'testings'
+          }
+        },
+        {
+          $addFields: {
+            table2: {
+              $map: {
+                input: '$testings',
+                as: 'tbl2',
+                in: {
+                  _id: '$$tbl2.examId',
+                  groupId: '$$tbl2.groupId',
+                  updatedAt: '$$tbl2.updatedAt',
+                  startedAt: '$$tbl2.startedAt',
+                  finishedAt: '$$tbl2.finishedAt',
+                }
+              }
+            }
+          }
+        },
+        {
+          $group: {
+            _id: null,
+            table1: {
+              $push: {
+                _id: '$_id',
+                updatedAt: '$createdAt'
+              }
+            },
+            table2: {
+              $first: '$table2'
+            }
+          }
+        },
+        {
+          $project: {
+            items: {
+              $setUnion: ['$table1', '$table2']
+            }
+          }
+        },
+        {
+          $unwind: '$items'
+        },
+        {
+          $replaceRoot: {
+            newRoot: '$items'
+          }
+        },
+        {
+          $group: {
+            _id: {
+              examId: '$_id',
+              groupId: '$groupId'
+            },
+            startedAt: { $last: '$startedAt' },
+            finishedAt: { $last: '$finishedAt' },
+            updatedAt: { $last: '$updatedAt' }
+          }
+        },
+        {
+          $lookup: {
+            from: 'exams',
+            localField: '_id.examId',
+            foreignField: '_id',
+            as: 'exam'
+          }
+        },
+        {
+          $unwind: '$exam'
+        },
+        {
+          $lookup: {
+            from: 'users',
+            localField: 'exam.owner',
+            foreignField: '_id',
+            as: 'user'
+          }
+        },
+        {
+          $unwind: '$user'
+        },
+        {
+          $lookup: {
+            from: 'groups',
+            localField: '_id.groupId',
+            foreignField: '_id',
+            as: 'group'
+          }
+        },
+        {
+          $unwind: {
+            path: '$group',
+            preserveNullAndEmptyArrays: true
+          }
+        },
+        {
+          $sort: {
+            updatedAt: -1
+          }
+        },
+        {
+          $project: {
+            questions: 0,
+            testings: 0
+          }
+        }
+      ]
+
+      const { page, lastPage, totalCount, items } = await fastify.paginate(fastify.mongoose.Exam, query, baseAggregate)
+
+      return {
+        page,
+        lastPage,
+        totalCount,
+        items: items.map(res => ({
+          code: res.exam.code,
+          subject: res.exam.subject,
+          name: res.exam.name,
+          type: res.exam.type,
+          groupName: res.group ? res.group.name : null,
+          owner: {
+            prefixName: res.user.prefixName,
+            firstName: res.user.firstName,
+            lastName: res.user.lastName,
+            role: res.user.role,
+          },
+          createdAt: res.exam.createdAt,
+          status: res.startedAt ? (res.finishedAt ? 'finished' : 'doing') : null
+        }))
+      }
+    } else {
+      baseAggregate = [
+        {
+          $match: {
+            owner: user._id
+          }
+        },
+        {
+          $lookup: {
+            from: 'users',
+            localField: 'owner',
+            foreignField: '_id',
+            as: 'owner'
+          }
+        },
+        { $unwind: "$owner" },
+        {
+          $project: { 
+            _id: 1,
+            name: 1,
+            subject: 1,
+            code: 1,
+            owner: {
+              _id: 1,
+              prefixName: 1,
+              firstName: 1,
+              lastName: 1,
+              role: 1
+            },
+            type: 1,
+            status: 1,
+            createdAt: 1,
+          }
+        }
+      ]
+    }
+    
+    return await fastify.paginate(fastify.mongoose.Exam, query, baseAggregate)
   })
 
   fastify.get('/all', {
@@ -200,7 +322,6 @@ module.exports = async (fastify, opts) => {
           countTestings: { $size: '$testings' },
           groupCount: { $size: '$groups' },
           latestTesting: { $max: '$testings.finishedAt'},
-
         }
       }
     ]
