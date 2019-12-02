@@ -218,6 +218,7 @@ module.exports = async (fastify, opts) => {
           type: res.exam.type,
           groupName: res.group ? res.group.name : null,
           owner: {
+            _id: res.user._id,
             prefixName: res.user.prefixName,
             firstName: res.user.firstName,
             lastName: res.user.lastName,
