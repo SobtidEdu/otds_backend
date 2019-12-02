@@ -49,5 +49,9 @@ module.exports = {
       type: Number,
       default: null
     },
+    updatedAt: {
+      type: Number,
+      default: moment().unix()
+    }
   },
 }
