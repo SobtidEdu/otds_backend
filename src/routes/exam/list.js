@@ -15,6 +15,11 @@ module.exports = async (fastify, opts) => {
     if (user.role == ROLE.ADMIN) {
       baseAggregate = [
         {
+          $match: {
+            owner: user._id
+          }
+        },
+        {
           $lookup: {
             from: 'users',
             localField: 'owner',
