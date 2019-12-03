@@ -221,10 +221,9 @@ module.exports = fp(async (fastify, options) => {
         }
       }
 
-      querystring.stringify(params)
       console.log(params)
       // return params
-      return instance.get(`/ws/RequestSendTestSetStat`, params)
+      return instance.get(`/ws/RequestSendTestSetStat?${querystring.stringify(params)}`)
       .then(response => {
         console.log(response.data.ResponseSendTestSetStat)
         const testSetGroup = response.data.ResponseFixedRandomTestset.ResponseTestsetGroup_ResponseFixedRandomTestset.ResponseTestsetGroup
