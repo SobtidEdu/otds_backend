@@ -179,6 +179,7 @@ module.exports = fp(async (fastify, options) => {
       params.TestSetID = data.code
       params.TestSetGroupResult = []
       for (let i in data.results) {
+        if (!data.results[i].answer) continue;
         TimeSpent = Math.floor(Math.random() * 250) + 10
         switch (data.results[i].type) {
           case 'MC':
