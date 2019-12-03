@@ -221,6 +221,7 @@ module.exports = fp(async (fastify, options) => {
         }
       }
 
+      querystring.stringify(params)
       console.log(params)
       // return params
       return instance.get(`/ws/RequestSendTestSetStat`, params)
