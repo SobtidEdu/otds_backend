@@ -330,8 +330,8 @@ module.exports = async (fastify, opts) => {
       baseAggregate.push({
         $match: { 
           $or: [
-            { name: new RegExp(`^${query.search}`, 'i') },
-            { code: new RegExp(`^${query.search}`, 'i') }
+            { name: new RegExp(`${query.search}`, 'i') },
+            { code: new RegExp(`${query.search}`, 'i') }
           ]
         }
       })
