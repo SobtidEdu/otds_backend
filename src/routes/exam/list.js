@@ -196,17 +196,11 @@ module.exports = async (fastify, opts) => {
           $sort: {
             updatedAt: -1
           }
-        },
-        {
-          $project: {
-            questions: 0,
-            testings: 0
-          }
         }
       ]
 
       const { page, lastPage, totalCount, items } = await fastify.paginate(fastify.mongoose.Exam, query, baseAggregate)
-
+      // return { totalCount, items }
       return {
         page,
         lastPage,
@@ -217,7 +211,10 @@ module.exports = async (fastify, opts) => {
           subject: res.exam.subject,
           name: res.exam.name,
           type: res.exam.type,
-          groupName: res.group ? res.group.name : null,
+          group: res.group ? {
+            _id: res.group._id,
+            name: res.group.name
+          } : null, 
           owner: {
             _id: res.user._id,
             prefixName: res.user.prefixName,

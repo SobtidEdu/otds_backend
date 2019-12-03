@@ -51,8 +51,7 @@ module.exports = async (fastify, options) => {
   }, async (request) => {
     const { query } = request
     let aggregate = []
-
-    if (!query.limit) query.limit = 100000
+    
     // Guest: use in register
     // if (!request.user || request.user.role !== ROLE.ADMIN) {
     //   query.filters = Object.assign(query.filters || {},)
