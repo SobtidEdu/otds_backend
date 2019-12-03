@@ -18,7 +18,7 @@ module.exports = fp(async (fastify, options, next) => {
 
     if (paginateOptions.filters) {
       for (let prop in paginateOptions.filters) {
-        matchOption['$match'][prop] = paginateOptions.filters[prop]
+        matchOption['$match'][prop] = new RegExp(paginateOptions.filters[prop], 'g')
       }
     }
 
