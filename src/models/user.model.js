@@ -131,7 +131,13 @@ module.exports = {
       type: Number
     },
     oldSystemId: { type: Number },
-    isSeenTutorial: { type: Boolean, default: false },
+    isSeenTutorial: { 
+      exam: { type: Boolean, default: false },
+      group: { type: Boolean, default: false },
+      testing: { type: Boolean, default: false },
+      report: { type: Boolean, default: false },
+      examCode: { type: Boolean, default: false }
+    },
     createdAt: {
       type: Number,
       default: moment().unix()
