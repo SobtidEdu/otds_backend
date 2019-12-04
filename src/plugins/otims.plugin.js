@@ -3,7 +3,26 @@ const querystring = require('querystring');
 const axios = require('axios')
 const moment = require('moment')
 
-const formUrlEncoded = x =>  Object.keys(x).reduce((p, c) => p + `&${c}=${encodeURIComponent(x[c])}`, '')
+const formUrlEncoded = data =>  {
+  let items = []
+  for (let key in data) {
+    if (typeof data[key] === 'string') items.push(`${key}=${encodeURIComponent(data[key])}`)
+    else if (typeof data[key] === 'array') {
+      data[key].forEach((nest, index) => {
+        if (typeof nest === 'object') {
+          for (let n in nest) {
+            items.push(`${key}[${index}][${n}]=${encodeURIComponent(nest[n])}`) 
+          }
+        } 
+        else if (typeof nest === 'string') {
+          items.push(`${key}[${index}]=${encodeURIComponent(nest[index])}`) 
+        }
+      })
+    }
+  }
+
+  return items.join('&')
+}
 
 module.exports = fp(async (fastify, options) => {
   const { OTIMS_API_URL, OTIMS_TOKEN, OTIMS_USER } = fastify.env
@@ -187,7 +206,7 @@ module.exports = fp(async (fastify, options) => {
           case 'MC':
             params.TestSetGroupResult.push({
               ItemID: data.results[i].id,
-              ItemSelectedChoice: data.results[i].answer,
+              ItemAnswer: data.results[i].answer,
               ItemResult: data.results[i].result,
               TimeSpent
             })
@@ -204,7 +223,7 @@ module.exports = fp(async (fastify, options) => {
             data.results[i].answer.forEach(tf => {
               params.TestSetGroupResult.push({
                 ItemID: data.results[i].id,
-                ItemSelectedChoice: tf.key,
+                ItemAnswer: tf.key,
                 ItemResult: data.results[i].result,
                 TimeSpent
               })
@@ -215,7 +234,7 @@ module.exports = fp(async (fastify, options) => {
               params.TestSetGroupResult.push({
                 ItemID: data.results[i].id,
                 ItemLeftSideSeq: ma.seq,
-                ItemSelectedChoice: ma.match,
+                ItemAnswer: ma.match,
                 ItemResult: data.results[i].result,
                 TimeSpent
               })
