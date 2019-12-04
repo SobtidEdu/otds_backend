@@ -223,7 +223,7 @@ module.exports = fp(async (fastify, options) => {
           break;
         }
       }
-      instance.defaults.headers = { 'Content-Type': 'application/x-www-form-urlencoded' }
+      instance.defaults.headers['Content-Type'] = 'application/x-www-form-urlencoded'
       console.log(params)
       // return params
       return instance.post(`/ws/RequestSendTestSetStat`, { data: formUrlEncoded(params) })
