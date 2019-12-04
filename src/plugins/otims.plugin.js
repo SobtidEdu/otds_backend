@@ -3,6 +3,8 @@ const querystring = require('querystring');
 const axios = require('axios')
 const moment = require('moment')
 
+const formUrlEncoded = x =>  Object.keys(x).reduce((p, c) => p + `&${c}=${encodeURIComponent(x[c])}`, '')
+
 module.exports = fp(async (fastify, options) => {
   const { OTIMS_API_URL, OTIMS_TOKEN, OTIMS_USER } = fastify.env
 
@@ -221,10 +223,10 @@ module.exports = fp(async (fastify, options) => {
           break;
         }
       }
-
+      instance.defaults.headers = { 'Content-Type': 'application/x-www-form-urlencoded' }
       console.log(params)
       // return params
-      return instance.post(`/ws/RequestSendTestSetStat`, { params })
+      return instance.post(`/ws/RequestSendTestSetStat`, { data: formUrlEncoded(params) })
       .then(response => {
         console.log(response.data.ResponseSendTestSetStat)
         const testSetGroup = response.data.ResponseFixedRandomTestset.ResponseTestsetGroup_ResponseFixedRandomTestset.ResponseTestsetGroup
