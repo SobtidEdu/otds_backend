@@ -226,7 +226,7 @@ module.exports = fp(async (fastify, options) => {
       instance.defaults.headers['Content-Type'] = 'application/x-www-form-urlencoded'
       console.log(params)
       // return params
-      return instance.post(`/ws/RequestSendTestSetStat`, { data: formUrlEncoded(params) })
+      return instance.post(`/ws/RequestSendTestSetStat`, formUrlEncoded(params))
       .then(response => {
         console.log(response.data.ResponseSendTestSetStat)
         const testSetGroup = response.data.ResponseFixedRandomTestset.ResponseTestsetGroup_ResponseFixedRandomTestset.ResponseTestsetGroup
