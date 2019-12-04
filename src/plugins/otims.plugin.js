@@ -11,11 +11,11 @@ const formUrlEncoded = data =>  {
       data[key].forEach((nest, index) => {
         if (typeof nest === 'object') {
           for (let n in nest) {
-            items.push(`${key}[${index}][${n}]=${encodeURIComponent(nest[n])}`) 
+            items.push(`${key}%5B${index}%5D%5B${n}%5D=${encodeURIComponent(nest[n])}`) 
           }
         } 
         else if (typeof nest === 'string') {
-          items.push(`${key}[${index}]=${encodeURIComponent(nest[index])}`) 
+          items.push(`${key}%5B${index}%5D=${encodeURIComponent(nest[index])}`) 
         }
       })
     }
