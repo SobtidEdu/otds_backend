@@ -245,19 +245,19 @@ module.exports = fp(async (fastify, options) => {
       instance.defaults.headers['Content-Type'] = 'application/x-www-form-urlencoded'
       console.log(params)
       console.log(formUrlEncoded(params))
-      // return params
-      // return instance.post(`/ws/RequestSendTestSetStat`, formUrlEncoded(params))
-      // .then(response => {
-      //   console.log(response.data.ResponseSendTestSetStat)
-      //   const testSetGroup = response.data.ResponseFixedRandomTestset.ResponseTestsetGroup_ResponseFixedRandomTestset.ResponseTestsetGroup
-      //   return params.NoStudents == 1 ? [testSetGroup] : testSetGroup
-      // })
-      // .catch(e => {
-      //   console.log(e)
-      //   const errorResponse = e.response.data
-      //   console.error(errorResponse)
-      //   // throw new Error(errorResponse.ResponseFirstItemCAT.ErrorMessage)
-      // })
+      return params
+      return instance.post(`/ws/RequestSendTestSetStat`, formUrlEncoded(params))
+      .then(response => {
+        console.log(response.data.ResponseSendTestSetStat)
+        const testSetGroup = response.data.ResponseFixedRandomTestset.ResponseTestsetGroup_ResponseFixedRandomTestset.ResponseTestsetGroup
+        return params.NoStudents == 1 ? [testSetGroup] : testSetGroup
+      })
+      .catch(e => {
+        console.log(e)
+        const errorResponse = e.response.data
+        console.error(errorResponse)
+        // throw new Error(errorResponse.ResponseFirstItemCAT.ErrorMessage)
+      })
     }
   })
 })
