@@ -135,11 +135,45 @@ module.exports = async (fastify, options) => {
           $unwind: '$exam'
         },
         {
+          $lookup: {
+            from: 'users',
+            localField: 'userId',
+            foreignField: '_id',
+            as: 'user'
+          }
+        },
+        {
+          $unwind: "$user"
+        },
+        {
+          $project: {
+            exam: {
+              grade: 1,
+              type: 1,
+            },
+            student: {
+              $cond: [{ $eq: ["$user.role", ROLE.STUDENT] }, 1, 0]
+            },
+            teacher: {
+              $cond: [{ $eq: ["$user.role", ROLE.TEACHER] }, 1, 0]
+            },
+            superTeacher: {
+              $cond: [{ $eq: ["$user.role", ROLE.SUPER_TEACHER] }, 1, 0]
+            },
+            admin: {
+              $cond: [{ $eq: ["$user.role", ROLE.ADMIN] }, 1, 0]
+            }
+          }
+        },
+        {
           $group: {
             _id: {
               type: "$exam.type",
             },
-            count: { $sum: 1 }
+            student: { $sum: "$student"},
+            teacher: { $sum: "$teacher"},
+            superTeacher: { $sum: "$superTeacher"},
+            admin: { $sum: "$admin"},
           }
         }
       ] 
@@ -147,7 +181,11 @@ module.exports = async (fastify, options) => {
       const response = await fastify.mongoose.Testing.aggregate(aggregate)
       return response.map((stat) => ({
         type: stat._id.type,
-        total: stat.count
+        student: stat.student,
+        teacher: stat.teacher,
+        superTeacher: stat.superTeacher,
+        admin: stat.admin,
+        total: stat.student + stat.teacher + stat.superTeacher + stat.admin
       }))
     }
 
