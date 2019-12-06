@@ -14,7 +14,7 @@ module.exports = async (fastify, opts) => {
     
     const buff = new Buffer(`${nextHours}.${user.id}`)
     const base64data = buff.toString('base64')
-
+    console.log(user)
     user.resetPasswordToken = base64data
     await user.save()
 
