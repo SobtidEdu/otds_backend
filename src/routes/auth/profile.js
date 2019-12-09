@@ -27,6 +27,8 @@ module.exports = async (fastify, opts) => {
   },
   async (request) => {
     const { user, body } = request
+
+    delete body.isSeenTutorial
     
     if (body.password == null) {
       delete body.password
