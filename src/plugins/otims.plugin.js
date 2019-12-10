@@ -46,7 +46,6 @@ module.exports = fp(async (fastify, options) => {
     getIndicators: async (params = {}) => {
       params.RequestedName = OTIMS_USER
       params.RequestedNo = `${OTIMS_USER}StrandIndicatorRequest${moment().format('YYYYMMDDHHmmSSS')}`
-      params.ItemType = 'G'
 
       // let q = querystring.stringify(params)
       const indicators = await instance.get(`/ws/StrandIndicatorRequest`, { params })
@@ -89,6 +88,15 @@ module.exports = fp(async (fastify, options) => {
         }
       }
       return indicators
+    },
+
+    getStrands: async (params = {}) => {
+      const strands = await this.getIndicators(params)
+      return strands.map(strand => ({
+        name: strand.name,
+        code: strand.code,
+        noitems: strand.indicators.reduce((noitem, indicator) => noitem + indicator.noitems, 0)
+      }))
     },
 
     getCompetitions: async (params = {}) => {
