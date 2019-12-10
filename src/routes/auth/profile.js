@@ -27,14 +27,17 @@ module.exports = async (fastify, opts) => {
   },
   async (request) => {
     const { user, body } = request
-
-    delete body.isSeenTutorial
     
     if (body.password == null) {
       delete body.password
     }
     if (body.profileImage == null) {
       delete body.profileImage
+    }
+
+    if (body.isSeenTutorial) {
+      body.isSeenTutorial = Object.assign(user.isSeenTutorial, body.isSeenTutorial)
+      console.log(body.isSeenTutorial)
     }
 
     if (body.school) {
