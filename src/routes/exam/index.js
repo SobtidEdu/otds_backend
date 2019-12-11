@@ -16,6 +16,7 @@ module.exports = async (fastify) => {
   fastify.register(examCreate)
   fastify.register(examLesson)
   fastify.register(examIndicator)
+  fastify.register(require('./strand'))
   fastify.register(examCompetition)
   fastify.register(examDelete)
   fastify.register(examUpdate)
