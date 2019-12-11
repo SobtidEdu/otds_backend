@@ -105,8 +105,7 @@ module.exports = fp(async (fastify, options) => {
           }))
         }))
       )
-      console.log(indicators)
-        return indicators
+      
       params.RequestType = 1
       params.TestSetType = 'FI'
       params.FollowStrand = true
