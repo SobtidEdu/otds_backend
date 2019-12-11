@@ -23,10 +23,10 @@ module.exports = async (fastify) => {
       params.KeyStage = query.grade
     }
     if (query.competitionName) {
-      params.Project = query.competitionName
+      params.Project = query.competition.name
     }
     if (query.competitionYears) {
-      params.ProjectYear = query.competitionYears.join(',')
+      params.ProjectYear = query.competition.year
     }
 
     return await fastify.otimsApi.getStrands(params)
