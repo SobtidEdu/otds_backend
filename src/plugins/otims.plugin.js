@@ -105,7 +105,7 @@ module.exports = fp(async (fastify, options) => {
           }))
         }))
       )
-      
+
       params.RequestType = 1
       params.TestSetType = 'FI'
       params.FollowStrand = true
@@ -130,6 +130,8 @@ module.exports = fp(async (fastify, options) => {
               const item = rawIndicator.split(',') // indicatorName, questionType, noQuestions
               return parseInt(item[2]) + noitems
             }, 0)
+          }).catch(err => {
+            return 0
           })
           indicators[strandIndex].indicators[indicatorIndex] = indicator
         }
