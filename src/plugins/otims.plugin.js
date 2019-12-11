@@ -105,6 +105,7 @@ module.exports = fp(async (fastify, options) => {
           }))
         }))
       )
+      console.log(indicators)
     
       params.RequestType = 1
       params.TestSetType = 'FI'
