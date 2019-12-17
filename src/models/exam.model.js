@@ -63,6 +63,7 @@ module.exports = {
       type: Number,
       default: moment().unix()
     },
+    deletedAt: { type: Number, default: null },
     questions: [{
       seq: { type: Number },
       id: { type: String },

@@ -1,6 +1,7 @@
 'use strict'
 
 const { ROLE } = require('@config/user')
+const moment = require('moment')
 
 module.exports = async (fastify, options) => {
   const schema = {}
@@ -16,7 +17,7 @@ module.exports = async (fastify, options) => {
     
     const group = await fastify.mongoose.Group.findOne({ _id: params.id })
 
-    await fastify.mongoose.Group.findOneAndDelete({_id: group._id })
+    await fastify.mongoose.Group.update({ _id: group._id }, { deletedAt: moment().unix() })
 
     return { message: fastify.message('group.deleted') }
   })

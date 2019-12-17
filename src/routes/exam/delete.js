@@ -1,7 +1,6 @@
 'use strict' 
 
 const { ROLE } = require('@config/user')
-const { CRITERION, EXAM_TYPE, LEVEL } = require('@config/exam')
 const moment = require('moment')
 
 module.exports = async (fastify) => { 
@@ -19,20 +18,18 @@ module.exports = async (fastify) => {
 
     let deleteExam = null;
     if (user.role === ROLE.ADMIN) {
-      deleteExam = fastify.mongoose.Exam.deleteOne({ _id: params.examId })
+      deleteExam = fastify.mongoose.Exam.updateOne({ _id: params.examId }, { deletedAt: moment().unix() })
     } else {
-      deleteExam = fastify.mongoose.Exam.deleteOne({ _id: params.examId, owner: user._id })
+      deleteExam = fastify.mongoose.Exam.updateOne({ _id: params.examId, owner: user._id }, { deletedAt: moment().unix() })
     }
     
-
     await Promise.all([
       deleteExam,
-      fastify.mongoose.Testing.deleteMany({ examId: params.examId }),
       fastify.mongoose.Group.updateMany({ 
         exams: { 
           $elemMatch: {
             _id: params.examId
-          } 
+          }
         }
       }, { $pull: { exams: { _id: params.examId } } }),
       fastify.mongoose.ExamSuggestion.update({}, { $pull: { list: { exam: params.examId } } }),
