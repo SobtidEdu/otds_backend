@@ -187,8 +187,8 @@ module.exports = fp(async (fastify, options) => {
         request_name: params.RequestedName,
         request_type: params.RequestType,
         test_set_type: 'FI',
-        learning_area: "",
-        key_stage: "",
+        learning_area: params.LearningArea,
+        key_stage: params.KeyStage,
         test_items: params.TestItems
       })
       .then(response => {
@@ -238,7 +238,7 @@ module.exports = fp(async (fastify, options) => {
         return nextItemCAT
       })
       .catch(e => {
-        console.error(e)
+        console.error(e.request)
         const errorResponse = e.response.data
         console.error(errorResponse)
         throw new Error(errorResponse.ResponseNextItemCAT.ErrorMessage)

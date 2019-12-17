@@ -10,7 +10,7 @@ module.exports = async (fastify) => {
   fastify.post('/', {
     preValidation: [
       (request) => fastify.validate(schema, request),
-      fastify.authenticate({ allowGuest: true })
+      fastify.authenticate()
     ]
   }, async (request) => {
     const { user, body } = request
