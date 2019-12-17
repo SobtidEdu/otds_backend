@@ -197,6 +197,7 @@ module.exports = fp(async (fastify, options) => {
       })
       .catch((e) => {
         const errorResponse = e.response.data
+        console.error(e.response.config.data)
         console.error(errorResponse.ResponseFixedRandomTestset)
         if (errorResponse.ResponseFixedRandomTestset.ErrorMessage === '010,ไม่พบข้อสอบตามเงื่อนไขที่ต้องการจัดชุด') {
           errorResponse.ResponseFixedRandomTestset.ErrorMessage = 'ข้อสอบไม่เพียงพอสำหรับการจัดชุดข้อสอบนี้'
@@ -238,7 +239,6 @@ module.exports = fp(async (fastify, options) => {
         return nextItemCAT
       })
       .catch(e => {
-        console.error(e.request)
         const errorResponse = e.response.data
         console.error(errorResponse)
         throw new Error(errorResponse.ResponseNextItemCAT.ErrorMessage)
