@@ -25,6 +25,7 @@ module.exports = async (fastify) => {
     
     await Promise.all([
       deleteExam,
+      fastify.mongoose.Testing.updateMany({ examId: params.examId, userId: user._id }, { deletedAt: moment().unix() }),
       fastify.mongoose.Group.updateMany({ 
         exams: { 
           $elemMatch: {

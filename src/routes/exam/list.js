@@ -16,7 +16,8 @@ module.exports = async (fastify, opts) => {
       baseAggregate = [
         {
           $match: {
-            owner: user._id
+            owner: user._id,
+            deletedAt: null
           }
         },
         {
@@ -91,14 +92,15 @@ module.exports = async (fastify, opts) => {
       baseAggregate = [
         {
           $match: {
-            owner: user._id
+            owner: user._id,
+            deletedAt: null
           }
         },
         {
           $lookup: {
             from: 'testings',
             pipeline: [
-              { $match: { userId: user._id } },
+              { $match: { userId: user._id, deletedAt: null } },
               { $project: { examId: 1, updatedAt: 1, userId: 1, groupId: 1, startedAt: 1, finishedAt: 1 } }
             ],
             as: 'testings'
@@ -115,7 +117,7 @@ module.exports = async (fastify, opts) => {
                   groupId: '$$tbl2.groupId',
                   updatedAt: '$$tbl2.updatedAt',
                   startedAt: '$$tbl2.startedAt',
-                  finishedAt: '$$tbl2.finishedAt',
+                  finishedAt: '$$tbl2.finishedAt'
                 }
               }
             }
@@ -237,7 +239,8 @@ module.exports = async (fastify, opts) => {
       baseAggregate = [
         {
           $match: {
-            owner: user._id
+            owner: user._id,
+            deletedAt: null
           }
         },
         {
@@ -282,6 +285,11 @@ module.exports = async (fastify, opts) => {
     const { query } = request
     
     const baseAggregate = [
+      {
+        $match: {
+          deletedAt: null
+        }
+      },
       {
         $lookup: {
           from: 'users',

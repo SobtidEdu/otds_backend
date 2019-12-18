@@ -52,6 +52,7 @@ module.exports = {
     updatedAt: {
       type: Number,
       default: moment().unix()
-    }
+    },
+    deletedAt: { type: Number, default: null }
   },
 }

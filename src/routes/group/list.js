@@ -59,7 +59,8 @@ module.exports = async (fastify, options) => {
                 userInfo: user._id,
                 status: { 
                   $in: [ STUDENT_STATUS.REQUEST, STUDENT_STATUS.JOIN, STUDENT_STATUS.REJECT, STUDENT_STATUS.DISMISS ] 
-                }
+                },
+                deletedAt: null
               }
             }
           }
@@ -109,6 +110,11 @@ module.exports = async (fastify, options) => {
     } else if (user.role === ROLE.ADMIN) {
 
       let baseOptions = [
+        {
+          $match: {
+            deletedAt: null
+          }
+        },
         { 
           $lookup: {
             from: 'users',
@@ -153,7 +159,7 @@ module.exports = async (fastify, options) => {
     } else {
       let baseOptions = [
         { 
-          $match: { owner: user._id} 
+          $match: { owner: user._id, deletedAt: null } 
         },
         {
           $project: { 
