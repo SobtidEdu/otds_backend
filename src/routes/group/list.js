@@ -2,6 +2,7 @@
 
 const { ROLE } = require('@config/user')
 const { STUDENT_STATUS } = require('@config/group')
+var mongoose = require('mongoose');
 
 module.exports = async (fastify, options) => {
 
@@ -56,7 +57,7 @@ module.exports = async (fastify, options) => {
           $match: { 
             'students': {
               $elemMatch: { 
-                userInfo: user._id,
+                userInfo: mongoose.Types.ObjectId(user._id),
                 status: { 
                   $in: [ STUDENT_STATUS.REQUEST, STUDENT_STATUS.JOIN, STUDENT_STATUS.REJECT, STUDENT_STATUS.DISMISS ] 
                 },
@@ -64,6 +65,10 @@ module.exports = async (fastify, options) => {
               }
             }
           }
+        },
+        { $unwind: "$students" },
+        {
+          $match: { 'students.userInfo': user._id }
         },
         { 
           $lookup: {
@@ -101,8 +106,8 @@ module.exports = async (fastify, options) => {
         createdAt: group.createdAt,
         name: group.name,
         code: group.code,
-        status: group.students[0].status,
-        jointDate: group.students[0].jointDate,
+        status: group.students.status,
+        jointDate: group.students.jointDate,
         owner: group.owner
       }))
 
