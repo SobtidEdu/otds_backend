@@ -27,8 +27,8 @@ module.exports = async (fastify, opts, next) => {
       }
     }, {
       $set: { 
-        'students.$.status': STUDENT_STATUS.DISMISS, 
-        'students.$.leftDate': moment().unix()
+        'students.$[].status': STUDENT_STATUS.DISMISS, 
+        'students.$[].leftDate': moment().unix()
       } 
     })
     
