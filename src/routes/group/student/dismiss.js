@@ -20,7 +20,7 @@ module.exports = async (fastify, opts, next) => {
     const group = await fastify.mongoose.Group.findOne({ _id: params.groupId })
     if (!group) throw  fastify.httpErrors.notFound(fastify.message('group.notFound'))
 
-    await fastify.mongoose.Group.updateOne({
+    await fastify.mongoose.Group.updateMany({
       _id: group._id,
       students: {
         $elemMatch: { userInfo: { $in: studentIds } }
