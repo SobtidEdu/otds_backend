@@ -62,10 +62,10 @@ fastify.register(require('fastify-static'), {
   root: path.join(__dirname, 'storage'),
   prefix: '/storage/'
 })
-fastify.register(require('fastify-rate-limit'), {
-  max: 300,
-  timeWindow: '1 minute'
-})
+// fastify.register(require('fastify-rate-limit'), {
+//   max: 300,
+//   timeWindow: '1 minute'
+// })
 
 if (process.env.APP_ENV !== 'local') {
   Sentry.init({ 

@@ -114,9 +114,6 @@ module.exports = async (fastify, options) => {
             _id: { $max: "$score" }
           }
         },
-        {
-          $sort: { score: -1 }
-        }
       ]
 
       const aggregateTestingList = [
@@ -137,6 +134,8 @@ module.exports = async (fastify, options) => {
         fastify.mongoose.Testing.aggregate(aggregateTestingStat),
         fastify.mongoose.Testing.aggregate(aggregateTestingList)
       ])
+
+      response[0] = response[0].sort((a, b) => (a._id < b._id) ? 1 : (a._id > b._id) ? -1 : 0)
 
       const myMaxScoreTesting = response[1].reduce((score, testing) => testing.score > score ? testing.score : score, 0)
       const myBestTesting = response[1].find(testing => testing.score === myMaxScoreTesting)
