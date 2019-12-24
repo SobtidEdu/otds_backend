@@ -231,7 +231,7 @@ module.exports = async (fastify, opts) => {
           },
           oneTimeDone: res.exam.oneTimeDone,
           createdAt: res.exam.createdAt,
-          status: res.startedAt ? (res.finishedAt ? 'finished' : 'doing') : null,
+          status: res.exam.status ? (res.startedAt ? (res.finishedAt ? 'finished' : 'doing') : null) : 'close',
           updatedAt: res.exam.updatedAt
         }))
       }
