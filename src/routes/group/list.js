@@ -147,7 +147,8 @@ module.exports = async (fastify, options) => {
             createdAt: 1,
             examCount: { $size: '$exams' }
           }
-        }
+        },
+        { $sort: { createdAt: -1 } }
       ]
       
       const groups = await fastify.paginate(fastify.mongoose.Group, query, baseOptions)
