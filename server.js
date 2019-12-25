@@ -67,12 +67,12 @@ fastify.register(require('fastify-static'), {
 //   timeWindow: '1 minute'
 // })
 
-if (process.env.APP_ENV !== 'local') {
-  Sentry.init({ 
-    dsn: process.env.SENTRY_URL,
-    environment: process.env.APP_ENV
-  })
-}
+// if (process.env.APP_ENV !== 'local') {
+//   Sentry.init({ 
+//     dsn: process.env.SENTRY_URL,
+//     environment: process.env.APP_ENV
+//   })
+// }
 
 /*****
  * Internal Plugin
@@ -112,7 +112,7 @@ fastify.register(
 /**
  * Route Setup
  */
-fastify.register(require('./src/routes'), { prefix: '/api' })
+fastify.register(require('./src/routes'), { prefix: process.env.APP_ENV !== 'local' ? '/' : '/api' })
 
 fastify.setErrorHandler(async (error, request, reply) => {
   console.log(error)
