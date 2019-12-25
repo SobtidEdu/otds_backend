@@ -97,12 +97,17 @@ module.exports = async (fastify, opts) => {
     await user.save()
     
     if (body.email) {
-      await fastify.nodemailer.sendMail({
-        from: fastify.env.EMAIL_FROM,
-        to: body.email,
-        subject: 'ยืนยันการลงทะเบียน OTDS',
-        html
-      })
+      try {
+        await fastify.nodemailer.sendMail({
+          from: fastify.env.EMAIL_FROM,
+          to: body.email,
+          subject: 'ยืนยันการลงทะเบียน OTDS',
+          html
+        })
+      } catch (e) {
+        console.log(e)
+      }
+      
     }
     
     return { message: 'Register success' }
