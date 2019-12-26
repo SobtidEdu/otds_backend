@@ -16,6 +16,12 @@ module.exports = fp(async (fastify, options, next) => {
     //   aggregateBaseOptions.splice(indexOfMatchOption, 1)
     // }
 
+    if (paginateOptions.search) {
+      for (let prop in paginateOptions.search) {
+        matchOption['$match'][prop] = new RegExp(`^${paginateOptions.search[prop]}`, 'i')
+      }
+    }
+
     if (paginateOptions.filters) {
       for (let prop in paginateOptions.filters) {
         matchOption['$match'][prop] = new RegExp(`^${paginateOptions.filters[prop]}$`, 'i')

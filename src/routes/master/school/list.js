@@ -27,6 +27,12 @@ module.exports = async (fastify, options) => {
               name: { type: 'string' },
               isActived: { type: 'boolean' }
             }
+          },
+          search: {
+            type: 'object',
+            properties: {
+              name: { type: 'string' },
+            }
           }
         }
       },
@@ -50,6 +56,7 @@ module.exports = async (fastify, options) => {
     ]
   }, async (request) => {
     const { query } = request
+    console.log(query)
     let aggregate = []
     
     // Guest: use in register
