@@ -10,29 +10,35 @@ module.exports = fp(async (fastify, options, next) => {
     const sort = paginateOptions.sort || { [SORT_KEY]: 'desc' }
     
     indexOfMatchOption = aggregateBaseOptions.findIndex(option => option['$match'] !== undefined )
-    let matchOption = { $match: {} }
+    
     // if (indexOfMatchOption > -1) {
     //   matchOption = aggregateBaseOptions[indexOfMatchOption]
     //   aggregateBaseOptions.splice(indexOfMatchOption, 1)
     // }
 
-    if (paginateOptions.search) {
-      for (let prop in paginateOptions.search) {
-        if (paginateOptions.search[prop] !== '') {
-          matchOption['$match'][prop] = new RegExp(`^${paginateOptions.search[prop]}`, 'i')
-        }
-      }
-    }
-
-    if (paginateOptions.filters) {
+    if (paginateOptions.filters && Object.keys(paginateOptions.filters).length > 0) {
+      let filterOption = { $match: { $and: [] } }
       for (let prop in paginateOptions.filters) {
         if (paginateOptions.filters[prop] !== '') {
-          matchOption['$match'][prop] = new RegExp(`^${paginateOptions.filters[prop]}$`, 'i')
+          filterOption['$match']['$and'].push({[prop]: new RegExp(`^${paginateOptions.filters[prop]}`, 'i') })
         }
       }
+      aggregateBaseOptions.push(filterOption)
     }
+    
 
-    aggregateBaseOptions.push(matchOption)
+    
+    if (paginateOptions.search && Object.keys(paginateOptions.search).length > 0) {
+      let searchOption = { $match: { $or: [] } }
+      for (let prop in paginateOptions.search) {
+        if (paginateOptions.search[prop] !== '') {
+          searchOption['$match']['$or'].push({[prop]: new RegExp(`^${paginateOptions.search[prop]}`, 'i') })
+        }
+      }
+      console.log(searchOption)
+      aggregateBaseOptions.push(searchOption)
+    }
+    
 
     // console.log(aggregateBaseOptions)
 
