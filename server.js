@@ -112,7 +112,7 @@ fastify.register(
 /**
  * Route Setup
  */
-fastify.register(require('./src/routes'), { prefix: process.env.APP_ENV !== 'local' ? '/' : '/api' })
+fastify.register(require('./src/routes'), { prefix: process.env.APP_ENV == 'production' ? '/' : '/api' })
 
 fastify.setErrorHandler(async (error, request, reply) => {
   console.log(error)
