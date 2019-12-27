@@ -23,7 +23,9 @@ module.exports = fp(async (fastify, options, next) => {
           filterOption['$match']['$and'].push({[prop]: new RegExp(`^${paginateOptions.filters[prop]}`, 'i') })
         }
       }
-      aggregateBaseOptions.push(filterOption)
+      if (filterOption['$match']['$and'].length > 0) {
+        aggregateBaseOptions.push(filterOption)
+      }
     }
     
 
@@ -35,8 +37,10 @@ module.exports = fp(async (fastify, options, next) => {
           searchOption['$match']['$or'].push({[prop]: new RegExp(`^${paginateOptions.search[prop]}`, 'i') })
         }
       }
-      console.log(searchOption)
-      aggregateBaseOptions.push(searchOption)
+
+      if (searchOption['$match']['$or'].length > 0) {
+        aggregateBaseOptions.push(searchOption)
+      }
     }
     
 
