@@ -159,7 +159,7 @@ module.exports = async (fastify, options) => {
     } else {
       const aggregate = [
         {
-          $match: { 
+          $match: {
             examId: mongoose.Types.ObjectId(params.examId),
             groupId: mongoose.Types.ObjectId(params.groupId),
             finishedAt: { $ne: null }
@@ -198,6 +198,11 @@ module.exports = async (fastify, options) => {
             latestStartedAt: 1,
             count: 1,
             latestScore: 1,
+          }
+        },
+        {
+          $sort: {
+            latestScore: -1
           }
         }
       ]
