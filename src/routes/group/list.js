@@ -28,6 +28,12 @@ module.exports = async (fastify, options) => {
             properties: {
               name: { type: 'string' }
             }
+          },
+          search: {
+            properties: {
+              name: { type: 'string' },
+              code: { type: 'string' },
+            }
           }
         }
       },
