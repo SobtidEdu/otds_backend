@@ -200,6 +200,32 @@ module.exports = async (fastify, opts) => {
           }
         },
         {
+          $project: {
+            _id: "$exam._id",
+            code: "$exam.code",
+            subject: "$exam.subject",
+            name: "$exam.name",
+            type: "$exam.type",
+            group: {
+              _id: "$group._id",
+              name: "$group.name"
+            },
+            owner: {
+              _id: "$user._id",
+              prefixName: "$user.prefixName",
+              firstName: "$user.firstName",
+              lastName: "$user.lastName",
+              role: "$user.role"
+            },
+            oneTimeDone: "$exam.oneTimeDone",
+            status: "$exam.status",
+            startedAt: "$startedAt",
+            finishedAt: "$finishedAt",
+            createdAt: "$exam.createdAt",
+            updatedAt: "$exam.updatedAt",
+          }
+        },
+        {
           $sort: {
             updatedAt: -1
           }
@@ -207,32 +233,14 @@ module.exports = async (fastify, opts) => {
       ]
 
       const { page, lastPage, totalCount, items } = await fastify.paginate(fastify.mongoose.Exam, query, baseAggregate)
-      // return { totalCount, items }
+      
       return {
         page,
         lastPage,
         totalCount,
         items: items.map(res => ({
-          _id: res.exam._id,
-          code: res.exam.code,
-          subject: res.exam.subject,
-          name: res.exam.name,
-          type: res.exam.type,
-          group: res.group ? {
-            _id: res.group._id,
-            name: res.group.name
-          } : null, 
-          owner: {
-            _id: res.user._id,
-            prefixName: res.user.prefixName,
-            firstName: res.user.firstName,
-            lastName: res.user.lastName,
-            role: res.user.role,
-          },
-          oneTimeDone: res.exam.oneTimeDone,
-          createdAt: res.exam.createdAt,
-          status: res.exam.status ? (res.startedAt ? (res.finishedAt ? 'finished' : 'doing') : null) : 'close',
-          updatedAt: res.exam.updatedAt
+          ...res,
+          status: res.status ? (res.startedAt ? (res.finishedAt ? 'finished' : 'doing') : null) : 'close',
         }))
       }
     } else {
