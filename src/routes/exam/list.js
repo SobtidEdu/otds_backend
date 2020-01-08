@@ -359,6 +359,22 @@ module.exports = async (fastify, opts) => {
       })
     }
     
-    return await fastify.paginate(fastify.mongoose.Exam, query, baseAggregate)
+    const response = await fastify.paginate(fastify.mongoose.Exam, query, baseAggregate)
+
+    const examSuggestion = await fastify.mongoose.ExamSuggestion.findOne({})
+    
+    let examSuggestionList = []
+    if (examSuggestion) {
+      examSuggestionList = examSuggestion.list
+    }
+      
+    response.items = response.items.map(item => {
+      return {
+        isSuggestion: examSuggestionList.findIndex(es => es.exam.toString() == item._id.toString()) !== -1,
+        ...item
+      }
+    })
+
+    return response
   })
 }
