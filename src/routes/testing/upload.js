@@ -10,6 +10,7 @@ module.exports = async (fastify, opts) => {
       (request) => fastify.validate(schema, request),
       fastify.authenticate()
     ],
+    bodyLimit: 6452595 // limit 6.2 mb,
   }, async (request) => {
     const { user, body, params } = request
     const { noteFile } = request.raw.files

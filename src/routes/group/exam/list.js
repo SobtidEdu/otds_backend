@@ -25,7 +25,8 @@ module.exports = async function(fastify, opts, next) {
       const exams = await fastify.mongoose.Exam.aggregate([
         { 
           $match: {
-            _id: { $in: examIdsArray }
+            _id: { $in: examIdsArray },
+            deletedAt: null
           }
         },
         { 
@@ -76,8 +77,8 @@ module.exports = async function(fastify, opts, next) {
       const { params, user } = request
 
       const [group, exams] = await Promise.all([
-        fastify.mongoose.Group.findOne({ _id: params.groupId }).lean(),
-        fastify.mongoose.Exam.find({ owner: user._id }).lean(),
+        fastify.mongoose.Group.findOne({ _id: params.groupId, deletedAt: null }).lean(),
+        fastify.mongoose.Exam.find({ owner: user._id, deletedAt: null }).lean(),
       ])
 
       let examsNotInGroup = exams.map(exam => {

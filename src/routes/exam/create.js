@@ -3,6 +3,22 @@
 const { ROLE } = require('@config/user')
 const { CRITERION, EXAM_TYPE, LEVEL } = require('@config/exam')
 
+const examCodeGenerator = (r, t) => {
+  const role = {
+    'student': 's',
+    'teacher': 't',
+    'superTeacher': 'e',
+    'admin': 'a',
+  }
+  const examType = {
+    'G': 'c',
+    'C': 'p',
+    'CAT': 's',
+    'CUSTOM': 'd',
+  }
+  return role[r] + examType[t] + (Math.floor(Math.random() * 90000000) + 10000000)
+}
+
 module.exports = async (fastify) => { 
 
   const schema = {}
@@ -39,7 +55,7 @@ module.exports = async (fastify) => {
         data.name = body.name + ` (ชุดที่ ${parseInt(i)+1})`
       }
       
-      data.code = exam.TestSetID
+      data.code = examCodeGenerator(user.role, data.type)
       
       if (data.type == 'CAT') {
         data.oneTimeDone = true
