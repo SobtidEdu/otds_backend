@@ -132,7 +132,7 @@ const mapExamParams = (user, params) => {
     exam.ProjectYear = params.competition.years.join(',')
   }
 
-  if (params.type === EXAM_TYPE.CUSTOM) {
+  if (params.type === EXAM_TYPE.CUSTOM || params.type === EXAM_TYPE.EXERCISE ) {
     exam.TestItems = params.testItems
   }
 
