@@ -196,6 +196,7 @@ module.exports = fp(async (fastify, options) => {
         return params.NoStudents == 1 ? [testSetGroup] : testSetGroup
       })
       .catch((e) => {
+        console.log(e)
         const errorResponse = e.response.data
         console.error(e.response.config.data)
         console.error(errorResponse.ResponseFixedRandomTestset)
