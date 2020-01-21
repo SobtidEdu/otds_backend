@@ -70,11 +70,14 @@ module.exports = async (fastify, options) => {
           count: 1,
           latestScore: 1,
         }
+      },
+      {
+        $sort: { latestStartedAt: -1 }
       }
     ]
     
     const response = await fastify.mongoose.Testing.aggregate(aggregate)
-    return response.filter(testing => !(testing._id.groupId && testing.group.length == 0))
+    const studentListOfExam = response.filter(testing => !(testing._id.groupId && testing.group.length == 0))
     .map(data => ({
       userId: data._id.userId,
       groupId: data._id.groupId,
@@ -89,5 +92,13 @@ module.exports = async (fastify, options) => {
       isInGroup: (data._id.groupId !== undefined),
       group: data._id.groupId !== undefined ? data.group[0].name : null
     }))
+
+    const statsOfExam = {
+      min: studentListOfExam.length > 0 ? studentListOfExam.reduce((score, testing) => score > testing.latestScore ? testing.latestScore : score, studentListOfExam[0].latestScore) : 0,
+      max: studentListOfExam.length > 0 ? studentListOfExam.reduce((score, testing) => score < testing.latestScore ? testing.latestScore : score, studentListOfExam[0].latestScore) : 0,
+      avg: studentListOfExam.length > 0 ? studentListOfExam.reduce((score, testing) => score + testing.latestScore, studentListOfExam[0].latestScore) / studentListOfExam.length : 0
+    }
+
+    return { studentListOfExam, statsOfExam }
   })
 }
