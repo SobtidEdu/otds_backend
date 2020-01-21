@@ -9,7 +9,8 @@ exports.EXAM_TYPE = {
   GENERAL: 'G',
   COMPETITION: 'C',
   CAT: 'CAT',
-  CUSTOM: 'CUSTOM'
+  CUSTOM: 'CUSTOM',
+  EXERCISE: 'E'
 }
 
 exports.LEVEL = {

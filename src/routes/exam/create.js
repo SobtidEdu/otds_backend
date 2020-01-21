@@ -15,7 +15,9 @@ const examCodeGenerator = (r, t) => {
     'C': 'p',
     'CAT': 's',
     'CUSTOM': 'd',
+    'E': 'e'
   }
+  
   return role[r] + examType[t] + (Math.floor(Math.random() * 90000000) + 10000000)
 }
 
@@ -41,7 +43,7 @@ module.exports = async (fastify) => {
       exams = await fastify.otimsApi.requestFixedRandomTestSet(params)
     } else if (body.type == EXAM_TYPE.CAT) {
       exams = await fastify.otimsApi.requestFirstItemCAT(params)
-    } else if (body.type == EXAM_TYPE.CUSTOM) {
+    } else if (body.type == EXAM_TYPE.CUSTOM || body.type == EXAM_TYPE.EXERCISE) {
       exams = await fastify.otimsApi.requestCustomTestSet(params)
     }
 
