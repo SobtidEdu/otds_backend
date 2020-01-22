@@ -34,6 +34,7 @@ module.exports = async (fastify) => {
         }
       }, { $pull: { exams: { _id: params.examId } } }),
       fastify.mongoose.ExamSuggestion.update({}, { $pull: { list: { exam: params.examId } } }),
+      fastify.mongoose.User.update({}, { $pull: { myExam: { examId: params.examId } } }),
     ])
     
     return { message: 'Exam has been deleted' }

@@ -2,6 +2,7 @@
 
 const { ROLE } = require('@config/user')
 const { CRITERION, EXAM_TYPE, LEVEL } = require('@config/exam')
+const moment = require('moment')
 
 const examCodeGenerator = (r, t) => {
   const role = {
@@ -106,6 +107,16 @@ module.exports = async (fastify) => {
     })
 
     const response = await fastify.mongoose.Exam.create(exams)
+    
+    await fastify.mongoose.User.update({ 
+      _id: user._id 
+    }, { 
+      $push: { 
+        myExam: { 
+          $each: response.map(e => ({ examId: e._id, groupId: null, latestAction: moment().unix() })) 
+        } 
+      } 
+    })
 
     return response
   })

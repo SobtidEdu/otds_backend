@@ -138,6 +138,19 @@ module.exports = {
       report: { type: Boolean, default: false },
       examCode: { type: Boolean, default: false }
     },
+    myExam: [
+      {
+        examId: {
+          type: "ObjectId",
+          ref: "Exam"
+        },
+        groupId: {
+          type: "ObjectId",
+          ref: "Group"
+        },
+        latestAction: { type: Number, default: moment().unix() },
+      }
+    ],
     createdAt: {
       type: Number,
       default: moment().unix()
