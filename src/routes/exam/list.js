@@ -169,17 +169,16 @@ module.exports = async (fastify, opts) => {
             },
             oneTimeDone: "$exam.oneTimeDone",
             status: "$exam.status",
-            testing: 1
-            // startedAt: 1577252412,
-            // finishedAt: null,
-            // createdAt: 1575633771
+            startedAt: "$testing.startedAt",
+            finishedAt: "$testing.finishedAt",
+            createdAt: "$exam.createdAt"
           }
         }
       ]
 
-      return await fastify.mongoose.User.aggregate(baseAggregate)
+      // return fastify.mongoose.User.aggregate(baseAggregate)
 
-      const { page, lastPage, totalCount, items } = await fastify.paginate(fastify.mongoose.Exam, query, baseAggregate)
+      const { page, lastPage, totalCount, items } = await fastify.paginate(fastify.mongoose.User, query, baseAggregate)
       
       return {
         page,
