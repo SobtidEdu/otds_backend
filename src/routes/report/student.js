@@ -96,7 +96,7 @@ module.exports = async (fastify, options) => {
     const statsOfExam = {
       min: studentListOfExam.length > 0 ? studentListOfExam.reduce((score, testing) => score > testing.latestScore ? testing.latestScore : score, studentListOfExam[0].latestScore) : 0,
       max: studentListOfExam.length > 0 ? studentListOfExam.reduce((score, testing) => score < testing.latestScore ? testing.latestScore : score, studentListOfExam[0].latestScore) : 0,
-      avg: studentListOfExam.length > 0 ? studentListOfExam.reduce((score, testing) => score + testing.latestScore, studentListOfExam[0].latestScore) / studentListOfExam.length : 0
+      avg: studentListOfExam.length > 0 ? studentListOfExam.reduce((score, testing) => score + testing.latestScore, 0) / studentListOfExam.length : 0
     }
 
     return { studentListOfExam, statsOfExam }
