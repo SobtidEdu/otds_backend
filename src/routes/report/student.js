@@ -15,7 +15,7 @@ module.exports = async (fastify, options) => {
   }, async (request) => {
     const { user, params } = request
     
-    const aggregate = [
+    const aggregateMember = [
       {
         $match: { 
           examId: mongoose.Types.ObjectId(params.examId),
@@ -54,6 +54,9 @@ module.exports = async (fastify, options) => {
         }
       },
       {
+        $unwind: { path: '$group', preserveNullAndEmptyArrays: true }
+      },
+      {
         $project: {
           user: {
             profileImage: 1,
@@ -63,6 +66,7 @@ module.exports = async (fastify, options) => {
             school: 1,
           },
           group: {
+            _id: 1,
             name: 1
           },
           testingId: 1,
@@ -75,22 +79,58 @@ module.exports = async (fastify, options) => {
         $sort: { latestStartedAt: -1 }
       }
     ]
+
+    const aggregateGuest = [
+      {
+        $match: { 
+          examId: mongoose.Types.ObjectId(params.examId),
+          finishedAt: { $ne: null },
+          userId: { $exists: false }
+        }
+      },
+      {
+        $project: {
+          testingId: 1,
+          latestStartedAt: "$startedAt",
+          count: { $literal: 1 },
+          latestScore: "$score"
+        }
+      },
+      {
+        $sort: { latestStartedAt: 1 }
+      }
+    ]
     
-    const response = await fastify.mongoose.Testing.aggregate(aggregate)
-    const studentListOfExam = response.filter(testing => !(testing._id.groupId && testing.group.length == 0))
+    const [member, guest] = await Promise.all([
+      fastify.mongoose.Testing.aggregate(aggregateMember),
+      fastify.mongoose.Testing.aggregate(aggregateGuest)
+    ])
+
+    const response = member.concat(guest.map((g, index) => ({
+      _id: {},
+      ...g,
+      user: {
+        profileImage: '',
+        prefixName: '',
+        firstName: `Guest${index+1}`,
+        lastName: '',
+        school: null,
+      }
+    })))
+    // return response
+    const studentListOfExam = response
     .map(data => ({
-      userId: data._id.userId,
-      groupId: data._id.groupId,
-      profileImage: fastify.storage.getUrlProfileImage(data.user.profileImage),
+      userId: data._id.userId || null,
+      groupId: data._id.groupId || null,
+      profileImage: data.user.profileImage ? fastify.storage.getUrlProfileImage(data.user.profileImage) : null,
       name: `${data.user.prefixName} ${data.user.firstName} ${data.user.lastName}`,
-      schoolName: data.user.school.name.text,
+      schoolName: data.user.school ? data.user.school.name.text : null,
       testingId: data.testingId,
       latestStartedAt: data.latestStartedAt,
       count: data.count,
       latestScore: data.latestScore,
-      testingId: data.testingId,
-      isInGroup: (data._id.groupId !== undefined),
-      group: data._id.groupId !== undefined ? data.group[0].name : null
+      isInGroup: !!data._id.groupId,
+      group: data.group
     }))
 
     const statsOfExam = {
