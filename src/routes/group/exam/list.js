@@ -83,9 +83,7 @@ module.exports = async function(fastify, opts, next) {
 
       let examsNotInGroup = []
 
-      if (group.exams && group.exams.length > 0) {
-        examsNotInGroup = exams.filter(exam => group.exams.findIndex(groupExam => groupExam._id.toString() === exam._id.toString()) === -1)
-      }
+      examsNotInGroup = exams.filter(exam => group.exams.findIndex(groupExam => groupExam._id.toString() === exam._id.toString()) === -1)
 
       return examsNotInGroup.map(exam => ({ ...exam, questionCount: exam.questions.length, questions: null }) )
     })
