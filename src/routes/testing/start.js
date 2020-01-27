@@ -28,8 +28,11 @@ module.exports = async (fastify, opts) => {
     const testingData = {
       groupId: null,
       finishedAt: null,
-      examId,
-      userId: user ? user._id : `guest${fastify.utils.randomString()}`
+      examId
+    }
+
+    if (user) {
+      testingData.userId = user._id
     }
 
     const finder = testingData
