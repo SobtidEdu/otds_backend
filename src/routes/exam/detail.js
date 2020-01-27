@@ -36,7 +36,7 @@ module.exports = async (fastify) => {
       }
 
       if (user) {
-        const queryTesting = { examId: exam._id, userId: user._id, groupId: { $exists: false }, }
+        const queryTesting = { examId: exam._id, userId: user._id, groupId: null, }
         
         await fastify.updateLastActionMyExam(user, exam._id, query.groupId ? query.groupId : null)
         
@@ -45,6 +45,7 @@ module.exports = async (fastify) => {
         }
 
         testing = await fastify.mongoose.Testing.find(queryTesting).sort({ finishedAt: 1 }).limit(1) 
+        console.log(testing)
       }
 
       return { ...exam, testing }

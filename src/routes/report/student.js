@@ -64,6 +64,7 @@ module.exports = async (fastify, options) => {
             firstName: 1,
             lastName: 1,
             school: 1,
+            role: 1
           },
           group: {
             _id: 1,
@@ -106,7 +107,7 @@ module.exports = async (fastify, options) => {
       fastify.mongoose.Testing.aggregate(aggregateGuest)
     ])
 
-    const response = member.concat(guest.map((g, index) => ({
+    const response = member.filter(member => member.user.role === ROLE.STUDENT).concat(guest.map((g, index) => ({
       _id: {},
       ...g,
       user: {
@@ -116,7 +117,8 @@ module.exports = async (fastify, options) => {
         lastName: '',
         school: null,
       }
-    })))
+    }))).sort((a, b) => a.createdAt - b.createdAt)
+
     // return response
     const studentListOfExam = response
     .map(data => ({
