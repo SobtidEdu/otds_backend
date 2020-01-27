@@ -130,7 +130,7 @@ module.exports = async (fastify, options) => {
       count: data.count,
       latestScore: data.latestScore,
       isInGroup: !!data._id.groupId,
-      group: data.group
+      group: data.group || null
     }))
 
     const statsOfExam = {
