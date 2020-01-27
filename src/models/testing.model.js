@@ -39,6 +39,9 @@ module.exports = {
     score: {
       type: Number
     },
+    timeLeft: {
+      type: Number
+    },
     theta: { type: String },
     se: { type: String },
     startedAt: {
