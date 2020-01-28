@@ -60,11 +60,11 @@ module.exports = async (fastify, opts) => {
       } else {
         progressTestings.push(progress)
       }
+      
+      await fastify.mongoose.Testing.update({ _id: testing._id }, { progressTestings, updatedAt: moment().unix(), timeLeft: body.timeLeft | null })
+
+      return { message: 'Sent answers' }
     }
-
-    await fastify.mongoose.Testing.update({ _id: testing._id }, { progressTestings, updatedAt: moment().unix() })
-
-    return { message: 'Sent answers' }
   })
 }
 
