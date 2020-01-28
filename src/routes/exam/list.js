@@ -153,7 +153,7 @@ module.exports = async (fastify, opts) => {
           $project: {
             _id: "$exam._id",
             code: "$exam.code",
-            subject: "$exam.student",
+            subject: "$exam.subject",
             name: "$exam.name",
             type: "$exam.type",
             group: {
