@@ -177,7 +177,7 @@ module.exports = async (fastify, opts) => {
         }
       ]
 
-      return fastify.mongoose.User.aggregate(baseAggregate)
+      // return fastify.mongoose.User.aggregate(baseAggregate)
 
       const { page, lastPage, totalCount, items } = await fastify.paginate(fastify.mongoose.User, query, baseAggregate)
       
