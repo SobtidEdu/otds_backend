@@ -171,12 +171,13 @@ module.exports = async (fastify, opts) => {
             status: "$exam.status",
             startedAt: "$testing.startedAt",
             finishedAt: "$testing.finishedAt",
-            createdAt: "$exam.createdAt"
+            createdAt: "$exam.createdAt",
+            deletedAt: "$exam.deletedAt"
           }
         }
       ]
 
-      // return fastify.mongoose.User.aggregate(baseAggregate)
+      return fastify.mongoose.User.aggregate(baseAggregate)
 
       const { page, lastPage, totalCount, items } = await fastify.paginate(fastify.mongoose.User, query, baseAggregate)
       
@@ -186,7 +187,7 @@ module.exports = async (fastify, opts) => {
         totalCount,
         items: items.map(res => ({
           ...res,
-          status: res.status ? (res.startedAt ? (res.finishedAt ? 'finished' : 'doing') : null) : 'close',
+          status: !res.deletedAt && res.status ? (res.startedAt ? (res.finishedAt ? 'finished' : 'doing') : null) : 'close',
         }))
       }
     } else {
