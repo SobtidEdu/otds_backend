@@ -32,12 +32,15 @@ module.exports = async function(fastify, opts, next) {
         { 
           $lookup: {
             from: 'testings',
-            let: { id: '$_id' },
+            let: { examId: '$_id', groupId: group._id },
             pipeline: [
               { 
                 $match: {
                   $expr: {
-                    $eq: ['$examId', '$$id']
+                    $and: [
+                      { $eq: ['$examId', '$$examId'] },
+                      { $eq: ['$groupId', '$$groupId'] }
+                    ]
                   }
                 }
               },
