@@ -25,8 +25,10 @@ module.exports = async (fastify) => {
 
     if (user.role === ROLE.STUDENT) {
       const groupId = query.groupId ? query.groupId : null
+
+      console.log(groupId)
       await Promise.all([
-       fastify.mongoose.User.update({}, { $pull: { myExam: { examId: params.examId, groupId } } }),
+       fastify.mongoose.User.update({ _id: user._id }, { $pull: { myExam: { examId: params.examId, groupId } } }),
        fastify.mongoose.Testing.updateMany({ examId: params.examId, userId: user._id, groupId }, { deletedAt: moment().unix() }),
        fastify.mongoose.Exam.updateOne({ _id: params.examId, owner: user._id }, { deletedAt: moment().unix() })
       ])
