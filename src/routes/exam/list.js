@@ -90,6 +90,7 @@ module.exports = async (fastify, opts) => {
       return response
 
     } else if (user.role == ROLE.STUDENT) {
+
       baseAggregate = [
         { 
           $match: {
@@ -98,7 +99,6 @@ module.exports = async (fastify, opts) => {
         },
         { $unwind: '$myExam' },
         { $replaceRoot: { newRoot: '$myExam' } },
-        { $sort: { latestAction: -1 } },
         {
           $lookup: {
             from: 'exams',
@@ -172,20 +172,20 @@ module.exports = async (fastify, opts) => {
             startedAt: "$testing.startedAt",
             finishedAt: "$testing.finishedAt",
             createdAt: "$exam.createdAt",
-            deletedAt: "$exam.deletedAt"
+            deletedAt: "$exam.deletedAt",
+            latestAction: 1
           }
         }
       ]
-
-      // return fastify.mongoose.User.aggregate(baseAggregate)
-
+      query.sort = { latestAction: 'desc' }
       const { page, lastPage, totalCount, items } = await fastify.paginate(fastify.mongoose.User, query, baseAggregate)
       
       return {
         page,
         lastPage,
         totalCount,
-        items: items.map(res => ({
+        items: items
+        .map(res => ({
           ...res,
           status: !res.deletedAt && res.status ? (res.startedAt ? (res.finishedAt ? 'finished' : 'doing') : null) : 'close',
         }))
@@ -324,4 +324,4 @@ module.exports = async (fastify, opts) => {
 
     return response
   })
-}
+} 

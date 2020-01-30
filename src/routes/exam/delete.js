@@ -45,8 +45,6 @@ module.exports = async (fastify) => {
       ])
     }
     
-    
-    
     return { message: 'Exam has been deleted' }
   })
 }
