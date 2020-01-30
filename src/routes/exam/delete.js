@@ -14,7 +14,7 @@ module.exports = async (fastify) => {
     ]
   }, async (request) => {
     
-    const { user, params } = request
+    const { user, params, query } = request
 
     let deleteExam = null;
     if (user.role === ROLE.ADMIN) {
@@ -24,9 +24,10 @@ module.exports = async (fastify) => {
     }
 
     if (user.role === ROLE.STUDENT) {
+      const groupId = query.groupId ? query.groupId : null
       await Promise.all([
-       fastify.mongoose.User.update({}, { $pull: { myExam: { examId: params.examId, groupId: params.groupId | null } } }),
-       fastify.mongoose.Testing.updateMany({ examId: params.examId, userId: user._id, groupId: params.groupId | null }, { deletedAt: moment().unix() }),
+       fastify.mongoose.User.update({}, { $pull: { myExam: { examId: params.examId, groupId } } }),
+       fastify.mongoose.Testing.updateMany({ examId: params.examId, userId: user._id, groupId }, { deletedAt: moment().unix() }),
        fastify.mongoose.Exam.updateOne({ _id: params.examId, owner: user._id }, { deletedAt: moment().unix() })
       ])
     } else {
