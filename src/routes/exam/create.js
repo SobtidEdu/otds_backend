@@ -80,26 +80,29 @@ module.exports = async (fastify) => {
         if (!Array.isArray(exam.ResponseItemGroup_ResponseTestsetGroup.ResponseItemGroup)) {
           ResponseItemGroup = [ResponseItemGroup]
         }
-        data.questions = ResponseItemGroup.map(question => ({
-          seq: question.ItemSeq,
-          id: question.ItemID,
-          type: question.QuestionType,
-          text: question.ItemQuestion,
-          suggestedTime: parseFloat(question.SuggestedTime),
-          explanation: question.Explanation,
-          lessonId: question.Lessons ? question.Lessons : null,
-          unit: question.QuestionType === 'SA' ?  question.ItemShortAnswer_ResponseItemGroup.Unit : '',
-          answers: question.QuestionType !== 'TF' ? transformAnswerByQuestionType(question) : [],
-          subQuestions: question.QuestionType === 'TF' ? question.ItemTFSubquestion_ResponseItemGroup.ItemTFSubquestion.map(subQuestion => ({
-            no: subQuestion.ItemNo,
-            text: subQuestion.ItemSubQuestion,
-            answers: subQuestion.ItemTFChoice_ItemTFSubquestion.ItemTFChoice.map(subAnswer => ({
-              seq: subAnswer.ItemChoiceSeq,
-              text: subAnswer.ItemChoice,
-              key: subAnswer.ItemChoiceKey === 'True'
-            }))
-          })) : []
-        }))  
+        data.questions = ResponseItemGroup.map(question => {
+          console.log(question.Lessons)
+          return {
+            seq: question.ItemSeq,
+            id: question.ItemID,
+            type: question.QuestionType,
+            text: question.ItemQuestion,
+            suggestedTime: parseFloat(question.SuggestedTime),
+            explanation: question.Explanation,
+            lessonId: question.Lessons ? question.Lessons : null,
+            unit: question.QuestionType === 'SA' ?  question.ItemShortAnswer_ResponseItemGroup.Unit : '',
+            answers: question.QuestionType !== 'TF' ? transformAnswerByQuestionType(question) : [],
+            subQuestions: question.QuestionType === 'TF' ? question.ItemTFSubquestion_ResponseItemGroup.ItemTFSubquestion.map(subQuestion => ({
+              no: subQuestion.ItemNo,
+              text: subQuestion.ItemSubQuestion,
+              answers: subQuestion.ItemTFChoice_ItemTFSubquestion.ItemTFChoice.map(subAnswer => ({
+                seq: subAnswer.ItemChoiceSeq,
+                text: subAnswer.ItemChoice,
+                key: subAnswer.ItemChoiceKey === 'True'
+              }))
+            })) : []
+          }
+        })
         data.quantity = data.questions.length
       }
 
