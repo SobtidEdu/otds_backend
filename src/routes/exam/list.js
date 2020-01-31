@@ -158,7 +158,8 @@ module.exports = async (fastify, opts) => {
             type: "$exam.type",
             group: {
               _id: 1,
-              name: 1
+              name: 1,
+              exams: 1
             },
             owner: {
                 _id: 1,
@@ -177,6 +178,7 @@ module.exports = async (fastify, opts) => {
           }
         }
       ]
+
       query.sort = { latestAction: 'desc' }
       const { page, lastPage, totalCount, items } = await fastify.paginate(fastify.mongoose.User, query, baseAggregate)
       
@@ -185,10 +187,27 @@ module.exports = async (fastify, opts) => {
         lastPage,
         totalCount,
         items: items
-        .map(res => ({
-          ...res,
-          status: !res.deletedAt && res.status ? (res.startedAt ? (res.finishedAt ? 'finished' : 'doing') : null) : 'close',
-        }))
+        .map(res => {
+          let status = null
+          if (res.deletedAt && !res.status) { // ข้อสอบโดนลบ หรืิอ ปิดสถานะข้อสอบ
+            status = 'close'
+          }
+          else if (res.group) { // ข้อสอบในกลุ่ม
+            const groupExam = res.group.exams.find(groupExam => groupExam._id.toString() == res._id.toString())
+            if (!groupExam || !groupExam.status) { // ข้อสอบถูกลบ หรือ ข้อสอบถูกปิดสถานะ
+              status = 'close'
+            }
+          }
+          else if (res.startedAt && res.finishedAt == null) { // ทำค้างไว้อยู่
+            status = 'doing'
+          } else if (res.startedAt && res.finishedAt != null) { // ทำเสร็จไปแล้วอย่างน้อย 1 รอบ
+            status = 'finished'
+          }
+          return {
+            ...res,
+            status
+          }
+        })
       }
     } else {
       baseAggregate = [
