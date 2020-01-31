@@ -81,7 +81,7 @@ module.exports = async (fastify) => {
           ResponseItemGroup = [ResponseItemGroup]
         }
         data.questions = ResponseItemGroup.map(question => {
-          console.log(question.Lessons)
+          console.log(question)
           return {
             seq: question.ItemSeq,
             id: question.ItemID,
