@@ -14,15 +14,15 @@ module.exports = async (fastify, opts) => {
     let testingTime =  testing.finishedAt - testing.startedAt
     let score = testing.progressTestings.reduce((total, progressTesting) => total + (progressTesting.isCorrect ? 1 : 0), 0)
 
-    const { userId, examId, startedAt, finishedAt, theta } = testing
-    let listTestings = await fastify.mongoose.Testing.find({ examId, userId, finishedAt: { $ne: null } }).sort({ finishedAt: 'desc' }).lean()
-    let newScores = listTestings.map(testing => testing.progressTestings.reduce((total, progressTesting) => total + (progressTesting.isCorrect ? 1 : 0), 0))
-    let oldScores = newScores
+    const { userId, examId, groupId, startedAt, finishedAt, theta } = testing
+    let listTestings = await fastify.mongoose.Testing.find({ examId, userId, groupId, finishedAt: { $ne: null } }).sort({ finishedAt: 'asc' }).lean()
+    const indexTesting = listTestings.findIndex(testing => testing._id.toString() === params.testingId)
+    listTestings = listTestings.slice(0, indexTesting + 1)
+    let newScores = listTestings.map(testing => testing.score)
+    let oldScores = newScores.map(x => x)
     if (listTestings.length > 1) {
-      listTestings.pop()
-      oldScores = listTestings.map(testing => testing.progressTestings.reduce((total, progressTesting) => total + (progressTesting.isCorrect ? 1 : 0), 0))
+      oldScores.pop()
     }
-
     return {
       score,
       testingTime,
