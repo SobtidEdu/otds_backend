@@ -159,7 +159,7 @@ module.exports = async (fastify, opts) => {
             group: {
               _id: 1,
               name: 1,
-              exams: 1
+              exams: 1,
             },
             owner: {
                 _id: 1,
@@ -195,6 +195,11 @@ module.exports = async (fastify, opts) => {
           else if (res.group) { // ข้อสอบในกลุ่ม
             const groupExam = res.group.exams.find(groupExam => groupExam._id.toString() == res._id.toString())
             if (!groupExam || !groupExam.status) { // ข้อสอบถูกลบ หรือ ข้อสอบถูกปิดสถานะ
+              status = 'close'
+            }
+
+            const studentInGroup = res.group.studnets.find(student => student.userInfo.toString() == user._id.toString())
+            if (!studentInGroup || studentInGroup.leftDate) { // นักเรียนไม่ได้อยู่ในกลุ่ม
               status = 'close'
             }
           }
