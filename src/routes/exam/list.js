@@ -160,6 +160,7 @@ module.exports = async (fastify, opts) => {
               _id: 1,
               name: 1,
               exams: 1,
+              students: 1
             },
             owner: {
                 _id: 1,
@@ -202,12 +203,15 @@ module.exports = async (fastify, opts) => {
             if (!studentInGroup || studentInGroup.leftDate) { // นักเรียนไม่ได้อยู่ในกลุ่ม
               status = 'close'
             }
+            delete res.group.exams
+            delete res.group.students
           }
           else if (res.startedAt && res.finishedAt == null) { // ทำค้างไว้อยู่
             status = 'doing'
           } else if (res.startedAt && res.finishedAt != null) { // ทำเสร็จไปแล้วอย่างน้อย 1 รอบ
             status = 'finished'
           }
+
           return {
             ...res,
             status
