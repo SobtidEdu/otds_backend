@@ -199,7 +199,7 @@ module.exports = async (fastify, opts) => {
               status = 'close'
             }
 
-            const studentInGroup = res.group.studnets.find(student => student.userInfo.toString() == user._id.toString())
+            const studentInGroup = res.group.students.find(student => student.userInfo.toString() == user._id.toString())
             if (!studentInGroup || studentInGroup.leftDate) { // นักเรียนไม่ได้อยู่ในกลุ่ม
               status = 'close'
             }
