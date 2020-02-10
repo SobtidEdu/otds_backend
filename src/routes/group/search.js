@@ -24,21 +24,8 @@ module.exports = async (fastify, options) => {
       {
         $match: {
           $and: [
-            { code: query.q.toUpperCase() },
-            {
-              $or: [
-                {
-                  students: {
-                    $elemMatch: {
-                      status: { $in: [STUDENT_STATUS.LEFT, STUDENT_STATUS.DISMISS, STUDENT_STATUS.REJECT] }
-                    }
-                  }
-                },
-                {
-                  'students.userInfo': { $ne: mongoose.Types.ObjectId(user._id) }
-                }
-              ]
-            }
+            { code: new RegExp(query.q.toUpperCase()) },
+            { deletedAt: null }
           ]
         }
       },
@@ -57,6 +44,7 @@ module.exports = async (fastify, options) => {
           name: 1,
           code: 1,
           logo: 1,
+          students: 1,
           ownerName: { $concat: [ "$owner.firstName", " ", "$owner.lastName"] }, 
           createdAt: 1
         }
@@ -68,7 +56,9 @@ module.exports = async (fastify, options) => {
     searchedGroup.items = searchedGroup.items
     .map(group => {
       group.logo = fastify.storage.getUrlGroupLogo(group.logo)
-      group.status = 'none'
+      const student = group.students.find(student => student.userInfo.toString() === user._id.toString())
+      delete group.students
+      group.status = student ? student.status : 'none'
       return group
     })
 
