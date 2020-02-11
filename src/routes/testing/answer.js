@@ -27,7 +27,7 @@ module.exports = async (fastify, opts) => {
     if (exam.type == 'CAT') {
       const question = exam.questions[order-1]
       const params = {
-        TestSetID: exam.code,
+        TestSetID: exam.otimsCode,
         ItemSeq: order,
         ItemID: question.id,
         ItemSelectedChoice: answer,

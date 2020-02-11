@@ -13,6 +13,7 @@ module.exports = {
       type: "ObjectId",
       ref: "User"
     },
+    otimsCode: { type: String },
     oldSystemCode: { type: String },
     code: { type: String },
     subject: { type: String },

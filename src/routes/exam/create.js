@@ -59,6 +59,7 @@ module.exports = async (fastify) => {
       }
       
       data.code = examCodeGenerator(user.role, data.type)
+      data.otimsCode = exam.TestSetID
       
       if (data.type == 'CAT') {
         data.oneTimeDone = true

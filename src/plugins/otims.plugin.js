@@ -230,7 +230,7 @@ module.exports = fp(async (fastify, options) => {
       params.RequestedName = OTIMS_USER
       params.RequestedNo = `${OTIMS_USER}RequestNextItemCAT${params.RequestType}${moment().format('YYYYMMDDHHmmSSS')}`
       params.TestSetType = `CT`
-
+      
       // return params
       return instance.get(`/ws/RequestNextItemCAT`, { params })
       .then(response => {

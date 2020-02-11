@@ -27,7 +27,7 @@ module.exports = async (fastify, opts) => {
     let { progressTestings } = testing
 
     let resultTestingToOtims = {
-      code: exam.code,
+      code: exam.otimsCode,
       results: []
     }
 
