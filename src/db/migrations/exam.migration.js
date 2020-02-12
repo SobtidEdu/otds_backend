@@ -10,44 +10,47 @@ module.exports = {
     synchronizer.setSqlQueryCmd('SELECT * FROM xml_result_teacher')
     synchronizer.setMongoCollection('exams')
 
-    await synchronizer.synchronize(5, continueRound, async (from, to) => {
+    await synchronizer.synchronize(20, continueRound, async (from, to) => {
       const user = await mongodb.collection('users').findOne({ oldSystemId: from.user_id })
       if (!user) {
         return null
       }
       let rawQuestion = await mysql.query(`SELECT txt_xml FROM ot_exam_xml WHERE code = '${from.code}'`)
+      
       rawQuestion = rawQuestion[0] ? JSON.parse(rawQuestion[0].txt_xml) : null
       
-      console.log(from.code)
       to.owner = user._id
       to.oldSystemCode = from.code
-      to.code = from.TestSetID
+      to.code = from.code
       to.subject = from.learning_area
       to.grade = from.key_stage
       to.type = from.TestType
       to.name = from.name
       to.status = from.status == 1
       if (rawQuestion && !Array.isArray(rawQuestion.ResponseItemGroup)) rawQuestion.ResponseItemGroup = [rawQuestion.ResponseItemGroup]
-      to.questions = rawQuestion ? rawQuestion.ResponseItemGroup.map(question => ({
-        seq: question.ItemSeq,
-        id: question.ItemID,
-        type: question.QuestionType,
-        text: question.ItemQuestion,
-        suggestedTime: parseFloat(question.SuggestedTime),
-        explanation: question.Explanation,
-        lessonId: question.Lessons ? question.Lessons : null,
-        unit: question.QuestionType === 'SA' ?  question.ItemShortAnswer_ResponseItemGroup.Unit : '',
-        answers: question.QuestionType !== 'TF' ? transformAnswerByQuestionType(question) : [],
-        subQuestions: question.QuestionType === 'TF' ? [{
-          no: null,
-          text: '',
-          answers: question.ItemTrueFalseChoice_ResponseItemGroup.ItemTrueFalseChoice.map(subAnswer => ({
-            seq: subAnswer.ItemChoiceSeq,
-            text: subAnswer.ItemChoice,
-            key: subAnswer.ItemChoiceKey === 'True'
-          }))
-        }] : []
-      })): []
+      to.questions = rawQuestion ? rawQuestion.ResponseItemGroup.filter(question => question !== undefined && question !== {}).map(question => {
+        // console.log(question)
+        return {
+          seq: question.ItemSeq ? question.ItemSeq : '',
+          id: question.ItemID,
+          type: question.QuestionType,
+          text: question.ItemQuestion,
+          suggestedTime: parseFloat(question.SuggestedTime),
+          explanation: question.Explanation,
+          lessonId: question.Lessons ? question.Lessons : null,
+          unit: question.QuestionType === 'SA' ?  question.ItemShortAnswer_ResponseItemGroup.Unit : '',
+          answers: question.QuestionType !== 'TF' ? transformAnswerByQuestionType(question) : [],
+          subQuestions: question.QuestionType === 'TF' ? [{
+            no: null,
+            text: '',
+            answers: question.ItemTrueFalseChoice_ResponseItemGroup ? question.ItemTrueFalseChoice_ResponseItemGroup.ItemTrueFalseChoice.map(subAnswer => ({
+              seq: subAnswer.ItemChoiceSeq,
+              text: subAnswer.ItemChoice,
+              key: subAnswer.ItemChoiceKey === 'True'
+            })) : []
+          }] : []
+        }
+      }): []
       to.quantity = to.questions.length
       to.examSetTotal = from.ri_set_count
       to.criterion = 'none'

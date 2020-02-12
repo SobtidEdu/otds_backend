@@ -23,6 +23,18 @@ module.exports = fp( async (fastify, options) => {
         randomstring += chars.substring(rnum,rnum+1);
       }
       return randomstring;
+    },
+
+    addSlashes: (str) => {
+      let chars = str.split('')
+      return chars.map(char => {
+        asciiCode = char.charCodeAt(0)
+        if ((asciiCode > 32 && asciiCode < 65) || (asciiCode > 90 && asciiCode < 97)) { // special charactor
+          return `\\${char}`
+        }
+
+        return char
+      }).join('')
     }
   })
 })
