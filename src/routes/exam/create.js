@@ -106,7 +106,8 @@ module.exports = async (fastify) => {
         })
         data.quantity = data.questions.length
       }
-
+      data.createdAt = moment().unix()
+      data.updatedAt = moment().unix()
       return data
     })
 
