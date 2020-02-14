@@ -107,7 +107,6 @@ module.exports = async (fastify, opts) => {
       } catch (e) {
         console.log(e)
       }
-      
     }
     
     return { message: 'Register success' }

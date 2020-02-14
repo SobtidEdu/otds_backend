@@ -29,7 +29,7 @@ module.exports = async (fastify, opts) => {
 
     if (!isValidCredential) throw fastify.httpErrors.badRequest('อีเมลหรือรหัสผ่านผิดพลาด')
     
-    if (!user.isConfirmationEmail && user.role === ROLE.TEACHER) throw fastify.httpErrors.badRequest('กรุณายืนยันการลงทะเบียนทาง Email')
+    if (!user.isConfirmationEmail) throw fastify.httpErrors.badRequest('กรุณายืนยันการลงทะเบียนทาง Email')
 
     if (user.isBanned) throw fastify.httpErrors.badRequest('ผู้ใช้บัญชีนี้ถูกระงับการใช้งาน กรุกณาติดต่อผู้ดูแลระบบ')
 
