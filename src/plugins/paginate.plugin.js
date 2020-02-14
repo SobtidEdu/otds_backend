@@ -10,11 +10,6 @@ module.exports = fp(async (fastify, options, next) => {
     const sort = paginateOptions.sort || { [SORT_KEY]: 'desc' }
     
     indexOfMatchOption = aggregateBaseOptions.findIndex(option => option['$match'] !== undefined )
-    
-    // if (indexOfMatchOption > -1) {
-    //   matchOption = aggregateBaseOptions[indexOfMatchOption]
-    //   aggregateBaseOptions.splice(indexOfMatchOption, 1)
-    // }
 
     if (paginateOptions.filters && Object.keys(paginateOptions.filters).length > 0) {
       let filterOption = { $match: { $and: [] } }
@@ -43,14 +38,11 @@ module.exports = fp(async (fastify, options, next) => {
         aggregateBaseOptions.push(searchOption)
       }
     }
-    
-
-    // console.log(aggregateBaseOptions)
 
     const skip = (page-1) * limit
 
     const [items, total] = await Promise.all([
-      mongooseModel.aggregate(aggregateBaseOptions).limit(limit+skip).skip(skip).sort(sort),
+      mongooseModel.aggregate(aggregateBaseOptions).sort(sort).limit(limit+skip).skip(skip).collation({ locale: "th" }),
       mongooseModel.aggregate(aggregateBaseOptions).count("count")
     ])
     
