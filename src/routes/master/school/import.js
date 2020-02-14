@@ -41,10 +41,6 @@ module.exports = async (fastify, options) => {
       const school = schools[i]
       const province = await fastify.mongoose.Province.findOne({ name: school[7] })
       if (province) {
-        const found = await fastify.mongoose.School.findOne({ name: school[0] })
-        if (found) {
-          console.log(found)
-        }
         await fastify.mongoose.School.findOneAndUpdate({
           name: school[0],
           addressNo: school[1]
