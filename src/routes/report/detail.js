@@ -134,6 +134,7 @@ module.exports = async (fastify, options) => {
             prefixName: 1,
             firstName: 1,
             lastName: 1,
+            role: 1,
             school: {
               name: 1
             }
