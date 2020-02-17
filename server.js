@@ -47,7 +47,7 @@ fastify.register(require('fastify-nodemailer'), {
   pool: true,
   host: fastify.env.EMAIL_HOST,
   port: fastify.env.EMAIL_PORT,
-  secure: fastify.env.APP_ENV !== 'local',
+  // secure: fastify.env.APP_ENV !== 'local',
   auth: {
     user: fastify.env.EMAIL_USERNAME,
     pass: fastify.env.EMAIL_PASSWORD
