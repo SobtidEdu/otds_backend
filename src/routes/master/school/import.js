@@ -5,6 +5,7 @@ const { TEMP_UPLOAD_PATH } = require('@config/storage')
 const readXlsxFile = require('read-excel-file/node')
 const fs = require('fs')
 const moment = require('moment')
+const { promisify } = require('util')
 
 module.exports = async (fastify, options) => {
   const schema = {}
@@ -20,16 +21,9 @@ module.exports = async (fastify, options) => {
   async (request) => {
     const { schoolsImportFile } = request.raw.files
     const pathFileName = `${TEMP_UPLOAD_PATH}/${schoolsImportFile.name}`
-    await schoolsImportFile.mv(pathFileName, (err) => {
-      return new Promise((resolve, reject) => {
-        if (err) {
-          console.log('error saving')
-          reject(err)
-        }
 
-        resolve()
-      })
-    })
+    const importFile = promisify(schoolsImportFile.mv)
+    const response = await importFile(pathFileName)
     
     const schools = await readXlsxFile(fs.createReadStream(pathFileName))
     
