@@ -42,9 +42,14 @@ module.exports = async (fastify) => {
         
         if (query.groupId) {
           queryTesting.groupId = query.groupId
-          const group = await fastify.mongoose.Group.findOne({ _id: query.groupId })
-          if (!group.exams.find(e => e._id.toString() === exam._id.toString())) {
+          const group = await fastify.mongoose.Group.findOne({ _id: query.groupId, deletedAt: null })
+          if (!group) {
             exam.status = false
+          } else {
+            const examGroup = group.exams.find(e => e._id.toString() === exam._id.toString())
+            if (!examGroup || !examGroup.status) {
+              exam.status = false
+            }
           }
         }
 
