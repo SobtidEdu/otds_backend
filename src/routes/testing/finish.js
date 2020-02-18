@@ -11,7 +11,7 @@ module.exports = async (fastify, opts) => {
       fastify.authenticate({ allowGuest: true })
     ],
   }, async (request) => {
-    const { params } = request
+    const { params, body } = request
     
     const { testingId } = params
 
@@ -66,10 +66,15 @@ module.exports = async (fastify, opts) => {
 
       testing.progressTestings = progressTestings
       testing.score = score
+    } else {
+      if (questions.length !== exam.quantity) {
+        fastify.mongoose.Exam.updateOne({ _id: exam._id }, { quantity: questions.length })
+      }
     }
     
     await fastify.otimsApi.requestSendTestsetStat(resultTestingToOtims)
 
+    testing.time = body.time
     testing.finishedAt = finishedAt
     testing.updatedAt = finishedAt
     return await testing.save()

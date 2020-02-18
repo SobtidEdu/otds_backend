@@ -39,8 +39,9 @@ module.exports = {
     score: {
       type: Number
     },
-    timeLeft: {
-      type: Number
+    time: {
+      type: Number,
+      default: 0
     },
     theta: { type: String },
     se: { type: String },

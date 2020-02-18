@@ -49,7 +49,7 @@ module.exports = async (fastify, opts) => {
       exam.questions.push(newQuestion)
       await exam.save()
       progressTestings.push(progress)
-      await fastify.mongoose.Testing.update({ _id: testing._id }, { progressTestings, theta: nextQuestion.Theta, se: nextQuestion.SE, updatedAt: moment().unix() })
+      await fastify.mongoose.Testing.update({ _id: testing._id }, { progressTestings, theta: nextQuestion.Theta, se: nextQuestion.SE, time: body.time, updatedAt: moment().unix() })
       return { newQuestion }
     } else {
       
@@ -61,7 +61,7 @@ module.exports = async (fastify, opts) => {
         progressTestings.push(progress)
       }
       
-      await fastify.mongoose.Testing.update({ _id: testing._id }, { progressTestings, updatedAt: moment().unix(), timeLeft: body.timeLeft | null })
+      await fastify.mongoose.Testing.update({ _id: testing._id }, { progressTestings, updatedAt: moment().unix(), time: body.time })
 
       return { message: 'Sent answers' }
     }
