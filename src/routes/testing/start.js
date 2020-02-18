@@ -43,6 +43,7 @@ module.exports = async (fastify, opts) => {
 
     if (user) {
       const testingExist = await fastify.mongoose.Testing.findOne(finder).lean()
+      fastify.updateLastActionMyExam(user, examId, groupId)
 
       if (testingExist) {
         await fastify.mongoose.Testing.updateOne({ _id: testingExist._id}, { updatedAt: moment().unix() })
