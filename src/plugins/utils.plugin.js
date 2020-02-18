@@ -29,7 +29,7 @@ module.exports = fp( async (fastify, options) => {
       let chars = str.split('')
       return chars.map(char => {
         asciiCode = char.charCodeAt(0)
-        if ((asciiCode > 32 && asciiCode < 65) || (asciiCode > 90 && asciiCode < 97)) { // special charactor
+        if ((asciiCode > 32 && asciiCode < 48) || (asciiCode > 57 && asciiCode < 65) || (asciiCode > 90 && asciiCode < 97)) { // special charactor
           return `\\${char}`
         }
 
