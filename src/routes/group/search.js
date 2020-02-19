@@ -24,7 +24,7 @@ module.exports = async (fastify, options) => {
       {
         $match: {
           $and: [
-            { code: new RegExp(query.q.toUpperCase()) },
+            { code: new RegExp(`^${query.q.toUpperCase()}$`) },
             { deletedAt: null }
           ]
         }
