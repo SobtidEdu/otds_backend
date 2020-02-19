@@ -8,15 +8,14 @@ module.exports = fp(async (fastify, options, next) => {
     const page = paginateOptions.page*1 || PAGE_NO
     const limit = paginateOptions.limit*1 || PAGE_LIMIT
     const sort = paginateOptions.sort || { [SORT_KEY]: 'desc' }
-    
+      
     indexOfMatchOption = aggregateBaseOptions.findIndex(option => option['$match'] !== undefined )
 
     if (paginateOptions.filters && Object.keys(paginateOptions.filters).length > 0) {
       let filterOption = { $match: { $and: [] } }
       for (let prop in paginateOptions.filters) {
         if (paginateOptions.filters[prop] !== '') {
-          console.log(paginateOptions.filters[prop])
-          filterOption['$match']['$and'].push({[prop]: new RegExp(`^${fastify.utils.addSlashes(paginateOptions.filters[prop])}`, 'i') })
+          filterOption['$match']['$and'].push({[prop]: new RegExp(`^${fastify.utils.addSlashes(paginateOptions.filters[prop])}$`, 'i') })
         }
       }
       if (filterOption['$match']['$and'].length > 0) {
@@ -24,13 +23,11 @@ module.exports = fp(async (fastify, options, next) => {
       }
     }
     
-
-    
     if (paginateOptions.search && Object.keys(paginateOptions.search).length > 0) {
       let searchOption = { $match: { $or: [] } }
       for (let prop in paginateOptions.search) {
         if (paginateOptions.search[prop] !== '') {
-          searchOption['$match']['$or'].push({[prop]: new RegExp(`^${fastify.utils.addSlashes(paginateOptions.search[prop])}`, 'i') })
+          searchOption['$match']['$or'].push({[prop]: new RegExp(`${fastify.utils.addSlashes(paginateOptions.search[prop])}`, 'i') })
         }
       }
 
