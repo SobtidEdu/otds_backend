@@ -1,5 +1,7 @@
 'use strict'
 
+const moment = require('moment')
+
 module.exports = async (fastity, opts) => {
 
   fastity.decorate('updateLastActionMyExam', async (user, examId, groupId = null) => {
@@ -15,9 +17,8 @@ module.exports = async (fastity, opts) => {
         const newExam = { examId, groupId, latestAction: moment().unix() }
         user.myExam.push(newExam)
       }
-      user.save()
+      await user.save()
     }
-      
   })
 
   fastity.register(require('./start'))
