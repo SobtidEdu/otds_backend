@@ -11,7 +11,6 @@ const examLesson = require('./lesson')
 const examIndicator = require('./indicator')
 const examCompetition = require('./competition')
 
-const getMongoObject = (attr) => attr ? attr.toString() : null
 module.exports = async (fastify) => { 
   
   fastify.register(examList)

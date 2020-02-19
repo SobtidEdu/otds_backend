@@ -35,6 +35,7 @@ module.exports = fp( async (fastify, options) => {
 
         return char
       }).join('')
-    }
+    },
+    parseObjectIdToString: (attr) => attr ? attr.toString() : null
   })
 })

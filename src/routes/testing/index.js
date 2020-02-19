@@ -7,9 +7,10 @@ module.exports = async (fastity, opts) => {
   fastity.decorate('updateLastActionMyExam', async (user, examId, groupId = null) => {
     if (user) {
       const { myExam } = user
-      const foundMyExamIndex = Array.from(myExam).findIndex(me => {
-        return me.examId.toString() === examId.toString() && getMongoObject(me.groupId) === getMongoObject(groupId)
-      })
+      const foundMyExamIndex = Array.from(myExam).findIndex(me => 
+        fastity.utils.parseObjectIdToString(me.examId) === fastity.utils.parseObjectIdToString(examId) &&
+        fastity.utils.parseObjectIdToString(me.groupId) === fastity.utils.parseObjectIdToString(groupId)
+      )
 
       if (foundMyExamIndex > -1) {
         user.myExam[foundMyExamIndex].latestAction = moment().unix()
