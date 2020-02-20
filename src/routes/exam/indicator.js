@@ -29,6 +29,8 @@ module.exports = async (fastify) => {
       params.ProjectYear = query.competitionYears
     }
 
-    return await fastify.otimsApi.getIndicators(params)
+    const response = await fastify.otimsApi.getIndicators(params)
+
+    return response.filter(indicator => !indicator.code.startsWith('51'))
   })
 }
