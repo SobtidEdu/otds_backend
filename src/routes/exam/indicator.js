@@ -31,6 +31,6 @@ module.exports = async (fastify) => {
 
     const response = await fastify.otimsApi.getIndicators(params)
 
-    return response.filter(indicator => !indicator.code.startsWith('51'))
+    return response.filter(strand => !strand.code.startsWith('51')).map(strand => strand.indicators.sort((a,b) => parseInt(a.split('/')[1]) - parseInt(b.split('/')[1]) ))
   })
 }
