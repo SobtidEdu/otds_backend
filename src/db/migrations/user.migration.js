@@ -112,7 +112,7 @@ module.exports = {
         algo: 'md5'
       }
       to.role = from.role == 3 ? 'admin' : (from.role == 2 ? 'teacher' : 'student')
-      to.isComfirmationEmail = true
+      to.isConfirmationEmail = true
       to.createdAt = moment().unix()
       to.updatedAt = moment().unix()
       // console.log(to)

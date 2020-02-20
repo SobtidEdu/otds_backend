@@ -64,7 +64,7 @@ module.exports = async (fastify, opts) => {
       body.email = body.email.toLowerCase()
     }
     
-    body.school.name.text = body.school.name.text.replace('โรงเรียน', '') //_.trimStart(body.school.name.text, 'โรงเรียน')
+    body.school.name.text = body.school.name.text !== 'กรุณาเลือก' ? body.school.name.text.replace('โรงเรียน', '') : '' //_.trimStart(body.school.name.text, 'โรงเรียน')
 
     _.forIn(body.school, function(value, key) {
       if (value.isModified == true) {
