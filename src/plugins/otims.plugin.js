@@ -187,8 +187,6 @@ module.exports = fp(async (fastify, options) => {
         request_name: params.RequestedName,
         request_type: params.RequestType,
         test_set_type: 'FI',
-        learning_area: params.LearningArea,
-        key_stage: params.KeyStage,
         test_items: params.TestItems
       })
       .then(response => {
