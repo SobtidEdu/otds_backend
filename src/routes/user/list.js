@@ -29,6 +29,8 @@ module.exports = async (fastify, opts) => {
           isSeenModified: 1,
           privacyPolicy: 1,
           role: 1,
+          uesrname: 1,
+          oldSystemId: 1
         }
       }
     ]
