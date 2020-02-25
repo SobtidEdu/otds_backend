@@ -190,7 +190,7 @@ module.exports = async (fastify, opts) => {
         items: items
         .map(res => {
           let status = null
-          if (res.deletedAt && !res.status) { // ข้อสอบโดนลบ หรืิอ ปิดสถานะข้อสอบ
+          if (res.deletedAt || !res.status) { // ข้อสอบโดนลบ หรืิอ ปิดสถานะข้อสอบ
             status = 'close'
           }
           else if (res.group) { // ข้อสอบในกลุ่ม
