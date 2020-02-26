@@ -41,38 +41,54 @@ module.exports = async (fastify, options) => {
           'exams._id': mongoose.Types.ObjectId(params.examId)
         }
       },
-      { 
-        $lookup: { 
-          from: 'testings', 
-          localField: '_id', 
-          foreignField: 'groupId', 
-          as: 'testings'
-        }
-      }, 
-      { $unwind: "$testings" },
       {
-        $match: {
-          'testings.examId': mongoose.Types.ObjectId(params.examId),
-          'testings.finishedAt': { $ne: null }
+        $lookup: {
+          from: 'testings',
+          let: { groupId: "$_id" },
+          pipeline: [
+            {
+              $match: {
+                $expr: { 
+                  $and: [
+                    { $eq: [ '$examId', mongoose.Types.ObjectId(params.examId) ] },
+                    { $eq: [ '$groupId', '$$groupId' ] },
+                    { $ne: [ '$finishedAt', null ] }
+                  ]
+                }
+              }
+            },
+            { $project: { _id: 1, startedAt: 1, finishedAt: 1, examId: 1, userId: 1, groupId: 1, score: 1 } },
+            { 
+              $group: {
+                _id: "$userId",
+                score: { $last: "$score" },
+                startedAt: { $last: "$startedAt" },
+                finishedAt: { $last: "$finishedAt" }
+              }
+            },
+            {
+              $sort: { finishedAt: -1 }
+            }
+          ],
+          as: 'testing'
         }
       },
+      { $unwind: "$testing" },
       {
         $project: { testings: { progressTestings: 0 } }
       },
       {
         $group: { 
-          _id: {
-            groupId: "$_id", 
-          },
-          studentTestings: { $addToSet : "$testings.userId" },
-          latestStartedAt: { $last: "$testings.startedAt" },
-          latestScore: { $last: "$testings.score" },
+          _id: "$_id",
+          totalStudentTestings: { $sum: 1 },
+          latestStartedAt: { $last: "$testing.startedAt" },
+          latestScore: { $last: "$testing.score" },
           logo: { $first: "$logo" },
           name: { $first: "$name" },
           totalStudent: { $first: "$totalStudent" },
-          minScore: { $min: "$testings.score" },
-          maxScore: { $max: "$testings.score" },
-          avgScore: { $avg: "$testings.score" }
+          minScore: { $min: "$testing.score" },
+          maxScore: { $max: "$testing.score" },
+          avgScore: { $avg: "$testing.score" }
         }
       }
     ]
@@ -81,7 +97,7 @@ module.exports = async (fastify, options) => {
     return response
     .map(data => ({
       _id: data._id.groupId,
-      totalStudentTestings: data.studentTestings.length,
+      totalStudentTestings: data.totalStudentTestings,
       latestStartedAt: data.latestStartedAt,
       latestScore: data.latestScore,
       name: data.name,
