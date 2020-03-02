@@ -66,8 +66,7 @@ module.exports = async (fastify, options) => {
                 userInfo: mongoose.Types.ObjectId(user._id),
                 status: { 
                   $in: [ STUDENT_STATUS.REQUEST, STUDENT_STATUS.JOIN, STUDENT_STATUS.REJECT, STUDENT_STATUS.DISMISS ] 
-                },
-                deletedAt: null
+                }
               }
             }
           }
@@ -99,7 +98,8 @@ module.exports = async (fastify, options) => {
             },
             'students.status': 1,
             'students.jointDate': 1,
-            createdAt: 1
+            createdAt: 1,
+            deletedAt: 1
           }
         }
       ]
@@ -114,7 +114,8 @@ module.exports = async (fastify, options) => {
         code: group.code,
         status: group.students.status,
         jointDate: group.students.jointDate,
-        owner: group.owner
+        owner: group.owner,
+        deletedAt: group.deletedAt
       }))
 
       return groups 
