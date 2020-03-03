@@ -129,14 +129,15 @@ module.exports = async (fastify, opts) => {
         {
           $lookup: {
             from: 'testings',
-            let: { examId: "$examId", groupId: "$groupId" },
+            let: { examId: "$examId", groupId: "$groupId", userId: user._id },
             pipeline: [
               {
                 $match: {
                   $expr: { 
                     $and: [
                       { $eq: [ '$examId', '$$examId' ] },
-                      { $cond: [ { $eq: [ "$$groupId", null ] } , { $eq: [ '$groupId', null ] }, { $eq : [ '$groupId', '$$groupId' ] } ] },
+                      { $eq: [ '$userId', '$$userId' ] },
+                      { $cond: [ { $eq: [ "$$groupId", null ] } , { $eq: [ '$groupId', null ] }, { $eq : [ '$groupId', '$$groupId' ] } ] }
                     ]
                   }
                 }
@@ -190,6 +191,7 @@ module.exports = async (fastify, opts) => {
         items: items
         .map(res => {
           let status = null
+          console.log(res)
           if (res.deletedAt || !res.status) { // ข้อสอบโดนลบ หรืิอ ปิดสถานะข้อสอบ
             status = 'close'
           }
