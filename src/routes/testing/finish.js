@@ -74,7 +74,6 @@ module.exports = async (fastify, opts) => {
     
     await fastify.otimsApi.requestSendTestsetStat(resultTestingToOtims)
 
-    testing.time = body.time
     testing.finishedAt = finishedAt
     testing.updatedAt = finishedAt
     return await testing.save()
