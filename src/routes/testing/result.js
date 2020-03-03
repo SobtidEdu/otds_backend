@@ -11,7 +11,7 @@ module.exports = async (fastify, opts) => {
     const testing = await fastify.mongoose.Testing.findOne({ _id: params.testingId })
     if (!testing) throw fastify.httpErrors.notFound(`Not found testing id: ${testingId}`)
 
-    let testingTime =  testing.finishedAt - testing.startedAt
+    let testingTime =  testing.time / 1000
     let score = testing.progressTestings.reduce((total, progressTesting) => total + (progressTesting.isCorrect ? 1 : 0), 0)
 
     const { userId, examId, groupId, startedAt, finishedAt, theta } = testing
