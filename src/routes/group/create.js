@@ -2,6 +2,7 @@
 
 const { ROLE } = require('@root/config')
 const generator = require('rand-token').generator({ chars: '0-9' })
+const moment = require('moment')
 
 module.exports = async (fastify, options) => {
 
@@ -53,6 +54,8 @@ module.exports = async (fastify, options) => {
       
       group.logo = imageInfo.fileName
     }
+    group.createdAt = moment().unix()
+    group.updatedAt = group.createdAt
 
     await group.save()
 
