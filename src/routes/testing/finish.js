@@ -89,7 +89,6 @@ const checkCorrect = (questionType, originalAnswers, userAnswer) => {
       return MCAnswer ? MCAnswer.key : false
     case 'SA':
       const SAAnswer = originalAnswers.find(originalAnswer => {
-        console.log(originalAnswer)
         originalAnswer.key = originalAnswer.key.replace('<p>', '')
         originalAnswer.key = originalAnswer.key.replace('</p>', '')
         return originalAnswer.key === userAnswer

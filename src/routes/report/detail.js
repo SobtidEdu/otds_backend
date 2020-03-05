@@ -108,13 +108,14 @@ module.exports = async (fastify, options) => {
       fastify.authorize([ROLE.TEACHER, ROLE.SUPER_TEACHER, ROLE.ADMIN])
     ]
   }, async (request) => {
-    const { params } = request
+    const { params, user } = request
 
     const aggregate = [
       {
         $match: { 
           examId: mongoose.Types.ObjectId(params.examId),
-          finishedAt: { $ne: null }
+          userId: { $ne: mongoose.Types.ObjectId(user._id) },
+          finishedAt: { $ne: null },
         }
       },
       {
