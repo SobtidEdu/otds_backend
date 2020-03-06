@@ -96,7 +96,7 @@ module.exports = async (fastify, options) => {
     const response = await fastify.mongoose.Group.aggregate(aggregate)
     return response
     .map(data => ({
-      _id: data._id.groupId,
+      _id: data._id,
       totalStudentTestings: data.totalStudentTestings,
       latestStartedAt: data.latestStartedAt,
       latestScore: data.latestScore,
