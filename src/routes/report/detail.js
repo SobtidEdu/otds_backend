@@ -142,6 +142,7 @@ module.exports = async (fastify, options) => {
           },
           progressTestings: 1,
           score: 1,
+          time: 1,
           startedAt: 1,
           finishedAt: 1,
         }
