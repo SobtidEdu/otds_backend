@@ -62,6 +62,7 @@ module.exports = async (fastify, options) => {
   fastify.register(require('./statistic'), { prefix: 'stats' })
   fastify.register(require('./upload'))
   fastify.register(require('./faq'))
+  fastify.register(require('./share'))
   fastify.register(require('./contact'))
   fastify.register(require('./test-send-mail'))
   if (fastify.env.APP_ENV !== 'production') {
