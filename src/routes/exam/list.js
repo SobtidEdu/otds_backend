@@ -324,17 +324,6 @@ module.exports = async (fastify, opts) => {
         }
       }
     ]
-
-    if (query.search) {
-      baseAggregate.push({
-        $match: { 
-          $or: [
-            { name: new RegExp(`${query.search}`, 'i') },
-            { code: new RegExp(`${query.search}`, 'i') }
-          ]
-        }
-      })
-    }
     
     const response = await fastify.paginate(fastify.mongoose.Exam, query, baseAggregate)
 
