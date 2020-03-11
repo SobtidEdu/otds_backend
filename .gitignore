@@ -1,5 +1,7 @@
 /node_modules
-/storage/images/profile/profile-*
+/storage/images/profile/*
+!/storage/images/profile/default.png
+/storage/images/profile/!*
 /storage/images/group/group-*
 /storage/html/term.html
 .env
