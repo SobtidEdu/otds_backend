@@ -20,9 +20,6 @@ module.exports = {
       type: "ObjectId",
       ref: "User"
     },
-    isStudentTest: {
-      type: Boolean
-    },
     progressTestings: [
       {
         questionId: { type: String },
@@ -49,6 +46,7 @@ module.exports = {
       type: Number,
       default: moment().unix()
     },
+    isOldSystem: { type: Boolean },
     finishedAt: {
       type: Number,
       default: null
