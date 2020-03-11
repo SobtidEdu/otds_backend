@@ -110,8 +110,8 @@ module.exports = async (fastify, options) => {
   }, async (request, reply) => {
     const { params } = request
 
-    const start = moment().year(params.year).month(params.month).startOf('month').unix()
-    const end = moment().year(params.year).month(params.month).endOf('month').unix()
+    const start = moment().year(params.year).month(parseInt(params.month)-1).startOf('month').unix()
+    const end = moment().year(params.year).month(parseInt(params.month)-1).endOf('month').unix()
 
     if (params.type == 'type') {
       const aggregate = [
@@ -353,8 +353,8 @@ module.exports = async (fastify, options) => {
   }, async (request, reply) => {
     const { params } = request
 
-    const start = moment().year(params.year).month(params.month).startOf('month').unix()
-    const end = moment().year(params.year).month(params.month).endOf('month').unix()
+    const start = moment().year(params.year).month(parseInt(params.month)-1).startOf('month').unix()
+    const end = moment().year(params.year).month(parseInt(params.month)-1).endOf('month').unix()
 
     const aggregate = [
       {
