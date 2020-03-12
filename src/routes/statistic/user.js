@@ -80,7 +80,7 @@ module.exports = async (fastify, options) => {
 
     const response = await fastify.mongoose.User.aggregate(aggregate)
     return response.map(stats => ({
-      month: stats._id.month,
+      month: parseInt(stats._id.month),
       year: stats._id.year,
       student: stats.student,
       teacher: stats.teacher,
