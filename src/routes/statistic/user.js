@@ -139,7 +139,7 @@ module.exports = async (fastify, options) => {
     return response
     .map(response => ({
       province: response._id.province ? response._id.province : 'ไม่มีข้อมูลจังหวัด',
-      region: response._id.region ? response._id.province : 'ไม่มีข้อมูลภาค',
+      region: response._id.region ? response._id.region : 'ไม่มีข้อมูลภาค',
       count: response.count,
     }))
   })
