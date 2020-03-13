@@ -200,6 +200,7 @@ const transformAnswerByQuestionType = (question) => {
     case 'SA': return question.ItemShortAnswer_ResponseItemGroup.ItemShortAnswer.map(answer => ({
       seq: answer.ItemAnswerSeq,
       key: answer.ItemAnswer,
+      type: answer.ItemAnswerType,
       operation: answer.ItemAnswerOperation
     }))
     case 'MA': return {

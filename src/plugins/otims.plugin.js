@@ -157,12 +157,12 @@ module.exports = fp(async (fastify, options) => {
       return instance.get(`/ws/RequestFixedRandomTestSet`, { params })
       .then(response => {
         const testSetGroup = response.data.ResponseFixedRandomTestset.ResponseTestsetGroup_ResponseFixedRandomTestset.ResponseTestsetGroup
-        console.log(testSetGroup.ResponseItemGroup_ResponseTestsetGroup.ResponseItemGroup)
-        testSetGroup.ResponseItemGroup_ResponseTestsetGroup.ResponseItemGroup.forEach(item => {
-          if (item.QuestionType == 'SA') {
-            console.log(item.ItemShortAnswer_ResponseItemGroup.ItemShortAnswer)
-          }
-        })
+        // console.log(testSetGroup.ResponseItemGroup_ResponseTestsetGroup.ResponseItemGroup)
+        // testSetGroup.ResponseItemGroup_ResponseTestsetGroup.ResponseItemGroup.forEach(item => {
+        //   if (item.QuestionType == 'SA') {
+        //     console.log(item.ItemShortAnswer_ResponseItemGroup.ItemShortAnswer)
+        //   }
+        // })
         return params.NoStudents == 1 ? [testSetGroup] : testSetGroup
       })
       .catch(e => {
