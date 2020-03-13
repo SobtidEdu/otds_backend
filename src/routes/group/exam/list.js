@@ -32,7 +32,7 @@ module.exports = async function(fastify, opts, next) {
         { 
           $lookup: {
             from: 'testings',
-            let: { examId: '$_id', groupId: group._id, user: user._id },
+            let: { examId: '$_id', groupId: group._id, userId: user._id },
             pipeline: [
               { 
                 $match: {
