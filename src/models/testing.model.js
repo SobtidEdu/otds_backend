@@ -33,6 +33,9 @@ module.exports = {
         }
       }
     ],
+    history: [
+      { startDate: { type: Number } }
+    ],
     score: {
       type: Number
     },

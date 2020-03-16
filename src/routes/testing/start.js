@@ -42,16 +42,18 @@ module.exports = async (fastify, opts) => {
     }
 
     if (user) {
-      const testingExist = await fastify.mongoose.Testing.findOne(finder).lean()
+      const testingExist = await fastify.mongoose.Testing.findOne(finder)
       fastify.updateLastActionMyExam(user, examId, groupId)
 
       if (testingExist) {
-        await fastify.mongoose.Testing.updateOne({ _id: testingExist._id}, { updatedAt: moment().unix() })
-        return { ...testingExist, questions }
+        testingExist.updatedAt = moment().unix()
+        testingExist.history.push({ startDate: moment().unix() })
+        await testingExist.save()
+        return { ...testingExist.toObject(), questions }
       }
     }
 
-    const testing = await fastify.mongoose.Testing.create(Object.assign(testingData, { startedAt: moment().unix() }))
+    const testing = await fastify.mongoose.Testing.create(Object.assign(testingData, { startedAt: moment().unix(), history: [{ startDate: moment().unix() }] }))
 
     return { ...testing.toObject(), questions }
   })
