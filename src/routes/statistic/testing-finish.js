@@ -4,7 +4,7 @@ const { ROLE } = require('@config/user')
 const moment = require('moment')
 
 module.exports = async (fastify, options) => {
-  fastify.get('/testing', {
+  fastify.get('/finished', {
     preValidation: [
       fastify.authenticate(),
       fastify.authorize([ROLE.ADMIN])
@@ -102,7 +102,7 @@ module.exports = async (fastify, options) => {
     }))
   })
 
-  fastify.get('/testing/detail/:year/:month/:type', {
+  fastify.get('/finished/detail/:year/:month/:type', {
     preValidation: [
       fastify.authenticate(),
       fastify.authorize([ROLE.ADMIN])
@@ -345,7 +345,7 @@ module.exports = async (fastify, options) => {
     }
   })
 
-  fastify.get('/testing/transactions/:year/:month', {
+  fastify.get('/finished/transactions/:year/:month', {
     preValidation: [
       fastify.authenticate(),
       fastify.authorize([ROLE.ADMIN])
@@ -359,7 +359,7 @@ module.exports = async (fastify, options) => {
     const aggregate = [
       {
         $match: {
-          startedAt: {
+          finishedAt: {
             $gte: start,
             $lt: end
           }

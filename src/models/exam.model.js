@@ -14,7 +14,7 @@ module.exports = {
       ref: "User"
     },
     otimsCode: { type: String },
-    oldSystemCode: { type: String },
+    oldSystemId: { type: String },
     code: { type: String },
     subject: { type: String },
     grade: { type: String },
