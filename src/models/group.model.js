@@ -12,6 +12,10 @@ module.exports = {
       required: true,
       trim: true,
     },
+    oldSystemId: {
+      type: Number,
+      default: null,
+    },
     owner: {
       type: "ObjectId",
       ref: "User"

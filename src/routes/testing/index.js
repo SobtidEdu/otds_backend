@@ -29,4 +29,5 @@ module.exports = async (fastity, opts) => {
   fastity.register(require('./finish'))
   fastity.register(require('./result'))
   fastity.register(require('./upload'))
+  fastity.register(require('./fixed-testing'))
 }

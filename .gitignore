@@ -1,8 +1,8 @@
 /node_modules
 /storage/images/profile/*
 !/storage/images/profile/default.png
-/storage/images/profile/!*
-/storage/images/group/group-*
+/storage/images/group/*
+!/storage/images/group/default.png
 /storage/html/term.html
 .env
 

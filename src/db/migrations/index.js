@@ -4,7 +4,7 @@ const program = require('commander')
 const { connectMongodb } = require('./mongo-connection')
 const Synchronizer = require('./synchronizer')
 const synchronizer = new Synchronizer()
-const groupCommands = ['user', 'exam']
+const groupCommands = ['user', 'exam', 'testing', 'group']
 
 program
   .version('1.0.0')
@@ -17,7 +17,7 @@ program
       for (migration of groupCommands) {
         let migrate = require(`./${migration}.migration`)
       
-        await migrate.sync(synchronizer, )
+        await migrate.sync(synchronizer)
       }
     } else {
       if (!groupCommands.includes(cmd)) {
@@ -26,7 +26,6 @@ program
       }
 
       const migrate = require(`./${cmd}.migration`)
-      
       await migrate.sync(synchronizer, options.continue)
     }
     await synchronizer.close()

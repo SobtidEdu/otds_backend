@@ -7,7 +7,7 @@ module.exports = {
   sync: async (synchronizer, continueRound) => {
     console.log('Synchonizing exam .....')
     const { mongoConnection, mongodb } = await connectMongodb()
-    synchronizer.setSqlQueryCmd('SELECT * FROM xml_result_teacher')
+    synchronizer.setSqlQueryCmd("SELECT * FROM xml_result_teacher WHERE is_delete = '0'")
     synchronizer.setMongoCollection('exams')
 
     await synchronizer.synchronize(20, continueRound, async (from, to) => {
@@ -16,11 +16,13 @@ module.exports = {
         return null
       }
       let rawQuestion = await mysql.query(`SELECT txt_xml FROM ot_exam_xml WHERE code = '${from.code}'`)
-      
+      // console.log(from.code)
+      // console.log(rawQuestion[0].txt_xml)
       rawQuestion = rawQuestion[0] ? JSON.parse(rawQuestion[0].txt_xml) : null
       
       to.owner = user._id
-      to.oldSystemCode = from.code
+      to.oldSystemId = from.id
+      to.otimsCode = from.TestSetID
       to.code = from.code
       to.subject = from.learning_area
       to.grade = from.key_stage
@@ -80,7 +82,7 @@ module.exports = {
     console.log('Clearing exam .....')
     
     try {
-      await mongodb.collection('exams').deleteMany({ oldSystemCode: { $exists: true } })
+      await mongodb.collection('exams').deleteMany({ oldSystemId: { $exists: true } })
     } catch (err) {
       if (err.code === 26) console.log('There isn\'t the exam collection')
       else console.log(err)

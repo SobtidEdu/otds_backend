@@ -47,7 +47,7 @@ class Synchronizer {
       console.log(`Round ${i}/${round} upstreaming ${recordsPerRound} records each round`)
       console.log(` Quering... ${firstRecordInRound} - ${lastRecordInRound}`)
       console.log(`${this.sqlQueryCmd} ORDER BY id ASC LIMIT ${firstRecordInRound - 1}, ${recordsPerRound}`)
-      const sources = await this.mysql.query(`${this.sqlQueryCmd} ORDER BY id ASC LIMIT ${firstRecordInRound - 1}, ${recordsPerRound}`)
+      const sources = await this.mysql.query(`${this.sqlQueryCmd} ORDER BY create_date ASC LIMIT ${firstRecordInRound - 1}, ${recordsPerRound}`)
       console.log(`${this.sqlQueryCmd} LIMIT ${firstRecordInRound - 1}, ${recordsPerRound}`)
       console.log(` Manipulating... ${firstRecordInRound} - ${lastRecordInRound}`)
       for (let j = 0; j < amountRecordInRound; j++) {
@@ -57,7 +57,9 @@ class Synchronizer {
         }
       }
       console.log(` Inserting... ${firstRecordInRound} - ${lastRecordInRound}`)
-      await this.mongodb.collection(this.mongoCollection).insertMany(items)
+      if (items.length > 0) {
+        await this.mongodb.collection(this.mongoCollection).insertMany(items)
+      }
     }
   }
 
