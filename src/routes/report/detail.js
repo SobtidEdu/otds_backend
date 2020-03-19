@@ -178,7 +178,7 @@ module.exports = async (fastify, options) => {
         }
         return testing
       }),
-      // questions: exam.questions
+      questions: exam.questions
     }
   })
 }
