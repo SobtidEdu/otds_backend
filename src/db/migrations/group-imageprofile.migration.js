@@ -31,7 +31,7 @@
   console.log(`total ${oldGroups.length}`)
   for (let oldGroup of oldGroups) {
     const fileName = oldGroup.image
-    const imageUrl = `${ONLINE_ETESTING}/images/uploads/${fileName}`
+    const imageUrl = `${ONLINE_ETESTING}/images/uploads/${encodeURIComponent(fileName)}`
     try {
       await download_image(imageUrl, `storage/images/group/${fileName}`)
       console.log('aleary download')
