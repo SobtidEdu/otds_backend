@@ -26,20 +26,13 @@ module.exports = async (fastify, opts) => {
     const { questions } = exam
 
     const testingData = {
-      groupId: null,
-      finishedAt: null,
-      examId
-    }
-
-    if (user) {
-      testingData.userId = user._id
+      userId: user ? user._id : null,
+      groupId: groupId || null,
+      examId,
+      finishedAt: null
     }
 
     const finder = testingData
-
-    if (groupId) {
-      finder.groupId = groupId
-    }
 
     if (user) {
       const testingExist = await fastify.mongoose.Testing.findOne(finder)

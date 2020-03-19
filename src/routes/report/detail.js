@@ -127,7 +127,10 @@ module.exports = async (fastify, options) => {
         }
       },
       {
-        $unwind: '$user'
+        $unwind: {
+          path: '$user',
+          preserveNullAndEmptyArrays: true
+        }
       },
       {
         $project: {
@@ -146,6 +149,11 @@ module.exports = async (fastify, options) => {
           startedAt: 1,
           finishedAt: 1,
         }
+      },
+      {
+        $sort: {
+          finishedAt: 1
+        }
       }
     ]
     
@@ -153,10 +161,24 @@ module.exports = async (fastify, options) => {
       fastify.mongoose.Testing.aggregate(aggregate),
       fastify.mongoose.Exam.findOne({ _id: params.examId })
     ])
+    let guestIndex = 1
     // return response
     return {
-      testings,
-      questions: exam.questions
+      testings: testings.map(testing => {
+        if (!testing.user) {
+          testing.user = {
+            prefixName: '',
+            firstName: `Guest${guestIndex++}`,
+            lastName: '',
+            role: 'guest',
+            school: {
+              name: ''
+            }
+          }
+        }
+        return testing
+      }),
+      // questions: exam.questions
     }
   })
 }

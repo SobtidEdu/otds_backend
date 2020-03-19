@@ -28,6 +28,9 @@ module.exports = async (fastify, opts) => {
   async (request) => {
     const { user, body } = request
     
+    if (!body.email) {
+      delete body.email
+    }
     if (body.password == null) {
       delete body.password
     }

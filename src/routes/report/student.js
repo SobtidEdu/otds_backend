@@ -86,7 +86,7 @@ module.exports = async (fastify, options) => {
         $match: { 
           examId: mongoose.Types.ObjectId(params.examId),
           finishedAt: { $ne: null },
-          userId: { $exists: false }
+          userId: { $eq: null }
         }
       },
       {
