@@ -16,13 +16,9 @@ module.exports = async function(fastify, opts, next) {
       const { user, params } = request;
       const group = await fastify.mongoose.Group.findOne({ _id: params.groupId })
 
-      if (user.role === ROLE.STUDENT) {
-        group.exams = group.exams.filter(exam => exam.status)
-      }
-
       let examIdsArray = group.exams.map(exam => exam._id)
       
-      const exams = await fastify.mongoose.Exam.aggregate([
+      let exams = await fastify.mongoose.Exam.aggregate([
         { 
           $match: {
             _id: { $in: examIdsArray },
@@ -65,6 +61,9 @@ module.exports = async function(fastify, opts, next) {
         }
       ])
 
+      if (user.role === ROLE.STUDENT) {
+        exams = exams.filter(exam => exam.status === true)
+      }
 
       return exams.map(exam => {
         const examInGroup = group.exams.find(examInGroup => examInGroup._id.toString() === exam._id.toString())
