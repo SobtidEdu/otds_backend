@@ -6,11 +6,13 @@ module.exports = {
   sync: async (synchronizer, continueRound) => {
     console.log('Synchonizing exam .....')
     const { mongoConnection, mongodb } = await connectMongodb()
-    synchronizer.setSqlQueryCmd(`SELECT * FROM xml_student_exam_progress WHERE is_finish = '1' AND is_delete = '0'`)
+    const examCode = `74fe00d688`
+    synchronizer.setSqlQueryCmd(`SELECT * FROM xml_student_exam_progress WHERE is_finish = '1' AND is_delete = '0' AND exam_id = '${examCode}'`)
     synchronizer.setMongoCollection('testings')
 
     await synchronizer.synchronize(50, continueRound, async (from, to) => {
       const exam = await mongodb.collection('exams').findOne({ code: from.exam_id })
+      console.log(from.score)
       if (!exam) {
         return null
       }
@@ -27,10 +29,10 @@ module.exports = {
       to.theta = from.cat_final_theta
       to.se = null
       to.time = from.time_used * 1000
-      console.log(from.exam_id)
       to.progressTestings = transformAnswer(exam.questions, from.answers)
       return to
     })
+
     await mongoConnection.close()
     console.log('exam synchonized .....')
   },
@@ -53,7 +55,7 @@ const transformAnswer = (questions, answers) => {
   // answers = answers.replace(']', '\\]')
   // answers = answers.replace('\\]', '\\\\]')
   answers = JSON.parse(answers)
-  console.log(answers)
+  // console.log(answers)
   // return []
   return questions.map(question => {
     const progressTesting = {
@@ -74,12 +76,12 @@ const transformAnswer = (questions, answers) => {
           progressTesting.isCorrect = checkCorrect(question, answer)
           break;
         case 'MA':
-          console.log('original answers from old system for MA type: ', answer)
+          // console.log('original answers from old system for MA type: ', answer)
           progressTesting.answer = answer.split(',').filter(ans => ans !== '').map((ans, i) => ({ seq: i+1, match: ans }))
           progressTesting.isCorrect = checkCorrect(question, progressTesting.answer)
           break;
         case 'TF': 
-          console.log('original answers from old system for TF type: ', answer)
+          // console.log('original answers from old system for TF type: ', answer)
           progressTesting.answer = answer.split(',').filter(ans => ans !== '').map(ans => ({ key: ans }))
           progressTesting.isCorrect = checkCorrect(question, progressTesting.answer)
           break;

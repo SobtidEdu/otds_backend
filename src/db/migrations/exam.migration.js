@@ -30,10 +30,10 @@ module.exports = {
       to.name = from.name
       to.status = from.status == 1
       if (rawQuestion && !Array.isArray(rawQuestion.ResponseItemGroup)) rawQuestion.ResponseItemGroup = [rawQuestion.ResponseItemGroup]
-      to.questions = rawQuestion ? rawQuestion.ResponseItemGroup.filter(question => question !== undefined && question !== {}).map(question => {
+      to.questions = rawQuestion ? rawQuestion.ResponseItemGroup.filter(question => question !== undefined && question !== {}).map((question, idex) => {
         // console.log(question)
         return {
-          seq: question.ItemSeq ? question.ItemSeq : '',
+          seq: idex+1,
           id: question.ItemID,
           type: question.QuestionType,
           text: question.ItemQuestion,
