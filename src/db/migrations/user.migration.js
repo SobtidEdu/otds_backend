@@ -6,7 +6,7 @@ module.exports = {
   sync: async (synchronizer, continueRound) => {
     console.log('Synchonizing user .....')
     const { mongoConnection, mongodb } = await connectMongodb()
-    synchronizer.setSqlQueryCmd('SELECT ot_users.*, ot_schools.name as school_name FROM ot_users LEFT JOIN ot_schools ON ot_users.school_id = ot_schools.id')
+    synchronizer.setSqlQueryCmd("SELECT ot_users.*, ot_schools.name as school_name FROM ot_users LEFT JOIN ot_schools ON ot_users.school_id = ot_schools.id WHERE usertype = ''")
     synchronizer.setMongoCollection('users')
 
     await synchronizer.synchronize(1000, continueRound, async (from, to) => {
@@ -112,9 +112,27 @@ module.exports = {
         algo: 'md5'
       }
       to.role = from.role == 3 ? 'admin' : (from.role == 2 ? 'teacher' : 'student')
-      to.isComfirmationEmail = true
+      to.isConfirmationEmail = true
       to.createdAt = moment().unix()
       to.updatedAt = moment().unix()
+      // Set default
+      to.isBanned = false
+      to.isLoggedOut = true
+      to.isSeenModified = true
+      to.privacyPolicy = null
+      to.isSeenTermAndCondition = false
+      to.isSeenDataPrivacy = false
+      to.notices = []
+      to.groups = []
+      to.isSeenTutorial = {
+        exam : false,
+        group : false,
+        testing : false,
+        report : false,
+        examCode : false
+      }
+      to.lastLoggedInAt = false
+      to.myExam = []
       // console.log(to)
       return to
     })

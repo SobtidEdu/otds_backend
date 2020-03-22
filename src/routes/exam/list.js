@@ -1,6 +1,7 @@
 'use strict' 
 
 const { ROLE } = require('@config/user')
+const mongoose = require('mongoose')
 
 module.exports = async (fastify, opts) => {
   fastify.get('/', {
@@ -16,7 +17,8 @@ module.exports = async (fastify, opts) => {
       baseAggregate = [
         {
           $match: {
-            owner: user._id
+            owner: user._id,
+            deletedAt: null
           }
         },
         {
@@ -88,156 +90,142 @@ module.exports = async (fastify, opts) => {
       return response
 
     } else if (user.role == ROLE.STUDENT) {
+
       baseAggregate = [
-        {
+        { 
           $match: {
-            owner: user._id
+            _id: user._id
           }
         },
-        {
-          $lookup: {
-            from: 'testings',
-            pipeline: [
-              { $match: { userId: user._id } },
-              { $project: { examId: 1, updatedAt: 1, userId: 1, groupId: 1, startedAt: 1, finishedAt: 1 } }
-            ],
-            as: 'testings'
-          }
-        },
-        {
-          $addFields: {
-            table2: {
-              $map: {
-                input: '$testings',
-                as: 'tbl2',
-                in: {
-                  _id: '$$tbl2.examId',
-                  groupId: '$$tbl2.groupId',
-                  updatedAt: '$$tbl2.updatedAt',
-                  startedAt: '$$tbl2.startedAt',
-                  finishedAt: '$$tbl2.finishedAt',
-                }
-              }
-            }
-          }
-        },
-        {
-          $group: {
-            _id: null,
-            table1: {
-              $push: {
-                _id: '$_id',
-                updatedAt: '$createdAt'
-              }
-            },
-            table2: {
-              $first: '$table2'
-            }
-          }
-        },
-        {
-          $project: {
-            items: {
-              $setUnion: ['$table1', '$table2']
-            }
-          }
-        },
-        {
-          $unwind: '$items'
-        },
-        {
-          $replaceRoot: {
-            newRoot: '$items'
-          }
-        },
-        {
-          $group: {
-            _id: {
-              examId: '$_id',
-              groupId: '$groupId'
-            },
-            startedAt: { $last: '$startedAt' },
-            finishedAt: { $last: '$finishedAt' },
-            updatedAt: { $last: '$updatedAt' }
-          }
-        },
+        { $unwind: '$myExam' },
+        { $replaceRoot: { newRoot: '$myExam' } },
         {
           $lookup: {
             from: 'exams',
-            localField: '_id.examId',
+            localField: 'examId',
             foreignField: '_id',
             as: 'exam'
           }
         },
-        {
-          $unwind: '$exam'
-        },
+        { $unwind: '$exam' },
         {
           $lookup: {
             from: 'users',
             localField: 'exam.owner',
             foreignField: '_id',
-            as: 'user'
+            as: 'owner'
           }
         },
-        {
-          $unwind: '$user'
-        },
+        { $unwind: '$owner' },
         {
           $lookup: {
             from: 'groups',
-            localField: '_id.groupId',
+            localField: 'groupId',
             foreignField: '_id',
             as: 'group'
           }
         },
+        { $unwind: { path: '$group', preserveNullAndEmptyArrays: true } },
         {
-          $unwind: {
-            path: '$group',
-            preserveNullAndEmptyArrays: true
+          $lookup: {
+            from: 'testings',
+            let: { examId: "$examId", groupId: "$groupId", userId: user._id },
+            pipeline: [
+              {
+                $match: {
+                  $expr: { 
+                    $and: [
+                      { $eq: [ '$examId', '$$examId' ] },
+                      { $eq: [ '$userId', '$$userId' ] },
+                      { $cond: [ { $eq: [ "$$groupId", null ] } , { $eq: [ '$groupId', null ] }, { $eq : [ '$groupId', '$$groupId' ] } ] }
+                    ]
+                  }
+                }
+              },
+              { $project: { _id: 1, startedAt: 1, finishedAt: 1, examId: 1, userId: 1, groupId: 1 } },
+              { $sort: { startedAt: -1 } },
+              { $limit: 1 }
+            ],
+            as: 'testing'
           }
         },
+        { $unwind: { path: '$testing', preserveNullAndEmptyArrays: true } },
         {
-          $sort: {
-            updatedAt: -1
+          $project: {
+            _id: "$exam._id",
+            code: "$exam.code",
+            subject: "$exam.subject",
+            name: "$exam.name",
+            type: "$exam.type",
+            group: {
+              _id: 1,
+              name: 1,
+              exams: 1,
+              students: 1
+            },
+            owner: {
+                _id: 1,
+                prefixName: 1,
+                firstName: 1,
+                lastName: 1,
+                role: 1
+            },
+            oneTimeDone: "$exam.oneTimeDone",
+            status: "$exam.status",
+            startedAt: "$testing.startedAt",
+            finishedAt: "$testing.finishedAt",
+            createdAt: "$exam.createdAt",
+            deletedAt: "$exam.deletedAt",
+            latestAction: 1
           }
         }
       ]
 
-      const { page, lastPage, totalCount, items } = await fastify.paginate(fastify.mongoose.Exam, query, baseAggregate)
-      // return { totalCount, items }
+      query.sort = { latestAction: 'desc' }
+      const { page, lastPage, totalCount, items } = await fastify.paginate(fastify.mongoose.User, query, baseAggregate)
+      
       return {
         page,
         lastPage,
         totalCount,
-        items: items.map(res => ({
-          _id: res.exam._id,
-          code: res.exam.code,
-          subject: res.exam.subject,
-          name: res.exam.name,
-          type: res.exam.type,
-          group: res.group ? {
-            _id: res.group._id,
-            name: res.group.name
-          } : null, 
-          owner: {
-            _id: res.user._id,
-            prefixName: res.user.prefixName,
-            firstName: res.user.firstName,
-            lastName: res.user.lastName,
-            role: res.user.role,
-          },
-          oneTimeDone: res.exam.oneTimeDone,
-          createdAt: res.exam.createdAt,
-          status: res.startedAt ? (res.finishedAt ? 'finished' : 'doing') : null,
-          updatedAt: res.exam.updatedAt
-        }))
+        items: items
+        .map(res => {
+          let status = null
+          console.log(res)
+          if (res.deletedAt || !res.status) { // ข้อสอบโดนลบ หรืิอ ปิดสถานะข้อสอบ
+            status = 'close'
+          }
+          else if (res.group) { // ข้อสอบในกลุ่ม
+            const groupExam = res.group.exams.find(groupExam => groupExam._id.toString() == res._id.toString())
+            if (!groupExam || !groupExam.status) { // ข้อสอบถูกลบ หรือ ข้อสอบถูกปิดสถานะ
+              status = 'close'
+            }
+
+            const studentInGroup = res.group.students.find(student => student.userInfo.toString() == user._id.toString())
+            if (!studentInGroup || studentInGroup.leftDate) { // นักเรียนไม่ได้อยู่ในกลุ่ม
+              status = 'close'
+            }
+            delete res.group.exams
+            delete res.group.students
+          }
+          else if (res.startedAt && res.finishedAt == null) { // ทำค้างไว้อยู่
+            status = 'doing'
+          } else if (res.startedAt && res.finishedAt != null) { // ทำเสร็จไปแล้วอย่างน้อย 1 รอบ
+            status = 'finished'
+          }
+
+          return {
+            ...res,
+            status
+          }
+        })
       }
     } else {
       baseAggregate = [
         {
           $match: {
-            owner: user._id
+            owner: user._id,
+            deletedAt: null
           }
         },
         {
@@ -282,6 +270,11 @@ module.exports = async (fastify, opts) => {
     const { query } = request
     
     const baseAggregate = [
+      {
+        $match: {
+          deletedAt: null
+        }
+      },
       {
         $lookup: {
           from: 'users',
@@ -331,18 +324,23 @@ module.exports = async (fastify, opts) => {
         }
       }
     ]
-
-    if (query.search) {
-      baseAggregate.push({
-        $match: { 
-          $or: [
-            { name: new RegExp(`${query.search}`, 'i') },
-            { code: new RegExp(`${query.search}`, 'i') }
-          ]
-        }
-      })
-    }
     
-    return await fastify.paginate(fastify.mongoose.Exam, query, baseAggregate)
+    const response = await fastify.paginate(fastify.mongoose.Exam, query, baseAggregate)
+
+    const examSuggestion = await fastify.mongoose.ExamSuggestion.findOne({})
+    
+    let examSuggestionList = []
+    if (examSuggestion) {
+      examSuggestionList = examSuggestion.list
+    }
+      
+    response.items = response.items.map(item => {
+      return {
+        isSuggestion: examSuggestionList.findIndex(es => es.exam.toString() == item._id.toString()) !== -1,
+        ...item
+      }
+    })
+
+    return response
   })
-}
+} 

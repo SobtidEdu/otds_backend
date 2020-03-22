@@ -28,6 +28,9 @@ module.exports = async (fastify, opts) => {
   async (request) => {
     const { user, body } = request
     
+    if (!body.email) {
+      delete body.email
+    }
     if (body.password == null) {
       delete body.password
     }
@@ -35,13 +38,26 @@ module.exports = async (fastify, opts) => {
       delete body.profileImage
     }
 
+    if (body.isSeenTutorial) {
+      body.isSeenTutorial = Object.assign(user.isSeenTutorial, body.isSeenTutorial)
+      console.log(body.isSeenTutorial)
+    }
+
     if (body.school) {
       body.school.name.text = _.trimStart(body.school.name.text, 'โรงเรียน')
 
+      const school = await fastify.mongoose.School.findOne({ name: body.school.name.text })
+
+      body.isSeenModified = true
       _.forIn(body.school, function(value, key) {
-        if (value.isModified == true) {
+        console.log(value, key, school)
+        if (key !== 'province' && school && value.text == school[key]) {
+          body.school[key].isModified = true
+        } else if (key === 'province' && school && value.id == school[key]) {
+          body.school[key].isModified = true
+        } else {
+          body.school[key].isModified = false
           body.isSeenModified = false
-          return 
         }
       })
     }

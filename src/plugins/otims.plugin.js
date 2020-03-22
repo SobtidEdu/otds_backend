@@ -25,7 +25,7 @@ const formUrlEncoded = data =>  {
 }
 
 module.exports = fp(async (fastify, options) => {
-  const { OTIMS_API_URL, OTIMS_TOKEN, OTIMS_USER } = fastify.env
+  const { OTIMS_API_URL, OTIMS_TOKEN, OTIMS_USER } = process.env
 
   const instance = axios.create({
     baseURL: OTIMS_API_URL,
@@ -46,8 +46,54 @@ module.exports = fp(async (fastify, options) => {
     getIndicators: async (params = {}) => {
       params.RequestedName = OTIMS_USER
       params.RequestedNo = `${OTIMS_USER}StrandIndicatorRequest${moment().format('YYYYMMDDHHmmSSS')}`
-      params.ItemType = 'G'
+    
+      // let q = querystring.stringify(params)
+      const indicators = await instance.get(`/ws/StrandIndicatorRequest`, { params })
+      .then(response => response.data.Result.StrandList_ResponseStrandIndicator.StrandList.map(strand => ({
+          name: strand.StrandFullname,
+          code: strand.StrandCode,
+          indicators: strand.IndicatorList_StrandList.IndicatorList.map(indicator => ({
+            name: indicator.IndicatorFullname,
+            code: indicator.IndicatorCode
+          }))
+        }))
+      )
+    
+      params.RequestType = 1
+      params.TestSetType = 'FI'
+      params.FollowStrand = true
+      params.FollowIndicator = true
+      params.BankType = 'Public'
+      params.ComplexityLevel = '1,2,3'
+    
+      for (let strandIndex in indicators) {
+        for (let indicatorIndex in indicators[strandIndex].indicators) {
+          const indicator = indicators[strandIndex].indicators[indicatorIndex]
+          
+          params.Strand = indicators[strandIndex].code
+          params.Indicator = indicators[strandIndex].indicators[indicatorIndex].code
+    
+          q = querystring.stringify(params)
+          indicator.noitems = await instance.get(`/ws/RequestItemsInquiry`, { params }).then(response => {
+            const arrayNoQuestionType = response.data.ResponseItemInquiry.ResponseNoQuestionType_ResponseItemInquiry.ResponseNoQuestionType
+            if (!arrayNoQuestionType[0]) return 0
+            const indicators = arrayNoQuestionType[0].Indicator.split(';')
+            return indicators.reduce((noitems, rawIndicator) => {
+              // console.log(rawIndicator)
+              const item = rawIndicator.split(',') // indicatorName, questionType, noQuestions
+              return parseInt(item[2]) + noitems
+            }, 0)
+          })
+          indicators[strandIndex].indicators[indicatorIndex] = indicator
+        }
+      }
+      return indicators
+    },
 
+    getStrands: async (params = {}) => {
+      params.RequestedName = OTIMS_USER
+      params.RequestedNo = `${OTIMS_USER}StrandIndicatorRequest${moment().format('YYYYMMDDHHmmSSS')}`
+    
       // let q = querystring.stringify(params)
       const indicators = await instance.get(`/ws/StrandIndicatorRequest`, { params })
       .then(response => response.data.Result.StrandList_ResponseStrandIndicator.StrandList.map(strand => ({
@@ -66,14 +112,14 @@ module.exports = fp(async (fastify, options) => {
       params.FollowIndicator = true
       params.BankType = 'Public'
       params.ComplexityLevel = '1,2,3'
-
+    
       for (let strandIndex in indicators) {
         for (let indicatorIndex in indicators[strandIndex].indicators) {
           const indicator = indicators[strandIndex].indicators[indicatorIndex]
           
           params.Strand = indicators[strandIndex].code
           params.Indicator = indicators[strandIndex].indicators[indicatorIndex].code
-
+    
           q = querystring.stringify(params)
           indicator.noitems = await instance.get(`/ws/RequestItemsInquiry`, { params }).then(response => {
             const arrayNoQuestionType = response.data.ResponseItemInquiry.ResponseNoQuestionType_ResponseItemInquiry.ResponseNoQuestionType
@@ -84,11 +130,18 @@ module.exports = fp(async (fastify, options) => {
               const item = rawIndicator.split(',') // indicatorName, questionType, noQuestions
               return parseInt(item[2]) + noitems
             }, 0)
+          }).catch(err => {
+            return 0
           })
           indicators[strandIndex].indicators[indicatorIndex] = indicator
         }
       }
-      return indicators
+
+      return indicators.map(strand => ({
+        name: strand.name,
+        code: strand.code,
+        noitems: strand.indicators.reduce((noitem, indicator) => noitem + indicator.noitems, 0)
+      }))
     },
 
     getCompetitions: async (params = {}) => {
@@ -105,6 +158,11 @@ module.exports = fp(async (fastify, options) => {
       .then(response => {
         const testSetGroup = response.data.ResponseFixedRandomTestset.ResponseTestsetGroup_ResponseFixedRandomTestset.ResponseTestsetGroup
         // console.log(testSetGroup.ResponseItemGroup_ResponseTestsetGroup.ResponseItemGroup)
+        // testSetGroup.ResponseItemGroup_ResponseTestsetGroup.ResponseItemGroup.forEach(item => {
+        //   if (item.QuestionType == 'SA') {
+        //     console.log(item.ItemShortAnswer_ResponseItemGroup.ItemShortAnswer)
+        //   }
+        // })
         return params.NoStudents == 1 ? [testSetGroup] : testSetGroup
       })
       .catch(e => {
@@ -134,8 +192,6 @@ module.exports = fp(async (fastify, options) => {
         request_name: params.RequestedName,
         request_type: params.RequestType,
         test_set_type: 'FI',
-        learning_area: "",
-        key_stage: "",
         test_items: params.TestItems
       })
       .then(response => {
@@ -144,6 +200,7 @@ module.exports = fp(async (fastify, options) => {
       })
       .catch((e) => {
         const errorResponse = e.response.data
+        console.error(e.response.config.data)
         console.error(errorResponse.ResponseFixedRandomTestset)
         if (errorResponse.ResponseFixedRandomTestset.ErrorMessage === '010,ไม่พบข้อสอบตามเงื่อนไขที่ต้องการจัดชุด') {
           errorResponse.ResponseFixedRandomTestset.ErrorMessage = 'ข้อสอบไม่เพียงพอสำหรับการจัดชุดข้อสอบนี้'
@@ -176,7 +233,7 @@ module.exports = fp(async (fastify, options) => {
       params.RequestedName = OTIMS_USER
       params.RequestedNo = `${OTIMS_USER}RequestNextItemCAT${params.RequestType}${moment().format('YYYYMMDDHHmmSSS')}`
       params.TestSetType = `CT`
-
+      
       // return params
       return instance.get(`/ws/RequestNextItemCAT`, { params })
       .then(response => {
@@ -185,7 +242,6 @@ module.exports = fp(async (fastify, options) => {
         return nextItemCAT
       })
       .catch(e => {
-        console.error(e)
         const errorResponse = e.response.data
         console.error(errorResponse)
         throw new Error(errorResponse.ResponseNextItemCAT.ErrorMessage)

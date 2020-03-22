@@ -20,9 +20,6 @@ module.exports = {
       type: "ObjectId",
       ref: "User"
     },
-    isStudentTest: {
-      type: Boolean
-    },
     progressTestings: [
       {
         questionId: { type: String },
@@ -36,8 +33,15 @@ module.exports = {
         }
       }
     ],
+    history: [
+      { startDate: { type: Number } }
+    ],
     score: {
       type: Number
+    },
+    time: {
+      type: Number,
+      default: 0
     },
     theta: { type: String },
     se: { type: String },
@@ -45,6 +49,7 @@ module.exports = {
       type: Number,
       default: moment().unix()
     },
+    isOldSystem: { type: Boolean },
     finishedAt: {
       type: Number,
       default: null
@@ -52,6 +57,7 @@ module.exports = {
     updatedAt: {
       type: Number,
       default: moment().unix()
-    }
+    },
+    deletedAt: { type: Number, default: null }
   },
 }

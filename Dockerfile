@@ -10,6 +10,9 @@ RUN yarn install
 RUN apt-get update
 RUN apt-get install -y tzdata
 
+ENV TZ=Asia/Bangkok
+RUN ln -snf /usr/share/zoneinfo/$TZ /etc/localtime && echo $TZ > /etc/timezone
+
 EXPOSE 3000
 
 CMD [ "yarn", "start:dev"]

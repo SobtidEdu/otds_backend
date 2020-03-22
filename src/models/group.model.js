@@ -12,6 +12,10 @@ module.exports = {
       required: true,
       trim: true,
     },
+    oldSystemId: {
+      type: Number,
+      default: null,
+    },
     owner: {
       type: "ObjectId",
       ref: "User"
@@ -68,6 +72,7 @@ module.exports = {
     updatedAt: {
       type: Number,
       default: moment().unix()
-    }
+    },
+    deletedAt: { type: Number, default: null },
   },
 }

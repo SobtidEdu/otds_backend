@@ -47,7 +47,7 @@ fastify.register(require('fastify-nodemailer'), {
   pool: true,
   host: fastify.env.EMAIL_HOST,
   port: fastify.env.EMAIL_PORT,
-  secure: fastify.env.APP_ENV !== 'local',
+  // secure: fastify.env.APP_ENV !== 'local',
   auth: {
     user: fastify.env.EMAIL_USERNAME,
     pass: fastify.env.EMAIL_PASSWORD
@@ -62,17 +62,17 @@ fastify.register(require('fastify-static'), {
   root: path.join(__dirname, 'storage'),
   prefix: '/storage/'
 })
-fastify.register(require('fastify-rate-limit'), {
-  max: 300,
-  timeWindow: '1 minute'
-})
+// fastify.register(require('fastify-rate-limit'), {
+//   max: 300,
+//   timeWindow: '1 minute'
+// })
 
-if (process.env.APP_ENV !== 'local') {
-  Sentry.init({ 
-    dsn: process.env.SENTRY_URL,
-    environment: process.env.APP_ENV
-  })
-}
+// if (process.env.APP_ENV !== 'local') {
+//   Sentry.init({ 
+//     dsn: process.env.SENTRY_URL,
+//     environment: process.env.APP_ENV
+//   })
+// }
 
 /*****
  * Internal Plugin
@@ -112,7 +112,7 @@ fastify.register(
 /**
  * Route Setup
  */
-fastify.register(require('./src/routes'), { prefix: '/api' })
+fastify.register(require('./src/routes'), { prefix: process.env.APP_ENV == 'production' ? '/' : '/api' })
 
 fastify.setErrorHandler(async (error, request, reply) => {
   console.log(error)

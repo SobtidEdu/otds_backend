@@ -64,7 +64,7 @@ module.exports = async (fastify, opts) => {
       body.email = body.email.toLowerCase()
     }
     
-    body.school.name.text = body.school.name.text.replace('โรงเรียน', '') //_.trimStart(body.school.name.text, 'โรงเรียน')
+    body.school.name.text = body.school.name.text !== 'กรุณาเลือก' ? body.school.name.text.replace('โรงเรียน', '') : '' //_.trimStart(body.school.name.text, 'โรงเรียน')
 
     _.forIn(body.school, function(value, key) {
       if (value.isModified == true) {
@@ -92,17 +92,19 @@ module.exports = async (fastify, opts) => {
 
     user = Object.assign(user, body)
 
-    user.isConfirmationEmail = body.role === ROLE.STUDENT
-
     await user.save()
     
     if (body.email) {
-      await fastify.nodemailer.sendMail({
-        from: fastify.env.EMAIL_FROM,
-        to: body.email,
-        subject: 'ยืนยันการลงทะเบียน OTDS',
-        html
-      })
+      try {
+        await fastify.nodemailer.sendMail({
+          from: fastify.env.EMAIL_FROM,
+          to: body.email,
+          subject: 'ยืนยันการลงทะเบียน OTDS',
+          html
+        })
+      } catch (e) {
+        console.log(e)
+      }
     }
     
     return { message: 'Register success' }

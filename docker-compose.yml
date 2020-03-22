@@ -31,17 +31,17 @@ services:
   #       reservations:
   #         cpus: '0.25'
   #         memory: 20M
-#   mongodb:
-#     image: mongo:4.2
-#     container_name: otds_mongodb
-#     restart: unless-stopped
-#     ports:
-#       - "27017:27017"
-#     volumes:
-#       - ./dbdata:/data/db
-#     networks:
-#       - app-network
-#     command: mongod --auth
+  # mongodb:
+  #   image: mongo:4.2
+  #   container_name: otds_mongodb
+  #   restart: unless-stopped
+  #   ports:
+  #     - "27017:27017"
+  #   volumes:
+  #     - ./dbdata:/data/db
+  #   networks:
+  #     - app-network
+  #   command: mongod --auth
 
 # networks: 
 #   app-network:

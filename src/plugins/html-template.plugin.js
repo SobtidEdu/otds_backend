@@ -30,6 +30,11 @@ module.exports = fp( async (fastify, options) => {
       
       const link = `${fastify.env.APP_FRONTEND_URL}/reset-password/${params.token}`
       return mustache.render(content, { ...params, link })
+    },
+    bindFacebookSharePahe: async (params) => {
+      const filePath = path.resolve(__dirname, '../../', 'storage/html/facebook-share.html')
+      const content = fs.readFileSync(filePath, { encoding: 'utf-8' })
+      return mustache.render(content, params)
     }
   })
 })

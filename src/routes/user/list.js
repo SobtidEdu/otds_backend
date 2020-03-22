@@ -29,6 +29,8 @@ module.exports = async (fastify, opts) => {
           isSeenModified: 1,
           privacyPolicy: 1,
           role: 1,
+          username: 1,
+          oldSystemId: 1
         }
       }
     ]
@@ -39,7 +41,9 @@ module.exports = async (fastify, opts) => {
           $or: [
             { firstName: new RegExp(`^${query.searchKeyword}`, 'i') },
             { lastName: new RegExp(`^${query.searchKeyword}`, 'i') },
-            { 'school.name.text': new RegExp(`^${query.searchKeyword}`, 'i') }
+            { 'school.name.text': new RegExp(`^${query.searchKeyword}`, 'i') },
+            { email: new RegExp(`^${query.searchKeyword}`, 'i') },
+            { username: new RegExp(`^${query.searchKeyword}`, 'i') },
           ]
         }
       })

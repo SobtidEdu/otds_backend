@@ -4,7 +4,7 @@ const { ROLE } = require('@config/user')
 const moment = require('moment')
 
 module.exports = async (fastify, options) => {
-  fastify.get('/testing', {
+  fastify.get('/finished', {
     preValidation: [
       fastify.authenticate(),
       fastify.authorize([ROLE.ADMIN])
@@ -92,7 +92,7 @@ module.exports = async (fastify, options) => {
     const response = await fastify.mongoose.Testing.aggregate(aggregate)
     return response
     .map(stats => ({
-      month: stats._id.month,
+      month: parseInt(stats._id.month),
       year: stats._id.year,
       student: stats.student,
       teacher: stats.teacher,
@@ -102,7 +102,7 @@ module.exports = async (fastify, options) => {
     }))
   })
 
-  fastify.get('/testing/detail/:year/:month/:type', {
+  fastify.get('/finished/detail/:year/:month/:type', {
     preValidation: [
       fastify.authenticate(),
       fastify.authorize([ROLE.ADMIN])
@@ -110,8 +110,8 @@ module.exports = async (fastify, options) => {
   }, async (request, reply) => {
     const { params } = request
 
-    const start = moment(`${params.year}${params.month}01000000 `, "YYYYMMDDHHmmss").unix()
-    const end = moment(`${params.year}${params.month}30235959 `, "YYYYMMDDHHmmss").unix()
+    const start = moment().year(params.year).month(parseInt(params.month)-1).startOf('month').unix()
+    const end = moment().year(params.year).month(parseInt(params.month)-1).endOf('month').unix()
 
     if (params.type == 'type') {
       const aggregate = [
@@ -345,7 +345,7 @@ module.exports = async (fastify, options) => {
     }
   })
 
-  fastify.get('/testing/transactions/:year/:month', {
+  fastify.get('/finished/transactions/:year/:month', {
     preValidation: [
       fastify.authenticate(),
       fastify.authorize([ROLE.ADMIN])
@@ -353,13 +353,13 @@ module.exports = async (fastify, options) => {
   }, async (request, reply) => {
     const { params } = request
 
-    const start = moment(`${params.year}${params.month}01000000 `, "YYYYMMDDHHmmss").unix()
-    const end = moment(`${params.year}${params.month}30235959 `, "YYYYMMDDHHmmss").unix()
+    const start = moment().year(params.year).month(parseInt(params.month)-1).startOf('month').unix()
+    const end = moment().year(params.year).month(parseInt(params.month)-1).endOf('month').unix()
 
     const aggregate = [
       {
         $match: {
-          startedAt: {
+          finishedAt: {
             $gte: start,
             $lt: end
           }

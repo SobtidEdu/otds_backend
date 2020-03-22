@@ -2,6 +2,7 @@
 
 const { ROLE } = require('@config/user')
 const { STUDENT_STATUS } = require('@config/group')
+var mongoose = require('mongoose');
 
 module.exports = async (fastify, options) => {
 
@@ -26,6 +27,12 @@ module.exports = async (fastify, options) => {
           filters: {
             properties: {
               name: { type: 'string' }
+            }
+          },
+          search: {
+            properties: {
+              name: { type: 'string' },
+              code: { type: 'string' },
             }
           }
         }
@@ -56,13 +63,17 @@ module.exports = async (fastify, options) => {
           $match: { 
             'students': {
               $elemMatch: { 
-                userInfo: user._id,
+                userInfo: mongoose.Types.ObjectId(user._id),
                 status: { 
                   $in: [ STUDENT_STATUS.REQUEST, STUDENT_STATUS.JOIN, STUDENT_STATUS.REJECT, STUDENT_STATUS.DISMISS ] 
                 }
               }
             }
           }
+        },
+        { $unwind: "$students" },
+        {
+          $match: { 'students.userInfo': user._id }
         },
         { 
           $lookup: {
@@ -87,7 +98,8 @@ module.exports = async (fastify, options) => {
             },
             'students.status': 1,
             'students.jointDate': 1,
-            createdAt: 1
+            createdAt: 1,
+            deletedAt: 1
           }
         }
       ]
@@ -100,15 +112,21 @@ module.exports = async (fastify, options) => {
         createdAt: group.createdAt,
         name: group.name,
         code: group.code,
-        status: group.students[0].status,
-        jointDate: group.students[0].jointDate,
-        owner: group.owner
+        status: group.students.status,
+        jointDate: group.students.jointDate,
+        owner: group.owner,
+        deletedAt: group.deletedAt
       }))
 
       return groups 
     } else if (user.role === ROLE.ADMIN) {
 
       let baseOptions = [
+        {
+          $match: {
+            deletedAt: null
+          }
+        },
         { 
           $lookup: {
             from: 'users',
@@ -136,7 +154,8 @@ module.exports = async (fastify, options) => {
             createdAt: 1,
             examCount: { $size: '$exams' }
           }
-        }
+        },
+        { $sort: { createdAt: -1 } }
       ]
       
       const groups = await fastify.paginate(fastify.mongoose.Group, query, baseOptions)
@@ -153,7 +172,7 @@ module.exports = async (fastify, options) => {
     } else {
       let baseOptions = [
         { 
-          $match: { owner: user._id} 
+          $match: { owner: user._id, deletedAt: null } 
         },
         {
           $project: { 

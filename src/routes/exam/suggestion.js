@@ -63,6 +63,54 @@ module.exports = async (fastify, opts) => {
           }
         }
       ])
+    } else if (user) {
+      baseAggregate = baseAggregate.concat([
+        {
+          $match: {
+            status: true
+          }
+        },
+        {
+          $lookup: {
+            from: 'testings',
+            let: { examId: "$_id" },
+            pipeline: [
+              {
+                $match: {
+                  $expr: { 
+                    $and: [
+                      { $eq: [ '$examId', '$$examId' ] },
+                      { $eq: [ '$userId', mongoose.Types.ObjectId(user._id) ] },
+                      { $eq: [ '$groupId', null ] }
+                    ]
+                  }
+                }
+              },
+              { $project: { _id: 1, startedAt: 1, finishedAt: 1, examId: 1, userId: 1, groupId: 1 } },
+              { $sort: { startedAt: -1 } },
+              { $limit: 1 }
+            ],
+            as: 'testing'
+          }
+        },
+        { $unwind: { path: '$testing', preserveNullAndEmptyArrays: true } },
+        {
+          $project: {
+            _id: 1,
+            code: 1,
+            subject: 1,
+            competition: 1,
+            name: 1,
+            grade: 1,
+            description: 1,
+            quantity: 1,
+            duration: 1,
+            type: 1,
+            withoutRegistered: 1,
+            testing: 1
+          }
+        }
+      ])
     } else {
       baseAggregate = baseAggregate.concat([
         {
@@ -89,8 +137,16 @@ module.exports = async (fastify, opts) => {
     }
 
     const exams = await fastify.mongoose.Exam.aggregate(baseAggregate)
-
-    return list.map(examSuggestion => exams.find(exam => exam._id.toString() == examSuggestion.exam)).filter(exam => exam != null)
+    return list.map(examSuggestion => {
+      const exam = exams.find(exam => exam._id.toString() == examSuggestion.exam) 
+      if (exam && exam.testing) {
+        if (exam.testing.finishedAt) exam.status = 'finished'
+        else exam.status = 'doing'
+      } else if (exam) {
+        exam.status = null
+      }
+      return exam
+    }).filter(exam => exam != null)
   })
 
   fastify.post('/:examId/suggestion', {

@@ -13,7 +13,7 @@ module.exports = async (fastify, opts) => {
     ],
   }, async (request) => {
     const { body, params } = request
-    const { questionId, order, type, answer, note } = body
+    const { questionId, order, type, answer, note, time } = body
 
     const testing = await fastify.mongoose.Testing.findOne({ _id: params.testingId })
     if (!testing) throw fastify.httpErrors.notFound(`Not found testing id: ${params.testingId}`)
@@ -27,7 +27,7 @@ module.exports = async (fastify, opts) => {
     if (exam.type == 'CAT') {
       const question = exam.questions[order-1]
       const params = {
-        TestSetID: exam.code,
+        TestSetID: exam.otimsCode,
         ItemSeq: order,
         ItemID: question.id,
         ItemSelectedChoice: answer,
@@ -49,7 +49,7 @@ module.exports = async (fastify, opts) => {
       exam.questions.push(newQuestion)
       await exam.save()
       progressTestings.push(progress)
-      await fastify.mongoose.Testing.update({ _id: testing._id }, { progressTestings, theta: nextQuestion.Theta, se: nextQuestion.SE, updatedAt: moment().unix() })
+      await fastify.mongoose.Testing.update({ _id: testing._id }, { progressTestings, theta: nextQuestion.Theta, se: nextQuestion.SE, time, updatedAt: moment().unix() })
       return { newQuestion }
     } else {
       
@@ -60,11 +60,11 @@ module.exports = async (fastify, opts) => {
       } else {
         progressTestings.push(progress)
       }
+      
+      await fastify.mongoose.Testing.update({ _id: testing._id }, { progressTestings, updatedAt: moment().unix(), time })
+
+      return { message: 'Sent answers' }
     }
-
-    await fastify.mongoose.Testing.update({ _id: testing._id }, { progressTestings, updatedAt: moment().unix() })
-
-    return { message: 'Sent answers' }
   })
 }
 

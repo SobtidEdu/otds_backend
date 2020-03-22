@@ -72,7 +72,7 @@ module.exports = async (fastify, options) => {
           admin: { $sum: "$admin"},
         }
       }
-    ] 
+    ]
 
     const response = await fastify.mongoose.LoginStat.aggregate(aggregate)
     return response.map(stats => ({
@@ -113,7 +113,10 @@ module.exports = async (fastify, options) => {
         }
       },
       {
-        $unwind: "$user"
+        $unwind: {
+          path: "$user",
+          preserveNullAndEmptyArrays: true
+        }
       },
       {
         $lookup: {
@@ -124,7 +127,10 @@ module.exports = async (fastify, options) => {
         }
       },
       {
-        $unwind: "$province"
+        $unwind: {
+          path: "$province",
+          preserveNullAndEmptyArrays: true
+        }
       },
       {
         $group: {
@@ -140,8 +146,8 @@ module.exports = async (fastify, options) => {
     const response = await fastify.mongoose.LoginStat.aggregate(aggregate)
     return response
     .map(response => ({
-      province: response._id.province,
-      region: response._id.region,
+      province: response._id.province || 'ไม่พบข้อมูลจังหวัด',
+      region: response._id.region || 'ไม่พบข้อมูลภาค',
       count: response.count,
     }))
   })

@@ -2,6 +2,25 @@
 
 const { ROLE } = require('@config/user')
 const { CRITERION, EXAM_TYPE, LEVEL } = require('@config/exam')
+const moment = require('moment')
+
+const examCodeGenerator = (r, t) => {
+  const role = {
+    'student': 's',
+    'teacher': 't',
+    'superTeacher': 'e',
+    'admin': 'a',
+  }
+  const examType = {
+    'G': 'c',
+    'C': 'p',
+    'CAT': 's',
+    'CUSTOM': 'd',
+    'E': 'e'
+  }
+  
+  return role[r] + examType[t] + (Math.floor(Math.random() * 90000000) + 10000000)
+}
 
 module.exports = async (fastify) => { 
 
@@ -10,7 +29,7 @@ module.exports = async (fastify) => {
   fastify.post('/', {
     preValidation: [
       (request) => fastify.validate(schema, request),
-      fastify.authenticate({ allowGuest: true })
+      fastify.authenticate()
     ]
   }, async (request) => {
     const { user, body } = request
@@ -25,7 +44,7 @@ module.exports = async (fastify) => {
       exams = await fastify.otimsApi.requestFixedRandomTestSet(params)
     } else if (body.type == EXAM_TYPE.CAT) {
       exams = await fastify.otimsApi.requestFirstItemCAT(params)
-    } else if (body.type == EXAM_TYPE.CUSTOM) {
+    } else if (body.type == EXAM_TYPE.CUSTOM || body.type == EXAM_TYPE.EXERCISE) {
       exams = await fastify.otimsApi.requestCustomTestSet(params)
     }
 
@@ -39,7 +58,8 @@ module.exports = async (fastify) => {
         data.name = body.name + ` (ชุดที่ ${parseInt(i)+1})`
       }
       
-      data.code = exam.TestSetID
+      data.code = examCodeGenerator(user.role, data.type)
+      data.otimsCode = exam.TestSetID
       
       if (data.type == 'CAT') {
         data.oneTimeDone = true
@@ -61,33 +81,47 @@ module.exports = async (fastify) => {
         if (!Array.isArray(exam.ResponseItemGroup_ResponseTestsetGroup.ResponseItemGroup)) {
           ResponseItemGroup = [ResponseItemGroup]
         }
-        data.questions = ResponseItemGroup.map(question => ({
-          seq: question.ItemSeq,
-          id: question.ItemID,
-          type: question.QuestionType,
-          text: question.ItemQuestion,
-          suggestedTime: parseFloat(question.SuggestedTime),
-          explanation: question.Explanation,
-          lessonId: question.Lessons ? question.Lessons : null,
-          unit: question.QuestionType === 'SA' ?  question.ItemShortAnswer_ResponseItemGroup.Unit : '',
-          answers: question.QuestionType !== 'TF' ? transformAnswerByQuestionType(question) : [],
-          subQuestions: question.QuestionType === 'TF' ? question.ItemTFSubquestion_ResponseItemGroup.ItemTFSubquestion.map(subQuestion => ({
-            no: subQuestion.ItemNo,
-            text: subQuestion.ItemSubQuestion,
-            answers: subQuestion.ItemTFChoice_ItemTFSubquestion.ItemTFChoice.map(subAnswer => ({
-              seq: subAnswer.ItemChoiceSeq,
-              text: subAnswer.ItemChoice,
-              key: subAnswer.ItemChoiceKey === 'True'
-            }))
-          })) : []
-        }))  
+        data.questions = ResponseItemGroup.map(question => {
+          
+          return {
+            seq: question.ItemSeq,
+            id: question.ItemID,
+            type: question.QuestionType,
+            text: question.ItemQuestion,
+            suggestedTime: parseFloat(question.SuggestedTime),
+            explanation: question.Explanation,
+            lessonId: question.Lessons ? question.Lessons.split(',')[0] : null,
+            unit: question.QuestionType === 'SA' ?  question.ItemShortAnswer_ResponseItemGroup.Unit : '',
+            answers: question.QuestionType !== 'TF' ? transformAnswerByQuestionType(question) : [],
+            subQuestions: question.QuestionType === 'TF' ? question.ItemTFSubquestion_ResponseItemGroup.ItemTFSubquestion.map(subQuestion => ({
+              no: subQuestion.ItemNo,
+              text: subQuestion.ItemSubQuestion,
+              answers: subQuestion.ItemTFChoice_ItemTFSubquestion.ItemTFChoice.map(subAnswer => ({
+                seq: subAnswer.ItemChoiceSeq,
+                text: subAnswer.ItemChoice,
+                key: subAnswer.ItemChoiceKey === 'True'
+              }))
+            })) : []
+          }
+        })
         data.quantity = data.questions.length
       }
-
+      data.createdAt = moment().unix()
+      data.updatedAt = moment().unix()
       return data
     })
 
     const response = await fastify.mongoose.Exam.create(exams)
+    
+    await fastify.mongoose.User.update({ 
+      _id: user._id 
+    }, { 
+      $push: { 
+        myExam: { 
+          $each: response.map(e => ({ examId: e._id, groupId: null, latestAction: moment().unix() })) 
+        } 
+      } 
+    })
 
     return response
   })
@@ -114,7 +148,7 @@ const mapExamParams = (user, params) => {
     exam.ProjectYear = params.competition.years.join(',')
   }
 
-  if (params.type === EXAM_TYPE.CUSTOM) {
+  if (params.type === EXAM_TYPE.CUSTOM || params.type === EXAM_TYPE.EXERCISE ) {
     exam.TestItems = params.testItems
   }
 
@@ -166,6 +200,7 @@ const transformAnswerByQuestionType = (question) => {
     case 'SA': return question.ItemShortAnswer_ResponseItemGroup.ItemShortAnswer.map(answer => ({
       seq: answer.ItemAnswerSeq,
       key: answer.ItemAnswer,
+      type: answer.ItemAnswerType,
       operation: answer.ItemAnswerOperation
     }))
     case 'MA': return {

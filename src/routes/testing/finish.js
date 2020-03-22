@@ -11,7 +11,7 @@ module.exports = async (fastify, opts) => {
       fastify.authenticate({ allowGuest: true })
     ],
   }, async (request) => {
-    const { params } = request
+    const { params, body } = request
     
     const { testingId } = params
 
@@ -27,7 +27,7 @@ module.exports = async (fastify, opts) => {
     let { progressTestings } = testing
 
     let resultTestingToOtims = {
-      code: exam.code,
+      code: exam.otimsCode,
       results: []
     }
 
@@ -66,6 +66,10 @@ module.exports = async (fastify, opts) => {
 
       testing.progressTestings = progressTestings
       testing.score = score
+    } else {
+      if (questions.length !== exam.quantity) {
+        fastify.mongoose.Exam.updateOne({ _id: exam._id }, { quantity: questions.length })
+      }
     }
     
     await fastify.otimsApi.requestSendTestsetStat(resultTestingToOtims)
@@ -85,7 +89,6 @@ const checkCorrect = (questionType, originalAnswers, userAnswer) => {
       return MCAnswer ? MCAnswer.key : false
     case 'SA':
       const SAAnswer = originalAnswers.find(originalAnswer => {
-        console.log(originalAnswer)
         originalAnswer.key = originalAnswer.key.replace('<p>', '')
         originalAnswer.key = originalAnswer.key.replace('</p>', '')
         return originalAnswer.key === userAnswer

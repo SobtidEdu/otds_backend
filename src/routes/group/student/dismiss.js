@@ -20,6 +20,16 @@ module.exports = async (fastify, opts, next) => {
     const group = await fastify.mongoose.Group.findOne({ _id: params.groupId })
     if (!group) throw  fastify.httpErrors.notFound(fastify.message('group.notFound'))
 
+    const { students } = group
+      
+    const studentUpdate = students.map(student => {
+      if (studentIds.includes(student.userInfo.toString())) {
+        student.status = STUDENT_STATUS.DISMISS
+        student.leftDate = moment().unix()
+      }
+      return student
+    })
+
     await fastify.mongoose.Group.updateOne({
       _id: group._id,
       students: {
@@ -27,8 +37,7 @@ module.exports = async (fastify, opts, next) => {
       }
     }, {
       $set: { 
-        'students.$.status': STUDENT_STATUS.DISMISS, 
-        'students.$.leftDate': moment().unix()
+        students: studentUpdate
       } 
     })
     

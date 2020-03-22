@@ -108,13 +108,14 @@ module.exports = async (fastify, options) => {
       fastify.authorize([ROLE.TEACHER, ROLE.SUPER_TEACHER, ROLE.ADMIN])
     ]
   }, async (request) => {
-    const { params } = request
+    const { params, user } = request
 
     const aggregate = [
       {
         $match: { 
           examId: mongoose.Types.ObjectId(params.examId),
-          finishedAt: { $ne: null }
+          userId: { $ne: mongoose.Types.ObjectId(user._id) },
+          finishedAt: { $ne: null },
         }
       },
       {
@@ -126,7 +127,10 @@ module.exports = async (fastify, options) => {
         }
       },
       {
-        $unwind: '$user'
+        $unwind: {
+          path: '$user',
+          preserveNullAndEmptyArrays: true
+        }
       },
       {
         $project: {
@@ -134,14 +138,21 @@ module.exports = async (fastify, options) => {
             prefixName: 1,
             firstName: 1,
             lastName: 1,
+            role: 1,
             school: {
               name: 1
             }
           },
           progressTestings: 1,
           score: 1,
+          time: 1,
           startedAt: 1,
           finishedAt: 1,
+        }
+      },
+      {
+        $sort: {
+          finishedAt: 1
         }
       }
     ]
@@ -150,9 +161,23 @@ module.exports = async (fastify, options) => {
       fastify.mongoose.Testing.aggregate(aggregate),
       fastify.mongoose.Exam.findOne({ _id: params.examId })
     ])
+    let guestIndex = 1
     // return response
     return {
-      testings,
+      testings: testings.map(testing => {
+        if (!testing.user) {
+          testing.user = {
+            prefixName: '',
+            firstName: `Guest${guestIndex++}`,
+            lastName: '',
+            role: 'guest',
+            school: {
+              name: ''
+            }
+          }
+        }
+        return testing
+      }),
       questions: exam.questions
     }
   })

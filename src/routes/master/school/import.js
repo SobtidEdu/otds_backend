@@ -5,6 +5,7 @@ const { TEMP_UPLOAD_PATH } = require('@config/storage')
 const readXlsxFile = require('read-excel-file/node')
 const fs = require('fs')
 const moment = require('moment')
+const { promisify } = require('util')
 
 module.exports = async (fastify, options) => {
   const schema = {}
@@ -20,16 +21,9 @@ module.exports = async (fastify, options) => {
   async (request) => {
     const { schoolsImportFile } = request.raw.files
     const pathFileName = `${TEMP_UPLOAD_PATH}/${schoolsImportFile.name}`
-    await schoolsImportFile.mv(pathFileName, (err) => {
-      return new Promise((resolve, reject) => {
-        if (err) {
-          console.log('error saving')
-          reject(err)
-        }
 
-        resolve()
-      })
-    })
+    const importFile = promisify(schoolsImportFile.mv)
+    const response = await importFile(pathFileName)
     
     const schools = await readXlsxFile(fs.createReadStream(pathFileName))
     
@@ -42,10 +36,10 @@ module.exports = async (fastify, options) => {
       const province = await fastify.mongoose.Province.findOne({ name: school[7] })
       if (province) {
         await fastify.mongoose.School.findOneAndUpdate({
-          name: school[0]
+          name: school[0],
+          addressNo: school[1]
         }, {
           province: province._id,
-          addressNo: school[1],
           villageNo: school[2],
           lane: school[3],
           road: school[4],

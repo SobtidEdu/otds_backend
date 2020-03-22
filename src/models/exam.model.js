@@ -13,7 +13,8 @@ module.exports = {
       type: "ObjectId",
       ref: "User"
     },
-    oldSystemCode: { type: String },
+    otimsCode: { type: String },
+    oldSystemId: { type: String },
     code: { type: String },
     subject: { type: String },
     grade: { type: String },
@@ -63,6 +64,7 @@ module.exports = {
       type: Number,
       default: moment().unix()
     },
+    deletedAt: { type: Number, default: null },
     questions: [{
       seq: { type: Number },
       id: { type: String },

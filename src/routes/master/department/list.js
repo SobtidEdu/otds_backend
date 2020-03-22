@@ -53,9 +53,13 @@ module.exports = async (fastify, options) => {
     let aggregate = []
 
     if (!request.user || request.user.role !== ROLE.ADMIN) {
-      query.filters = Object.assign(query.filters || {}, {isActive: true})
       query.sort = Object.assign(query.sort || {}, {seq: 1})
       aggregate = [
+        {
+          $match: {
+            isActive: true
+          }
+        },
         { $project: { name: 1, isActive: 1 } }
       ]
     }

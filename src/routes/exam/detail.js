@@ -2,6 +2,7 @@
 
 const { ROLE } = require('@config/user')
 const { CRITERION, EXAM_TYPE, LEVEL } = require('@config/exam')
+const { STUDENT_STATUS } = require('@config/group')
 const moment = require('moment')
 
 module.exports = async (fastify) => { 
@@ -36,13 +37,27 @@ module.exports = async (fastify) => {
       }
 
       if (user) {
-        const queryTesting = { examId: exam._id, userId: user._id, groupId: { $exists: false }, }
+        const queryTesting = { examId: exam._id, userId: user._id, groupId: null }
+        
         if (query.groupId) {
           queryTesting.groupId = query.groupId
+          const group = await fastify.mongoose.Group.findOne({ _id: query.groupId, deletedAt: null })
+          if (!group) {
+            exam.status = false
+          } else {
+            const examGroup = group.exams.find(e => e._id.toString() === exam._id.toString())
+            if (!examGroup || !examGroup.status) {
+              exam.status = false
+            }
+            const studentGroup = group.students.find(s => s.userInfo.toString() === user._id.toString())
+            if (!studentGroup || [STUDENT_STATUS.LEFT, STUDENT_STATUS.DISMISS, STUDENT_STATUS.REJECT].includes(studentGroup.status)) {
+              exam.status = false
+            }
+          }
         }
+
         testing = await fastify.mongoose.Testing.find(queryTesting).sort({ finishedAt: 1 }).limit(1)
       }
-      
 
       return { ...exam, testing }
     } catch (e) {

@@ -80,7 +80,7 @@ module.exports = async (fastify, options) => {
 
     const response = await fastify.mongoose.User.aggregate(aggregate)
     return response.map(stats => ({
-      month: stats._id.month,
+      month: parseInt(stats._id.month),
       year: stats._id.year,
       student: stats.student,
       teacher: stats.teacher,
@@ -98,8 +98,8 @@ module.exports = async (fastify, options) => {
   }, async (request, reply) => {
     const { params } = request
 
-    const start = moment(`${params.year}${params.month}01000000 `, "YYYYMMDDHHmmss").unix()
-    const end = moment(`${params.year}${params.month}30235959 `, "YYYYMMDDHHmmss").unix()
+    const start = moment().year(params.year).month(parseInt(params.month)-1).startOf('month').unix()
+    const end = moment().year(params.year).month(parseInt(params.month)-1).endOf('month').unix()
 
     const aggregate = [
       {
@@ -119,7 +119,10 @@ module.exports = async (fastify, options) => {
         }
       },
       {
-        $unwind: "$province"
+        $unwind: {
+          path: "$province",
+          preserveNullAndEmptyArrays: true
+        }
       },
       {
         $group: {
@@ -135,8 +138,8 @@ module.exports = async (fastify, options) => {
     const response = await fastify.mongoose.User.aggregate(aggregate)
     return response
     .map(response => ({
-      province: response._id.province,
-      region: response._id.region,
+      province: response._id.province ? response._id.province : 'ไม่มีข้อมูลจังหวัด',
+      region: response._id.region ? response._id.region : 'ไม่มีข้อมูลภาค',
       count: response.count,
     }))
   })
@@ -149,8 +152,8 @@ module.exports = async (fastify, options) => {
   }, async (request, reply) => {
     const { params } = request
 
-    const start = moment(`${params.year}${params.month}01000000 `, "YYYYMMDDHHmmss").unix()
-    const end = moment(`${params.year}${params.month}30235959 `, "YYYYMMDDHHmmss").unix()
+    const start = moment().year(params.year).month(parseInt(params.month)-1).startOf('month').unix()
+    const end = moment().year(params.year).month(parseInt(params.month)-1).endOf('month').unix()
 
     const aggregate = [
       {

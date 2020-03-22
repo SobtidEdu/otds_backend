@@ -16,27 +16,28 @@ module.exports = async function(fastify, opts, next) {
       const { user, params } = request;
       const group = await fastify.mongoose.Group.findOne({ _id: params.groupId })
 
-      if (user.role === ROLE.STUDENT) {
-        group.exams = group.exams.filter(exam => exam.status)
-      }
-
       let examIdsArray = group.exams.map(exam => exam._id)
       
-      const exams = await fastify.mongoose.Exam.aggregate([
+      let exams = await fastify.mongoose.Exam.aggregate([
         { 
           $match: {
-            _id: { $in: examIdsArray }
+            _id: { $in: examIdsArray },
+            deletedAt: null
           }
         },
         { 
           $lookup: {
             from: 'testings',
-            let: { id: '$_id' },
+            let: { examId: '$_id', groupId: group._id, userId: user._id },
             pipeline: [
               { 
                 $match: {
                   $expr: {
-                    $eq: ['$examId', '$$id']
+                    $and: [
+                      { $eq: ['$examId', '$$examId'] },
+                      { $eq: ['$groupId', '$$groupId'] },
+                      { $eq: ['$userId', '$$userId'] }
+                    ]
                   }
                 }
               },
@@ -60,6 +61,9 @@ module.exports = async function(fastify, opts, next) {
         }
       ])
 
+      if (user.role === ROLE.STUDENT) {
+        exams = exams.filter(exam => exam.status === true)
+      }
 
       return exams.map(exam => {
         const examInGroup = group.exams.find(examInGroup => examInGroup._id.toString() === exam._id.toString())
@@ -76,18 +80,14 @@ module.exports = async function(fastify, opts, next) {
       const { params, user } = request
 
       const [group, exams] = await Promise.all([
-        fastify.mongoose.Group.findOne({ _id: params.groupId }).lean(),
-        fastify.mongoose.Exam.find({ owner: user._id }).lean(),
+        fastify.mongoose.Group.findOne({ _id: params.groupId, deletedAt: null }).lean(),
+        fastify.mongoose.Exam.find({ owner: user._id, deletedAt: null }).lean(),
       ])
 
-      let examsNotInGroup = exams.map(exam => {
-        return Object.assign(exam, { questionCount: exam.questions.length })
-      })
+      let examsNotInGroup = []
 
-      if (group.exams && group.exams.length > 1) {
-        examsNotInGroup = examsNotInGroup.filter(exam => group.exams.findIndex(groupExam => groupExam._id.toString() == exam._id) === -1)
-      }
+      examsNotInGroup = exams.filter(exam => group.exams.findIndex(groupExam => groupExam._id.toString() === exam._id.toString()) === -1)
 
-      return examsNotInGroup
+      return examsNotInGroup.map(exam => ({ ...exam, questionCount: exam.questions.length, questions: null }) )
     })
 }
