@@ -188,11 +188,16 @@ module.exports = fp(async (fastify, options) => {
     requestCustomTestSet: async (params = {}) => {
       params.RequestedName = OTIMS_USER
       
-      return instance.post(`/ws/request-custom-test-set`, {
+      return axios.post(`${OTIMS_API_URL}/ws/request-custom-test-set`, {
         request_name: params.RequestedName,
         request_type: params.RequestType,
         test_set_type: 'FI',
         test_items: params.TestItems
+      }, {
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': OTIMS_TOKEN
+        }
       })
       .then(response => {
         const testSetGroup = response.data.ResponseFixedRandomTestset.ResponseTestsetGroup_ResponseFixedRandomTestset.ResponseTestsetGroup
