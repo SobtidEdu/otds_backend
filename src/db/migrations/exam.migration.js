@@ -71,7 +71,7 @@ module.exports = {
         }
       }
       
-      to.createdAt = moment().unix()
+      to.createdAt = moment(from.create_date).unix()
       // console.log(to)
       return to
     })
