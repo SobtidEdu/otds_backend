@@ -18,7 +18,6 @@ module.exports = async (fastify, opts) => {
     const splitName = noteFile.name.split(',')
     const extension = splitName[splitName.length]
     const fileName = `${params.testingId}_${params.questionId}.${extension}`
-    console.log(fite)
     const pathFileName = `${TESTING_UPLOAD_PATH}/${fileName}`
     
     const testing = await fastify.mongoose.Testing.findOne({ _id: params.testingId, userId: user._id })
