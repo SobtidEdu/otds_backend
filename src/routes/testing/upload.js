@@ -15,8 +15,8 @@ module.exports = async (fastify, opts) => {
     const { user, body, params } = request
     const { noteFile } = request.raw.files
 
-    const splitName = noteFile.name.split(',')
-    const extension = splitName[splitName.length]
+    const splitName = noteFile.name.split('.')
+    const extension = splitName[splitName.length-1]
     const fileName = `${params.testingId}_${params.questionId}.${extension}`
     const pathFileName = `${TESTING_UPLOAD_PATH}/${fileName}`
     
