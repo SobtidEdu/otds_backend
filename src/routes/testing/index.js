@@ -18,7 +18,9 @@ module.exports = async (fastity, opts) => {
         const newExam = { examId, groupId, latestAction: moment().unix() }
         user.myExam.push(newExam)
       }
-      await user.save()
+      console.log(user)
+      // await user.save()
+      await fastity.mongoose.User.updateOne({ _id: user._id }, { $set: { myExam }})
     }
   })
 
