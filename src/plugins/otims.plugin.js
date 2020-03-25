@@ -254,7 +254,7 @@ module.exports = fp(async (fastify, options) => {
       params.RequestedName = OTIMS_USER
       params.RequestedNo = `${OTIMS_USER}RequestSendTestsetStat1${moment().format('YYYYMMDDHHmmSSS')}`
       params.TestSetID = data.code
-      params.TestSetGroupResult = []
+      params.RequestTestsetGroupResult = []
       for (let i in data.results) {
         if (!data.results[i].answer) continue;
         TimeSpent = Math.floor(Math.random() * 250) + 10
@@ -262,7 +262,7 @@ module.exports = fp(async (fastify, options) => {
           case 'MC':
             params.TestSetGroupResult.push({
               ItemID: data.results[i].id,
-              ItemAnswer: data.results[i].answer,
+              ItemSelectedChoice: data.results[i].answer,
               ItemResult: data.results[i].result,
               TimeSpent
             })
@@ -276,10 +276,11 @@ module.exports = fp(async (fastify, options) => {
             })
           break;
           case 'TF':
-            data.results[i].answer.forEach(tf => {
+            data.results[i].answer.forEach((tf) => {
               params.TestSetGroupResult.push({
                 ItemID: data.results[i].id,
-                ItemAnswer: tf.key,
+                ItemLeftSideSeq: tf.seq,
+                ItemSelectedChoice: tf.key,
                 ItemResult: data.results[i].result,
                 TimeSpent
               })
@@ -290,7 +291,7 @@ module.exports = fp(async (fastify, options) => {
               params.TestSetGroupResult.push({
                 ItemID: data.results[i].id,
                 ItemLeftSideSeq: ma.seq,
-                ItemAnswer: ma.match,
+                ItemSelectedChoice: ma.match,
                 ItemResult: data.results[i].result,
                 TimeSpent
               })
