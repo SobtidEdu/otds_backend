@@ -281,10 +281,10 @@ module.exports = fp(async (fastify, options) => {
             })
           break;
           case 'TF':
-            data.results[i].answer.forEach((tf) => {
+            data.results[i].answer.forEach((tf, index) => {
               params.RequestTestsetGroupResult.push({
                 ItemID: data.results[i].id,
-                ItemLeftSideSeq: tf.seq,
+                ItemLeftSideSeq: index+1,
                 ItemSelectedChoice: tf.key,
                 ItemResult: data.results[i].result,
                 TimeSpent
