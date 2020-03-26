@@ -309,9 +309,9 @@ module.exports = fp(async (fastify, options) => {
       console.log(formUrlEncoded(params))
       return instance.post(`/ws/RequestSendTestSetStat`, formUrlEncoded(params))
       .then(response => {
-        console.log(response.data.ResponseSendTestSetStat)
-        const testSetGroup = response.data.ResponseFixedRandomTestset.ResponseTestsetGroup_ResponseFixedRandomTestset.ResponseTestsetGroup
-        return params.NoStudents == 1 ? [testSetGroup] : testSetGroup
+        // console.log(response.data)
+        // const testSetGroup = response.data.ResponseFixedRandomTestset.ResponseTestsetGroup_ResponseFixedRandomTestset.ResponseTestsetGroup
+        // return params.NoStudents == 1 ? [testSetGroup] : testSetGroup
       })
       .catch(e => {
         console.log(e)
