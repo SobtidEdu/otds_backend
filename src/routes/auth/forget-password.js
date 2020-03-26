@@ -8,14 +8,14 @@ module.exports = async (fastify, opts) => {
   fastify.post('/forget-password/email', async (request) => {
     const { body } = request
     const user = await fastify.mongoose.User.findOne({ email: body.email.toLowerCase() })
+    console.log(user)
     if (!user) throw fastify.httpErrors.badRequest('Not found this email')
 
     const nextHours = moment().add(1, 'h').unix()
     
     const buff = new Buffer(`${nextHours}.${user.id}`)
     const base64data = buff.toString('base64')
-    user.resetPasswordToken = base64data
-    await user.save()
+    await fastify.mongoose.User.updateOne({ _id: user._id }, { $set: { resetPasswordToken: base64data } })
 
     await fastify.nodemailer.sendMail({
       from: fastify.env.EMAIL_FROM,
