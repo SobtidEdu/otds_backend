@@ -71,7 +71,7 @@ module.exports = async (fastify, opts) => {
         fastify.mongoose.Exam.updateOne({ _id: exam._id }, { quantity: questions.length })
       }
     }
-    if (!user || (user._id.toString() === exam.owner.toString())) {
+    if (!user || (user._id.toString() !== exam.owner.toString())) {
       console.log("Send test to OTIMS")
       await fastify.otimsApi.requestSendTestsetStat(resultTestingToOtims)
     }
