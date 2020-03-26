@@ -23,7 +23,8 @@ module.exports = async (fastify, opts) => {
                   $elemMatch: { _id: mongoose.Types.ObjectId(params.examId) }
                 }
               }
-            }
+            },
+            { deletedAt: { $eq: null } }
           ]
         }
       },
@@ -42,7 +43,8 @@ module.exports = async (fastify, opts) => {
     }
 
     const response = await fastify.mongoose.Group.aggregate(baseAggregate)
-    return response.map(group => {
+    return response
+    .map(group => {
       group.logo = fastify.storage.getUrlGroupLogo(group.logo)
       return group
     })
