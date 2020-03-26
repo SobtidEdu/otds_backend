@@ -72,6 +72,7 @@ module.exports = async (fastify, opts) => {
       }
     }
     if (!user || (user._id.toString() === exam.owner.toString())) {
+      console.log("Send test to OTIMS")
       await fastify.otimsApi.requestSendTestsetStat(resultTestingToOtims)
     }
 
