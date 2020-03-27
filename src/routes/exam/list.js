@@ -35,8 +35,36 @@ module.exports = async (fastify, opts) => {
         {
           $lookup: {
             from: 'testings',
-            localField: '_id',
-            foreignField: 'examId',
+            let: { examId: "$_id" },
+            pipeline: [
+              {
+                $match: {
+                  $expr: { 
+                    $and: [
+                      { $eq: [ '$examId', "$$examId" ] },
+                      { $ne: [ '$finishedAt', null ] }
+                    ]
+                  }
+                }
+              },
+              { $project: { _id: 1, examId: 1, userId: 1 } },
+              {
+                $lookup: {
+                  from: 'users',
+                  localField: 'userId',
+                  foreignField: '_id',
+                  as: 'user'
+                }
+              },
+              {
+                $unwind: '$user'
+              },
+              {
+                $match: {
+                  'user.role': 'student'
+                }
+              }
+            ],
             as: 'testings'
           }
         },
@@ -289,8 +317,36 @@ module.exports = async (fastify, opts) => {
       {
         $lookup: {
           from: 'testings',
-          localField: '_id',
-          foreignField: 'examId',
+          let: { examId: "$_id" },
+          pipeline: [
+            {
+              $match: {
+                $expr: { 
+                  $and: [
+                    { $eq: [ '$examId', "$$examId" ] },
+                    { $ne: [ '$finishedAt', null ] }
+                  ]
+                }
+              }
+            },
+            { $project: { _id: 1, examId: 1, userId: 1 } },
+            {
+              $lookup: {
+                from: 'users',
+                localField: 'userId',
+                foreignField: '_id',
+                as: 'user'
+              }
+            },
+            {
+              $unwind: '$user'
+            },
+            {
+              $match: {
+                'user.role': 'student'
+              }
+            }
+          ],
           as: 'testings'
         }
       },

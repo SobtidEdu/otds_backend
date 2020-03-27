@@ -45,7 +45,10 @@ module.exports = async (fastify, options) => {
           code: 1,
           logo: 1,
           students: 1,
-          ownerName: { $concat: [ "$owner.firstName", " ", "$owner.lastName"] }, 
+          owner: {
+            firstName: 1,
+            lastName: 1
+          }, 
           createdAt: 1
         }
       }

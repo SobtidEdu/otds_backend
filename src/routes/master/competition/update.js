@@ -17,7 +17,7 @@ module.exports = async (fastify, opts) => {
     const competition = await fastify.mongoose.ExamConfiguration.findOne({ type: 'COMPETITION' }).lean()
 
     const { data } = competition
-
+    
     const index = data.findIndex(c => c.id == params.competitionId)
 
     if (index > -1) {
