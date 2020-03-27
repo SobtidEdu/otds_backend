@@ -27,6 +27,7 @@ module.exports = async (fastify, options) => {
       owner: group.owner,
       studentCount: group.students.filter(student => student.status === STUDENT_STATUS.JOIN).length,
       createdAt: group.createdAt,
+      deletedAt: group.deletedAt,
       status: myGroup ? myGroup.status : 'none'
     }
 
