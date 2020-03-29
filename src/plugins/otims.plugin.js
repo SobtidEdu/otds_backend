@@ -110,7 +110,6 @@ module.exports = fp(async (fastify, options) => {
       params.TestSetType = 'FI'
       params.FollowStrand = true
       params.FollowIndicator = true
-      params.BankType = 'Public'
       params.ComplexityLevel = '1,2,3'
     
       for (let strandIndex in indicators) {
