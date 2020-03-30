@@ -127,8 +127,9 @@ module.exports = fp(async (fastify, options) => {
             if (!arrayNoQuestionType[0]) return 0
             const indicators = arrayNoQuestionType[0].Indicator.split(';')
             return indicators.reduce((noitems, rawIndicator) => {
-              // console.log(rawIndicator)
-              const item = rawIndicator.split(',') // indicatorName, questionType, noQuestions
+              console.log(rawIndicator)
+              const item = rawIndicator.split(',') // indicatorName, questionType, 
+              console.log()
               return parseInt(item[2]) + noitems
             }, 0)
           }).catch(err => {
@@ -286,7 +287,7 @@ module.exports = fp(async (fastify, options) => {
               params.RequestTestsetGroupResult.push({
                 ItemID: data.results[i].id,
                 ItemLeftSideSeq: index+1,
-                ItemSelectedChoice: tf.key,
+                ItemSelectedChoice: tf ? tf.key : 0,
                 ItemResult: data.results[i].result,
                 TimeSpent
               })
@@ -306,8 +307,8 @@ module.exports = fp(async (fastify, options) => {
         }
       }
       instance.defaults.headers['Content-Type'] = 'application/x-www-form-urlencoded'
-      console.log(params)
-      console.log(formUrlEncoded(params))
+      // console.log(params)
+      // console.log(formUrlEncoded(params))
       return instance.post(`/ws/RequestSendTestSetStat`, formUrlEncoded(params))
       .then(response => {
         console.log(response.data)
