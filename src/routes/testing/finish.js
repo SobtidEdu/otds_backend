@@ -96,7 +96,8 @@ const mapResultToOtims = (questionType, originalAnswers, userAnswer) => {
     if (userAnswer == null) userAnswer = []
     return originalAnswers.left.map((originalAnswer, index) => {
       const ans = userAnswer.find(a => a.seq === originalAnswer.seq)
-      return ans ? {...answer, result: ans.match === originalAnswer.match ? 1 : 0 } : { seq: originalAnswer.seq, match: 0, result: 2 } 
+      console.log(ans)
+      return ans ? {...ans, result: ans.match === originalAnswer.match ? 1 : 0 } : { seq: originalAnswer.seq, match: 0, result: 2 } 
     })
   } else {
     return userAnswer ? userAnswer : ''
