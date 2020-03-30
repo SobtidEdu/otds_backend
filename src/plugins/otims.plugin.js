@@ -56,7 +56,7 @@ module.exports = fp(async (fastify, options) => {
             name: indicator.IndicatorFullname,
             code: indicator.IndicatorCode
           }))
-        }))
+        })).filter(strand => !strand.code.startsWith('51'))
       )
     
       params.RequestType = 1
@@ -97,7 +97,6 @@ module.exports = fp(async (fastify, options) => {
       // let q = querystring.stringify(params)
       const indicators = await instance.get(`/ws/StrandIndicatorRequest`, { params })
       .then(response => {
-        console.log(response.data.Result.StrandList_ResponseStrandIndicator.StrandList)
         return response.data.Result.StrandList_ResponseStrandIndicator.StrandList.map(strand => ({
           name: strand.StrandFullname,
           code: strand.StrandCode,
@@ -105,7 +104,7 @@ module.exports = fp(async (fastify, options) => {
             name: indicator.IndicatorFullname,
             code: indicator.IndicatorCode
           }))
-        }))
+        })).filter(strand => !strand.code.startsWith('51'))
       })
 
       params.RequestType = 1
@@ -114,7 +113,9 @@ module.exports = fp(async (fastify, options) => {
       params.FollowIndicator = true
       params.ComplexityLevel = '1,2,3'
     
+      
       for (let strandIndex in indicators) {
+        if (indicators[strandIndex].code.startsWith('51')) continue
         for (let indicatorIndex in indicators[strandIndex].indicators) {
           const indicator = indicators[strandIndex].indicators[indicatorIndex]
           
@@ -125,11 +126,9 @@ module.exports = fp(async (fastify, options) => {
           indicator.noitems = await instance.get(`/ws/RequestItemsInquiry`, { params }).then(response => {
             const arrayNoQuestionType = response.data.ResponseItemInquiry.ResponseNoQuestionType_ResponseItemInquiry.ResponseNoQuestionType
             if (!arrayNoQuestionType[0]) return 0
-            const indicators = arrayNoQuestionType[0].Indicator.split(';')
-            return indicators.reduce((noitems, rawIndicator) => {
-              console.log(rawIndicator)
-              const item = rawIndicator.split(',') // indicatorName, questionType, 
-              console.log()
+            const indicators = arrayNoQuestionType[0].Strand.split(';')
+            return indicators.reduce((noitems, rawStrand) => {
+              const item = rawStrand.split(',') // indicatorName, questionType, 
               return parseInt(item[2]) + noitems
             }, 0)
           }).catch(err => {
@@ -138,12 +137,15 @@ module.exports = fp(async (fastify, options) => {
           indicators[strandIndex].indicators[indicatorIndex] = indicator
         }
       }
-
-      return indicators.map(strand => ({
-        name: strand.name,
-        code: strand.code,
-        noitems: strand.indicators.reduce((noitem, indicator) => noitem + indicator.noitems, 0)
-      }))
+      // console.log(indicators)
+      return indicators.map(strand => {
+        // console.log(strand.indicators)  
+        return {
+          name: strand.name,
+          code: strand.code,
+          noitems: strand.indicators.reduce((noitem, indicator) => noitem + indicator.noitems, 0)
+        }
+      })
     },
 
     getCompetitions: async (params = {}) => {

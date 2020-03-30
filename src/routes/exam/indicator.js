@@ -31,7 +31,7 @@ module.exports = async (fastify) => {
 
     const response = await fastify.otimsApi.getIndicators(params)
 
-    return response.filter(strand => !strand.code.startsWith('51')).map(strand => {
+    return response.map(strand => {
       strand.indicators.sort((a,b) => {
         const codeA = a.code.split(' ')
         const codeB = b.code.split(' ')

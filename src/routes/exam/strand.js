@@ -32,6 +32,6 @@ module.exports = async (fastify) => {
     params.BankType = query.BankType || 'Public'
 
     const response = await fastify.otimsApi.getStrands(params)
-    return response.filter(strand => !strand.code.startsWith('51'))
+    return response
   })
 }
