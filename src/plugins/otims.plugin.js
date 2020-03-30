@@ -287,8 +287,8 @@ module.exports = fp(async (fastify, options) => {
               params.RequestTestsetGroupResult.push({
                 ItemID: data.results[i].id,
                 ItemLeftSideSeq: index+1,
-                ItemSelectedChoice: tf ? tf.key : 0,
-                ItemResult: data.results[i].result,
+                ItemSelectedChoice: tf.key,
+                ItemResult: tf.result,
                 TimeSpent
               })
             })
@@ -299,7 +299,7 @@ module.exports = fp(async (fastify, options) => {
                 ItemID: data.results[i].id,
                 ItemLeftSideSeq: ma.seq,
                 ItemSelectedChoice: ma.match,
-                ItemResult: data.results[i].result,
+                ItemResult: ma.result,
                 TimeSpent
               })
             })
