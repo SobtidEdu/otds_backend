@@ -28,9 +28,7 @@ module.exports = async (fastify) => {
     if (query.competition.year) {
       params.ProjectYear = query.competition.year
     }
-    if (query.bankType) {
-      params.BankType = query.bankType || 'Public'
-    }
+    params.BankType = query.BankType || 'Public'
 
     const response = await fastify.otimsApi.getStrands(params)
     return response.filter(strand => !strand.code.startsWith('51'))
