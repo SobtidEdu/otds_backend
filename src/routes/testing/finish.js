@@ -73,7 +73,7 @@ module.exports = async (fastify, opts) => {
     }
     if (!user || (user._id.toString() !== exam.owner.toString())) {
       console.log("Send test to OTIMS")
-      // console.log(resultTestingToOtims.results[0].answer)
+      // return resultTestingToOtims
       await fastify.otimsApi.requestSendTestsetStat(resultTestingToOtims)
     }
 
@@ -96,7 +96,7 @@ const mapResultToOtims = (questionType, originalAnswers, userAnswer) => {
     if (userAnswer == null) userAnswer = []
     return originalAnswers.left.map((originalAnswer, index) => {
       const ans = userAnswer.find(a => a.seq === originalAnswer.seq)
-      return ans ? {...ans, result: ans.match === originalAnswer.match ? 1 : 0 } : { seq: originalAnswer.seq, match: 0, result: 2 } 
+      return ans ? {...ans, result: ans.match == originalAnswer.match ? 1 : 0 } : { seq: originalAnswer.seq, match: 0, result: 2 } 
     })
   } else {
     return userAnswer ? userAnswer : ''
