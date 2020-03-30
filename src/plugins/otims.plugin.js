@@ -100,7 +100,7 @@ module.exports = fp(async (fastify, options) => {
         return response.data.Result.StrandList_ResponseStrandIndicator.StrandList.map(strand => ({
           name: strand.StrandFullname,
           code: strand.StrandCode,
-          indicators: strand.IndicatorList_StrandList.IndicatorList.map(indicator => ({
+          indicators: strand.IndicatorList_StrandList.IndicatorList.filter((indicator, i) => i === 0).map(indicator => ({
             name: indicator.IndicatorFullname,
             code: indicator.IndicatorCode
           }))
@@ -113,21 +113,22 @@ module.exports = fp(async (fastify, options) => {
       params.FollowIndicator = true
       params.ComplexityLevel = '1,2,3'
     
-      
+      // return indicators
       for (let strandIndex in indicators) {
-        if (indicators[strandIndex].code.startsWith('51')) continue
         for (let indicatorIndex in indicators[strandIndex].indicators) {
           const indicator = indicators[strandIndex].indicators[indicatorIndex]
           
           params.Strand = indicators[strandIndex].code
           params.Indicator = indicators[strandIndex].indicators[indicatorIndex].code
-    
+          
+          // console.log(params)
           q = querystring.stringify(params)
           indicator.noitems = await instance.get(`/ws/RequestItemsInquiry`, { params }).then(response => {
             const arrayNoQuestionType = response.data.ResponseItemInquiry.ResponseNoQuestionType_ResponseItemInquiry.ResponseNoQuestionType
+            // console.log(arrayNoQuestionType)
             if (!arrayNoQuestionType[0]) return 0
-            const indicators = arrayNoQuestionType[0].Strand.split(';')
-            return indicators.reduce((noitems, rawStrand) => {
+            const strand = arrayNoQuestionType[0].Strand.split(';')
+            return strand.reduce((noitems, rawStrand) => {
               const item = rawStrand.split(',') // indicatorName, questionType, 
               return parseInt(item[2]) + noitems
             }, 0)
@@ -137,7 +138,7 @@ module.exports = fp(async (fastify, options) => {
           indicators[strandIndex].indicators[indicatorIndex] = indicator
         }
       }
-      // console.log(indicators)
+
       return indicators.map(strand => {
         // console.log(strand.indicators)  
         return {
