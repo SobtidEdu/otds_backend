@@ -22,8 +22,8 @@ module.exports = async (fastify) => {
     if (query.grade) {
       params.KeyStage = query.grade
     }
-    if (query.competition.name) {
-      params.Project = query.competition.name
+    if (query.competition.project) {
+      params.Project = query.competition.project
     }
     if (query.competition.year) {
       params.ProjectYear = query.competition.year
