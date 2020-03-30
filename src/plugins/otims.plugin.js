@@ -96,7 +96,9 @@ module.exports = fp(async (fastify, options) => {
     
       // let q = querystring.stringify(params)
       const indicators = await instance.get(`/ws/StrandIndicatorRequest`, { params })
-      .then(response => response.data.Result.StrandList_ResponseStrandIndicator.StrandList.map(strand => ({
+      .then(response => {
+        console.log(response.data.Result.StrandList_ResponseStrandIndicator.StrandList)
+        return response.data.Result.StrandList_ResponseStrandIndicator.StrandList.map(strand => ({
           name: strand.StrandFullname,
           code: strand.StrandCode,
           indicators: strand.IndicatorList_StrandList.IndicatorList.map(indicator => ({
@@ -104,7 +106,7 @@ module.exports = fp(async (fastify, options) => {
             code: indicator.IndicatorCode
           }))
         }))
-      )
+      })
 
       params.RequestType = 1
       params.TestSetType = 'FI'
