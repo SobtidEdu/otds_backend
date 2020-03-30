@@ -28,6 +28,7 @@ module.exports = async (fastify) => {
     if (query.competition.year) {
       params.ProjectYear = query.competition.year
     }
+    params.ProjectName = query.ProjectName || ''
     params.BankType = query.BankType || 'Public'
 
     const response = await fastify.otimsApi.getStrands(params)
