@@ -43,7 +43,7 @@ module.exports = async (fastify, opts) => {
           resultTestingToOtims.results.push({
             id: question.id,
             type: question.type,
-            answer: progressTesting.answer,
+            answer: mapResultToOtims(question.type, (question.type !== 'TF' ? question.answers : question.subQuestions), progressTesting.answer),
             result: progressTesting.isCorrect ? 1 : 0
           })
           return progressTesting
@@ -51,8 +51,8 @@ module.exports = async (fastify, opts) => {
           resultTestingToOtims.results.push({
             id: question.id,
             type: question.type,
-            answer: null,
-            result: 0
+            answer: mapResultToOtims(question.type, (question.type !== 'TF' ? question.answers : question.subQuestions), null),
+            result: 2
           })
           return {
             questionId: question._id,
@@ -73,6 +73,7 @@ module.exports = async (fastify, opts) => {
     }
     if (!user || (user._id.toString() !== exam.owner.toString())) {
       console.log("Send test to OTIMS")
+      // console.log(resultTestingToOtims.results[0].answer)
       await fastify.otimsApi.requestSendTestsetStat(resultTestingToOtims)
     }
 
@@ -81,6 +82,26 @@ module.exports = async (fastify, opts) => {
     return await testing.save()
     
   })
+}
+
+const mapResultToOtims = (questionType, originalAnswers, userAnswer) => {
+  
+  if (questionType === 'TF') {
+    if (userAnswer == null) userAnswer = []
+    return originalAnswers.map((originalAnswer, index) => { 
+      const ans = userAnswer[index]
+      return ans ? { key: ans.key, result: originalAnswer.answers.find(a => a.seq === ans.key) ? 1 : 0 } : { key: 0, result: 2 }
+    })
+  } else if (questionType === 'MA') {
+    if (userAnswer == null) userAnswer = []
+    return originalAnswers.left.map((originalAnswer, index) => {
+      const ans = userAnswer.find(a => a.seq === originalAnswer.seq)
+      return ans ? {...answer, result: ans.match === originalAnswer.match ? 1 : 0 } : { seq: originalAnswer.seq, match: 0, result: 2 } 
+    })
+  } else {
+    return userAnswer ? userAnswer : ''
+  }
+  
 }
 
 const checkCorrect = (questionType, originalAnswers, userAnswer) => {
