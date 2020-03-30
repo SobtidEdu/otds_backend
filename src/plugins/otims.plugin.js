@@ -110,7 +110,7 @@ module.exports = fp(async (fastify, options) => {
       params.RequestType = 1
       params.TestSetType = 'FI'
       params.FollowStrand = true
-      params.FollowIndicator = true
+      params.FollowIndicator = false
       params.ComplexityLevel = '1,2,3'
     
       // return indicators
@@ -119,7 +119,7 @@ module.exports = fp(async (fastify, options) => {
           const indicator = indicators[strandIndex].indicators[indicatorIndex]
           
           params.Strand = indicators[strandIndex].code
-          params.Indicator = indicators[strandIndex].indicators[indicatorIndex].code
+          params.Indicator = ''
           
           // console.log(params)
           q = querystring.stringify(params)
