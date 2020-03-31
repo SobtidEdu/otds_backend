@@ -28,31 +28,38 @@ class Synchronizer {
     }
   }
 
-  async synchronize(recordsPerRound = 1000, callback) {
+  async synchronize(recordsPerRound = 1000, continueRound, callback) {
     const { total } = (await this.mysql.query(`SELECT count(*) AS total FROM (${this.sqlQueryCmd}) AS T`)).shift()
     console.log(`Total Records : ${total}`)
     const round = Math.ceil(total / recordsPerRound)
     let firstRecordInRound = 0
     let lastRecordInRound = 0
-    let amountRecordInRound = 0
     let items = []
+    let temp = {}
 
     for (let i = 1; i <= round; i++) {
-      if (i < round) continue;
-      firstRecordInRound = ((i-1)*recordsPerRound)+1
+      if (continueRound && i < continueRound) continue;
+      items = []
+      firstRecordInRound = ((i-1)*recordsPerRound) + 1 
       lastRecordInRound = i*recordsPerRound < total ? i*recordsPerRound : total
-      amountRecordInRound = lastRecordInRound - firstRecordInRound
       console.log(`Round ${i}/${round} upstreaming ${recordsPerRound} records each round`)
       console.log(` Quering... ${firstRecordInRound} - ${lastRecordInRound}`)
-      const sources = await this.mysql.query(`${this.sqlQueryCmd} ORDER BY id ASC LIMIT ${firstRecordInRound - 1}, ${recordsPerRound}`)
-      console.log(`${this.sqlQueryCmd} LIMIT ${firstRecordInRound - 1}, ${recordsPerRound}`)
+      console.log(`${this.sqlQueryCmd} ORDER BY create_date ASC LIMIT ${firstRecordInRound - 1}, ${recordsPerRound}`)
+      const sources = await this.mysql.query(`${this.sqlQueryCmd} ORDER BY create_date ASC LIMIT ${firstRecordInRound - 1}, ${recordsPerRound}`)
       console.log(` Manipulating... ${firstRecordInRound} - ${lastRecordInRound}`)
-      for (let j = 0; j < amountRecordInRound; j++) {
-        items[j] = callback(sources[j], {})
+
+      for (let j = 0; j < sources.length; j++) {
+        temp = await callback(sources[j], {})
+        if (temp) {
+          items.push(temp)
+        }
       }
 
       console.log(` Inserting... ${firstRecordInRound} - ${lastRecordInRound}`)
-      await this.mongodb.collection(this.mongoCollection).insertMany(items)
+      if (items.length > 0) {
+        const inserted = await this.mongodb.collection(this.mongoCollection).insertMany(items)
+        console.log(inserted.insertedCount)
+      }
     }
   }
 

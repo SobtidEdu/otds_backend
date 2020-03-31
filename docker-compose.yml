@@ -13,25 +13,35 @@ services:
     volumes:
       - ./src:/usr/src/app/src
       - ./storage:/usr/src/app/storage
-    #depends_on:
-    #  - db
+      - ./server.js:/usr/src/app/server.js
+    # depends_on:
+    #  - mongodb
     # networks:
     #   - app-network
     # command: sh wait-for.sh db:27017 -- /home/node/app/node_modules/.bin/nodemon server.js
-#   db:
-#     image: mongo:4.1.8-xenial
-#     container_name: mongo_db
-#     restart: unless-stopped
-#     env_file: .env
-#     environment:
-#       - MONGO_INITDB_ROOT_USERNAME=$MONGO_USERNAME
-#       - MONGO_INITDB_ROOT_PASSWORD=$MONGO_PASSWORD
-#     ports:
-#       - "27017:27017"
-#     volumes:
-#       - dbdata:/data/db
-#     networks:
-#       - app-network
+  # cache-server:
+  #   image: memcached
+  #   ports:
+  #     - "11211:11211"
+  #   deploy:
+  #     resources:
+  #       limits:
+  #         cpus: '0.50'
+  #         memory: 50M
+  #       reservations:
+  #         cpus: '0.25'
+  #         memory: 20M
+  # mongodb:
+  #   image: mongo:4.2
+  #   container_name: otds_mongodb
+  #   restart: unless-stopped
+  #   ports:
+  #     - "27017:27017"
+  #   volumes:
+  #     - ./dbdata:/data/db
+  #   networks:
+  #     - app-network
+  #   command: mongod --auth
 
 # networks: 
 #   app-network:
@@ -39,4 +49,4 @@ services:
 
 # volumes:
 #   dbdata:
-#   node_modules:  
+  # node_modules:  

@@ -1,8 +1,6 @@
 'use strict'
 
-const mongoose = require('mongoose');
 const moment = require('moment');
-const generator = require('rand-token').generator({ chars: '0-9' })
 
 
 module.exports = {
@@ -14,57 +12,55 @@ module.exports = {
       required: true,
       trim: true,
     },
+    oldSystemId: {
+      type: Number,
+      default: null,
+    },
     owner: {
       type: "ObjectId",
       ref: "User"
     },
-    students: {
-      requestToJoin: [
-        {
-          userInfo: {
-            type: "ObjectId",
-            ref: "User"
-          },
-          requestedDate: {
-            type: Number,
-            default: moment().unix()
-          }
+    students: [
+      {
+        userInfo: {
+          type: "ObjectId",
+          ref: "User"
+        },
+        status: {
+          type: String,
+        },
+        requestedDate: {
+          type: Number,
+          default: null
+        },
+        jointDate: {
+          type: Number,
+          default: null
+        },
+        leftDate: {
+          type: Number,
+          default: null
+        },
+        teacherSeenLeft: {
+          type: Boolean,
+          default: false
         }
-      ],
-      inGroup: [
-        {
-          userInfo: {
-            type: "ObjectId",
-            ref: "User"
-          },
-          jointDate: {
-            type: Number,
-            default: moment().unix()
-          }
+      }
+    ],
+    exams: [
+      {
+        status: {
+          type: Boolean,
+          default: true
+        },
+        addedAt: {
+          type: Number,
+          default: moment().unix()
         }
-      ],
-      hasLeft: [
-        {
-          userInfo: {
-            type: "ObjectId",
-            ref: "User"
-          },
-          leftDate: {
-            type: Number,
-            default: moment().unix()
-          }
-        }
-      ]
-    },
-    // exams: [
-    //   {
-    //     type: "ObjectId",
-    //     ref: "Exam"
-    //   }
-    // ],
+      }
+    ],
     code: {
-      type: String,
-      default: () => generator.generate(4)
+      type: String
     },
     logo: {
       type: String
@@ -76,6 +72,7 @@ module.exports = {
     updatedAt: {
       type: Number,
       default: moment().unix()
-    }
+    },
+    deletedAt: { type: Number, default: null },
   },
 }

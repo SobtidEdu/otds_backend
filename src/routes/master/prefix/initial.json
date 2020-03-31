@@ -1,0 +1,37 @@
+[
+  {
+    "name": "ด.ช.",
+    "visible": {
+      "teacher": false,
+      "student": true
+    }
+  },
+  {
+    "name": "ด.ญ.",
+    "visible": {
+      "teacher": false,
+      "student": true
+    }
+  },
+  {
+    "name": "นาย",
+    "visible": {
+      "teacher": true,
+      "student": true
+    }
+  },
+  {
+    "name": "นาง",
+    "visible": {
+      "teacher": true,
+      "student": false
+    }
+  },
+  {
+    "name": "นางสาว",
+    "visible": {
+      "teacher": true,
+      "student": true
+    }
+  }
+]

@@ -1,8 +1,6 @@
 'use strict'
 
-const mongoose = require('mongoose');
 const moment = require('moment');
-const ObjectId = mongoose.Schema.Types.ObjectId
 
 module.exports = {
   name: 'provinces',
@@ -13,6 +11,10 @@ module.exports = {
       required: true,
       trim: true,
       unique: true
+    },
+    region: {
+      type: String,
+      trim: true
     },
     isActive: {
       type: Boolean,

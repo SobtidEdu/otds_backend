@@ -1,0 +1,12 @@
+[
+  {
+    "id": "MATH",
+    "name": "คณิตศาสตร์",
+    "isActive": true
+  },
+  {
+    "id": "SCI",
+    "name": "วิทยาศาสตร์",
+    "isActive": true
+  }
+]

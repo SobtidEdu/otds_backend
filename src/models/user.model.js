@@ -1,7 +1,7 @@
 'use strict'
 
 const moment = require('moment');
-const { GENDER, ROLE, USERGROUP_STAUS } = require('@root/config')
+const { GENDER, ROLE, GROUP_STATUS } = require('@config/user')
 
 module.exports = {
   name: 'users',
@@ -22,14 +22,11 @@ module.exports = {
       required: true,
       trim: true
     },
-    gender: {
-      type: String,
-      enum: Object.values(GENDER)
+    username: {
+      type: String
     },
     email: {
-      type: String,
-      unique: true,
-      required: true
+      type: String
     },
     password: {
       hashed: {
@@ -44,16 +41,50 @@ module.exports = {
       enum: Object.values(ROLE),
       default: ROLE.STUDENT
     },
-    department: {
-      type: String,
-    },
     school: {
-      type: { type: String, enum: ['system', 'other'] },
-      name: { type: String }
-    },
-    province: {
-      type: "ObjectId",
-      ref: "Province"
+      name: {
+        text: { type: String },
+        isModified: { type: Boolean },
+      },
+      addressNo: {
+        text: { type: String },
+        isModified: { type: Boolean },
+      },
+      villageNo: {
+        text: { type: String },
+        isModified: { type: Boolean },
+      },
+      lane: {
+        text: { type: String },
+        isModified: { type: Boolean },
+      },
+      road: {
+        text: { type: String },
+        isModified: { type: Boolean },
+      },
+      subDistrict: {
+        text: { type: String },
+        isModified: { type: Boolean },
+      },
+      district: {
+        text: { type: String },
+        isModified: { type: Boolean },
+      },
+      postalCode: {
+        text: { type: String },
+        isModified: { type: Boolean },
+      },
+      department: {
+        text: { type: String },
+        isModified: { type: Boolean },
+      },
+      province: {
+        id: {
+          type: "ObjectId",
+          ref: "Province"
+        },
+        isModified: { type: Boolean }
+      },
     },
     profileImage: {
       type: String
@@ -70,16 +101,54 @@ module.exports = {
       type: Boolean,
       default: false
     },
-    groups: [
+    isSeenModified: {
+      type: Boolean,
+      default: true
+    },
+    privacyPolicy: {
+      type: Boolean,
+      default: null
+    },
+    resetPasswordToken: {
+      type: String
+    },
+    isSeenTermAndCondition: {
+      type: Boolean,
+      default: true
+    },
+    isSeenDataPrivacy: {
+      type: Boolean,
+      default: true
+    },
+    notices: [
       {
-        info: {
+        id: { type: Number },
+        text: { type: String },
+        times: { type: Number }
+      }
+    ],
+    lastLoggedInAt: {
+      type: Number
+    },
+    oldSystemId: { type: Number },
+    isSeenTutorial: { 
+      exam: { type: Boolean, default: false },
+      group: { type: Boolean, default: false },
+      testing: { type: Boolean, default: false },
+      report: { type: Boolean, default: false },
+      examCode: { type: Boolean, default: false }
+    },
+    myExam: [
+      {
+        examId: {
+          type: "ObjectId",
+          ref: "Exam"
+        },
+        groupId: {
           type: "ObjectId",
           ref: "Group"
         },
-        status: {
-          type: String, 
-          enum: Object.values(USERGROUP_STAUS)
-        },
+        latestAction: { type: Number, default: moment().unix() },
       }
     ],
     createdAt: {

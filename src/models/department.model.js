@@ -1,8 +1,6 @@
 'use strict'
 
-const mongoose = require('mongoose');
 const moment = require('moment');
-const ObjectId = mongoose.Schema.Types.ObjectId
 
 module.exports = {
   name: 'departments',
@@ -13,6 +11,10 @@ module.exports = {
       required: true,
       trim: true,
       unique: true
+    },
+    code: { type: String },
+    seq: {
+      type: Number
     },
     isActive: {
       type: Boolean,
@@ -26,5 +28,5 @@ module.exports = {
       type: Number,
       default: moment().unix()
     }
-  },
+  }
 }

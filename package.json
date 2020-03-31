@@ -10,14 +10,16 @@
     "start:prod": "node server.js",
     "start:dev": "node ./node_modules/nodemon/bin/nodemon.js server.js",
     "db:seed": "node ./db/seeds",
-    "db:migrate": "node ./db/migrations",
+    "db:migrate": "node ./src/db/migrations",
     "migrate": "node node_modules/db-migrate/bin/db-migrate",
     "test": "jest test",
     "coverage": "jest --collectCoverageFrom=test/**.js --coverage"
   },
   "dependencies": {
+    "@sentry/node": "^5.7.1",
     "ajv": "^6.10.0",
     "ajv-errors": "^1.0.1",
+    "axios": "^0.19.0",
     "base64-to-image": "^1.0.2",
     "bcrypt": "^3.0.6",
     "commander": "^2.20.0",
@@ -33,9 +35,14 @@
     "fastify-jwt": "^0.10.0",
     "fastify-mongoose-driver": "^1.0.2",
     "fastify-nodemailer": "^4.0.0",
+    "fastify-rate-limit": "^2.2.0",
     "fastify-sensible": "^2.0.1",
+    "fastify-sentry": "^1.2.1",
     "fastify-static": "^2.4.0",
     "inquirer": "^6.2.2",
+    "jquery": "^3.4.1",
+    "md5": "^2.2.1",
+    "memcached": "^2.2.2",
     "module-alias": "^2.2.0",
     "moment": "^2.24.0",
     "mongodb": "^3.2.3",
@@ -43,7 +50,9 @@
     "mysql": "^2.16.0",
     "pino-pretty": "^2.5.0",
     "qs": "^6.7.0",
+    "querystring": "^0.2.0",
     "rand-token": "^0.4.0",
+    "read-excel-file": "^4.0.2",
     "uuid": "^3.3.2"
   },
   "devDependencies": {
@@ -55,7 +64,8 @@
     "nodemon": "^1.18.10"
   },
   "_moduleAliases": {
-    "@root"      : ".",
-    "@src"      : "src"
+    "@root": ".",
+    "@src": "src",
+    "@config": "src/config"
   }
 }

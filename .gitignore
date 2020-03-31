@@ -1,7 +1,14 @@
 /node_modules
-/storage/images/profile/profile-*
+/storage/images/profile/*
+!/storage/images/profile/default.png
+/storage/images/group/*
+!/storage/images/group/default.png
+/storage/html/term.html
 .env
 
 .DS_Store
 /storage/.*
 /storage/images/.*
+
+dbdata/
+data/

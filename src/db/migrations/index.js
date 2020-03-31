@@ -4,12 +4,13 @@ const program = require('commander')
 const { connectMongodb } = require('./mongo-connection')
 const Synchronizer = require('./synchronizer')
 const synchronizer = new Synchronizer()
-const groupCommands = ['competition', 'province', 'school', 'user']
+const groupCommands = ['user', 'exam', 'testing', 'group']
 
 program
   .version('1.0.0')
   .command('sync <cmd>')
-  .action(async (cmd) => {
+  .option('-c, --continue <continue>', 'Continue from round number')
+  .action(async (cmd, options) => {
     console.log('===== OTDS Migration Getting Start =====')
     await synchronizer.connectDB()
     if (cmd == 'all') {
@@ -25,8 +26,7 @@ program
       }
 
       const migrate = require(`./${cmd}.migration`)
-      
-      await migrate.sync(synchronizer)
+      await migrate.sync(synchronizer, options.continue)
     }
     await synchronizer.close()
     console.log('===== OTDS Migration End =====')
