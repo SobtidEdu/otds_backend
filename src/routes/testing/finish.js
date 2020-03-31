@@ -85,7 +85,6 @@ module.exports = async (fastify, opts) => {
 }
 
 const mapResultToOtims = (questionType, originalAnswers, userAnswer) => {
-  
   if (questionType === 'TF') {
     if (userAnswer == null) userAnswer = []
     return originalAnswers.map((originalAnswer, index) => { 
@@ -98,10 +97,11 @@ const mapResultToOtims = (questionType, originalAnswers, userAnswer) => {
       const ans = userAnswer.find(a => a.seq === originalAnswer.seq)
       return ans ? {...ans, result: ans.match == originalAnswer.match ? 1 : 0 } : { seq: originalAnswer.seq, match: 0, result: 2 } 
     })
-  } else {
+  } else if (questionType === 'MC') {
+    return userAnswer ? userAnswer : 0
+  } else if (questionType === 'SA') {
     return userAnswer ? userAnswer : ''
   }
-  
 }
 
 const checkCorrect = (questionType, originalAnswers, userAnswer) => {
