@@ -36,7 +36,7 @@ fastify.register(require('fastify-jwt'), {
   sign: {
     audience: 'otds.user',
     issuer: 'onlinetesting.ipst.ac.th',
-    expiresIn: '1d'
+    expiresIn: '30m'
   },
   verify: {
     audience: 'otds.user',
