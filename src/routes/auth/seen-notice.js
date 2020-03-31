@@ -20,7 +20,7 @@ module.exports = async (fastify, opts) => {
       user.notices.splice(index, 1)
     }
     
-    await user.save()
+    await fastify.mongoose.User.updateOne({ _id: user._id }, { $set: { notices: user.notices }})
 
     return { message: 'success' }
   })
